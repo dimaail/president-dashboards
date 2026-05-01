@@ -325,11 +325,10 @@ html, body {
   background: var(--pres-panel);
 }
 .pres-brand-mark {
-  height: 28px; width: 28px;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: var(--pres-accent); color: #000;
-  font-weight: 900; font-size: 14px;
-  border-radius: 2px;
+  height: 40px; width: 40px;
+  display: inline-block;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .pres-brand-title {
   font-weight: 800; letter-spacing: 0.04em; font-size: 13px;
@@ -1764,8 +1763,8 @@ const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => (
             <span className="chip flat">{t("By transaction volume")}</span>
           </span>
         </div>
-        <UgandaMap data={REGIONS} activeId={activeRegion} onPick={setActiveRegion} mode="activity" />
-        <MapLegend mode="activity" />
+        <UgandaMap data={REGIONS} activeId={activeRegion} onPick={setActiveRegion} valueKey="disb" maxKey="alloc" mode="rate" />
+        <MapLegend mode="rate" />
       </div>
 
       <div className="col" style={{ gap: 12 }}>
@@ -2223,7 +2222,7 @@ function App() {
 
       {/* ── Brand ────────────────────────────────────────────────── */}
       <div className="pres-brand">
-        <span className="pres-brand-mark">U</span>
+        <img className="pres-brand-mark" src="../assets/Coat_of_arms_of_Uganda.svg.png" alt="Coat of Arms of Uganda" />
         <div>
           <div className="pres-brand-title">SWITCH</div>
           <div className="pres-brand-sub">{t("Office of the President")}</div>
