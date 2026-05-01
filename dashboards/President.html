@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440" />
+<title>President of Uganda · Supervision Dashboard</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="president.css">
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="president-icon.jsx"></script>
+<script type="text/babel" src="president-data.jsx"></script>
+<script type="text/babel" src="president-charts.jsx"></script>
+<script type="text/babel" src="president-map.jsx"></script>
+<script type="text/babel" src="president-tabs.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "density": "comfortable",
+  "language": "en"
+}/*EDITMODE-END*/;
+
+// EN/Luganda label table (subset; common executive surface labels)
+const I18N = {
+  en: {},
+  lg: {
+    "Executive overview": "Endaba enkulu",
+    "Live · all systems": "Bya leero · sisitemu zonna",
+    "Real-time activity · regions": "Emirimu ya leero · ebitundu",
+    "By transaction volume": "Ku muwendo gw'ebikolwa",
+    "Low activity": "Emirimu mitono",
+    "High activity": "Emirimu mingi",
+    "Channel mix · today": "Engeri y'okusasula · leero",
+    "Transaction type mix": "Engeri z'ebikolwa",
+    "Switch volume · 30d (T UGX)": "Omuwendo gw'ensimbi · ennaku 30",
+    "Cross-agency signal": "Obubaka okuva mu bitongole",
+    "Agency": "Ekitongole",
+    "Indicator": "Akabonero",
+    "Today": "Leero",
+    "Δ": "Enkyukakyuka",
+    "Settlement uptime": "Obutuufu bw'okusasula",
+    "MTD vs target": "Omwezi okusinga ekigendererwa",
+    "Blocked tx amount": "Ensimbi ezizibiddwa",
+    "Disbursement rate": "Omuwendo gw'okugaba",
+    "Liquidity floor breaches": "Okumenya omutindo gw'ensimbi",
+    "Bank of Uganda · Macroeconomy": "Bbanka ya Uganda · Ebyenfuna",
+    "Real-time · NPS feed": "Bya kati · NPS",
+    "Liquidity & digitalization · rails": "Ensimbi n'ekika ky'okusasula",
+    "Consumption & business activity": "Okugula n'eby'obusuubuzi",
+    "Trend": "Endagiriro",
+    "Participant liquidity (top 10)": "Ensimbi z'abeenywanyi (10 ab'okumpi)",
+    "Live": "Bya kati",
+    "Participant": "Eyeenyigira",
+    "Liquidity (T UGX)": "Ensimbi (T UGX)",
+    "Share": "Omugabo",
+    "Status": "Embeera",
+    "Liquidity buffer": "Ensimbi z'okusosola",
+    "Healthy": "Nungi",
+    "Watch": "Tunula",
+    "Resolution": "Mu kunoonyereza",
+    "Financial Intelligence Authority": "Ekitongole ky'Amagezi g'Ensimbi",
+    "Live · investigation activities": "Bya kati · okunoonyereza",
+    "Fraud cases · by type": "Obubbi · ku ngeri",
+    "Volume (UGX) shown in detail view; click a row.": "Ensimbi zirambika mu ndaba enzijjuvu.",
+    "High-risk entities": "Bizinensi ez'akabi",
+    "Sector": "Ekitundu",
+    "Entities": "Bizinensi",
+    "Volume (B UGX)": "Ensimbi (B UGX)",
+    "30d Δ": "Enkyukakyuka 30d",
+    "Recently blocked transactions": "Ebikolwa ebizibiddwa awaakayo",
+    "auto-blocked": "ziziddwa eyokka",
+    "Debtor": "Eyasendebbwa",
+    "Debtor FI": "Bbanka y'eyasendebbwa",
+    "Creditor": "Eyasenze",
+    "Creditor FI": "Bbanka y'eyasenze",
+    "Amount": "Ensimbi",
+    "Type": "Ekika",
+    "Block date": "Olunaku lw'okuziyiza",
+    "Uganda Revenue Authority": "Ekitongole ky'Omusolo",
+    "Tax collection & cross-checks": "Okusolooza n'okukebera omusolo",
+    "Tax collected · monthly (T UGX)": "Omusolo · buli mwezi",
+    "Year": "Omwaka",
+    "Quarter": "Kota",
+    "Month": "Omwezi",
+    "Regional budget · target vs actual": "Bajeti y'ebitundu · ekigendererwa vs ekituufu",
+    "Cross-check: declared vs cashflow": "Okugeraageranya: ebyalangiriddwa vs ensimbi",
+    "6 high-risk": "6 ab'akabi",
+    "Taxpayer": "Asasula omusolo",
+    "Declared": "Yalangirira",
+    "Cashflow": "Entambula y'ensimbi",
+    "Gap": "Enjawukana",
+    "Risk": "Akabi",
+    "Unregistered taxpayers": "Abasasula omusolo abateetabye",
+    "Estimated taxpayers": "Abasasula abalowoozebwa",
+    "Potential revenue: UGX 124.7B / yr": "Ensimbi ezisobola: UGX 124.7B / mwaka",
+    "Unregistered VAT": "VAT eteetabye",
+    "Potential revenue: UGX 488.4B / yr": "Ensimbi ezisobola: UGX 488.4B / mwaka",
+    "Estimates derived from Switch C2B / B2B flows reconciled against URA TIN registry. Refreshed weekly. Click to drill into source matching rules.": "Embalirira eva ku ntambula ya Switch egeraageranyiziddwa n'ebyandiikidwa ku TIN. Eddamu wiiki yonna.",
+    "Parish Development Model": "Pulani y'Okukulaakulanya Eparishi",
+    "Allocated vs disbursed · YTD": "Eyaweereddwayo vs eyagabwa",
+    "Disbursement intensity by region": "Amaanyi g'okugaba ku bitundu",
+    "Allocated → Disbursed": "Eyagabibwa → Eyaweereddwayo",
+    "Underperforming": "Tekikola bulungi",
+    "On plan": "Ku pulaani",
+    "PDM pillars · allocation vs disbursement": "Empagi za PDM",
+    "Districts · allocated vs disbursed (B UGX)": "Disitulikiti · ensimbi",
+    "Top 12": "12 ab'okumpi",
+    "District": "Disitulikiti",
+    "Allocated": "Yaweereddwayo",
+    "Disbursed": "Yagabibwa",
+    "Rate": "Omuwendo",
+    "Progress": "Enkulaakulana",
+    "Tabs": "Empapula",
+    "Overview": "Endaba",
+    "BoU": "BoU",
+    "FIA": "FIA",
+    "URA": "URA",
+    "PDM": "PDM",
+    "Alerts": "Obubaka",
+    "Period": "Ekiseera",
+    "President of Uganda": "Pulezidenti wa Uganda",
+    "Office of the President": "Ofiisi ya Pulezidenti",
+    "All systems live": "Sisitemu zonna zikola",
+    "Density": "Obungi",
+    "Language": "Olulimi",
+    "Compact": "Kifunze",
+    "Comfortable": "Kya bwerere",
+    "English": "Olungereza",
+    "Luganda": "Oluganda",
+    "Switch · Office of the President": "Switch · Ofiisi ya Pulezidenti",
+  }
+};
+
+const TABS = [
+  { id: "overview", icon: "dashboard",       label: "Overview" },
+  { id: "bou",      icon: "account_balance", label: "BoU" },
+  { id: "fia",      icon: "shield",          label: "FIA" },
+  { id: "ura",      icon: "request_quote",   label: "URA" },
+  { id: "pdm",      icon: "map",             label: "PDM" },
+];
+
+const SeverityIcon = ({ sev }) => {
+  const map = { crit: "error", warn: "warning", info: "info", good: "check_circle" };
+  return <Icon name={map[sev] || "info"} size={14} />;
+};
+
+function App() {
+  const [tab, setTab]                   = React.useState("overview");
+  const [activeRegion, setActiveRegion] = React.useState(null);
+  const [tweaks, setTweak]              = useTweaks(TWEAK_DEFAULTS);
+  const [now, setNow]                   = React.useState(new Date());
+
+  React.useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const t    = (s) => (I18N[tweaks.language] && I18N[tweaks.language][s]) || s;
+  const data = window.PRES_DATA;
+
+  const tabBody = {
+    overview: <TabOverview t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
+    bou:      <TabBoU      t={t} data={data} />,
+    fia:      <TabFIA      t={t} data={data} />,
+    ura:      <TabURA      t={t} data={data} />,
+    pdm:      <TabPDM      t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
+  };
+
+  const clock = now.toLocaleTimeString("en-GB", { hour12: false });
+
+  return (
+    <div className={`pres density-${tweaks.density === "comfortable" ? "comfortable" : "compact"}`}
+         data-screen-label={`01 ${tab.toUpperCase()}`}>
+
+      {/* ── Brand ────────────────────────────────────────────────── */}
+      <div className="pres-brand">
+        <span className="pres-brand-mark">U</span>
+        <div>
+          <div className="pres-brand-title">SWITCH</div>
+          <div className="pres-brand-sub">{t("Office of the President")}</div>
+        </div>
+      </div>
+
+      {/* ── Topbar ───────────────────────────────────────────────── */}
+      <div className="pres-topbar">
+        <div className="pres-tabs">
+          {TABS.map(tb => (
+            <button key={tb.id}
+              className={`pres-tab ${tab === tb.id ? "is-active" : ""}`}
+              onClick={() => setTab(tb.id)}>
+              <span className="dot" />
+              {t(tb.label)}
+            </button>
+          ))}
+        </div>
+        <div className="pres-topbar-meta">
+          <span>{t("Period")}: 21.11.23</span>
+          <span className="muted">·</span>
+          <span>UGX</span>
+          <span className="muted">{data.fxRate}</span>
+          <span className="clock">{clock} EAT</span>
+          <span className="pres-pill">
+            <span className="swatch" />
+            {t("All systems live")}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Side nav ─────────────────────────────────────────────── */}
+      <nav className="pres-nav">
+        <div className="pres-nav-section">{t("Tabs")}</div>
+        {TABS.map(tb => (
+          <button key={tb.id}
+            className={`pres-nav-item ${tab === tb.id ? "is-active" : ""}`}
+            onClick={() => setTab(tb.id)}>
+            <Icon name={tb.icon} size={18} />
+            {t(tb.label)}
+          </button>
+        ))}
+
+        <div className="pres-nav-section">{t("Period")}</div>
+        <button className="pres-nav-item"><Icon name="today"          size={18} />Today</button>
+        <button className="pres-nav-item is-active"><Icon name="date_range" size={18} />21 Nov 2023</button>
+        <button className="pres-nav-item"><Icon name="calendar_month" size={18} />This month</button>
+        <button className="pres-nav-item"><Icon name="event_repeat"   size={18} />Custom</button>
+
+        <div className="pres-nav-foot">
+          <div style={{ fontWeight: 600, color: "var(--pres-text-dim)" }}>President of Uganda</div>
+          <div>{t("Office of the President")}</div>
+          <div className="mute2" style={{ marginTop: 4 }}>v0.1 · {data.asOf.split("·")[0]}</div>
+        </div>
+      </nav>
+
+      {/* ── Main content ─────────────────────────────────────────── */}
+      <main className="pres-main">{tabBody[tab]}</main>
+
+      {/* ── Alerts column ────────────────────────────────────────── */}
+      <aside className="pres-alerts">
+        <div className="alerts-h">
+          <span>{t("Alerts")} · {t("Live")}</span>
+          <span className="count">{data.alerts.length}</span>
+        </div>
+        {data.alerts.map((a, i) => (
+          <div key={i} className={`alert ${a.sev}`}>
+            <div className="a-h">
+              <span className="row" style={{ gap: 6 }}>
+                <SeverityIcon sev={a.sev} />{a.sev}
+              </span>
+              <span className="a-t">{a.t}</span>
+            </div>
+            <div className="a-body">
+              <strong style={{ fontWeight: 700 }}>{a.title}</strong> — {a.body}
+            </div>
+            <div className="a-meta">{a.meta}</div>
+          </div>
+        ))}
+      </aside>
+
+      {/* ── Tweaks panel ─────────────────────────────────────────── */}
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Display">
+          <TweakRadio
+            label={t("Density")}
+            value={tweaks.density}
+            onChange={(v) => setTweak("density", v)}
+            options={[
+              { value: "compact",     label: t("Compact") },
+              { value: "comfortable", label: t("Comfortable") },
+            ]} />
+          <TweakRadio
+            label={t("Language")}
+            value={tweaks.language}
+            onChange={(v) => setTweak("language", v)}
+            options={[
+              { value: "en", label: t("English") },
+              { value: "lg", label: t("Luganda") },
+            ]} />
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>

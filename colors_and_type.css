@@ -1,0 +1,263 @@
+/* ────────────────────────────────────────────────────────────────
+   SWITCH MVP — Design Tokens
+   Colors, type, spacing, radii, shadows.
+   Use these CSS vars in any new SWITCH design.
+   ──────────────────────────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Open+Sans:wght@400;700&family=Jost:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Montserrat+Alternates:ital,wght@0,500;0,600;1,600&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+/* Material Icons ligature support — needs more than the @font-face import */
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga";
+}
+
+/* Commissioner — brand font, supplied by user (variable font) */
+@font-face {
+  font-family: "Commissioner";
+  src: url("./fonts/Commissioner-VariableFont_FLAR_VOLM_slnt_wght.ttf") format("truetype-variations"),
+       url("./fonts/Commissioner-VariableFont_FLAR_VOLM_slnt_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ─── COLORS ────────────────────────────────────────────────── */
+
+  /* Neutrals — the chassis */
+  --switch-page-bg:        #EFEBE6;   /* warm beige page background */
+  --switch-page-bg-2:      #F5F5F5;   /* secondary inset surface */
+  --switch-surface:        #FAFAFA;   /* card / row surface */
+  --switch-surface-alt:    #FDFDFD;   /* subtle alt row */
+  --switch-white:          #FFFFFF;
+  --switch-fg:             #000000;   /* primary text */
+  --switch-fg-soft:        #121216;   /* near-black, used in titles */
+  --switch-fg-muted:       #605E5C;   /* secondary text, helper */
+  --switch-fg-faint:       #8A8886;   /* tertiary text */
+  --switch-fg-disabled:    #B0B0B2;   /* disabled / placeholder */
+  --switch-fg-67:          rgba(0,0,0,0.67); /* footer */
+
+  /* Slate-blue chrome */
+  --switch-stroke:         #3E5674;   /* input + button borders */
+  --switch-stroke-soft:    rgba(0,0,0,0.05);
+  --switch-stroke-soft-2:  rgba(62,86,116,0.40);
+  --switch-slate:          #4D729D;   /* hover-state primary */
+  --switch-slate-dark:     #2B46A3;   /* pressed primary */
+  --switch-slate-deep:     #374840;   /* dark slate (rare) */
+  --switch-slate-warm:     #7C8F79;   /* warm slate stroke */
+
+  /* Primary action (blue) */
+  --switch-primary:        #0728C8;   /* Login, Find, links */
+  --switch-primary-deep:   #0100A8;   /* m+i_rest button bg */
+  --switch-primary-soft:   #2873FF;   /* link hover */
+  --switch-primary-faint:  #76A9FF;   /* selected row tint */
+  --switch-primary-bg:     #F1F1FD;   /* selected sidebar item */
+
+  /* Accent — orange (MVP / draft / brand-mark "MVP") */
+  --switch-accent:         #FF7A00;
+  --switch-accent-bg:      rgba(255,122,0,0.10);
+
+  /* Status */
+  --switch-success:        #0BB653;
+  --switch-success-deep:   #085227;   /* dark green status fill */
+  --switch-success-mid:    #4A8E60;
+  --switch-pending:        #F5A623;
+  --switch-error:          #FF005C;   /* legacy magenta */
+  --switch-error-bg:       rgba(255,0,92,0.07);
+  --switch-special:        #9E00FF;   /* purple (rare) */
+
+  /* ─── TYPE FAMILIES ─────────────────────────────────────────── */
+  --switch-font-sans:      "Nunito Sans", "Open Sans", system-ui, -apple-system, sans-serif;
+  --switch-font-tight:     "Commissioner", "Nunito Sans", system-ui, sans-serif;
+  --switch-font-display:   "Jost", "Nunito Sans", system-ui, sans-serif;
+  --switch-font-poster:    "Montserrat", "Nunito Sans", system-ui, sans-serif;
+  --switch-font-deco:      "Montserrat Alternates", "Montserrat", system-ui, sans-serif;
+  --switch-font-mono:      ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --switch-font-icon:      "Material Icons";
+
+  /* ─── TYPE SCALE (px → matches Figma usage histogram) ─────────── */
+  --switch-fs-10:          10px;   /* badge chip caps */
+  --switch-fs-11:          11px;   /* sub-helper, dense table */
+  --switch-fs-12:          12px;   /* table cell, helper (dominant) */
+  --switch-fs-13:          13px;   /* secondary body */
+  --switch-fs-14:          14px;   /* body, buttons */
+  --switch-fs-16:          16px;   /* titles, primary links */
+  --switch-fs-18:          18px;   /* section headers */
+  --switch-fs-20:          20px;
+  --switch-fs-24:          24px;   /* page headers */
+  --switch-fs-34:          34px;   /* hero subhead */
+  --switch-fs-48:          48px;
+  --switch-fs-64:          64px;   /* hero KPI */
+
+  /* Line-heights (mostly tight) */
+  --switch-lh-tight:       1.0;
+  --switch-lh-snug:        1.143;   /* 16/14 */
+  --switch-lh-normal:      1.333;
+  --switch-lh-relaxed:     1.5;
+
+  /* Letter-spacing */
+  --switch-ls-caps:        0.030em;  /* badges */
+  --switch-ls-display:     0.060em;  /* SWITCH wordmark */
+
+  /* ─── SPACING — 4px base ─────────────────────────────────────── */
+  --switch-sp-1:  4px;
+  --switch-sp-2:  8px;
+  --switch-sp-3:  12px;
+  --switch-sp-4:  16px;
+  --switch-sp-5:  20px;
+  --switch-sp-6:  24px;
+  --switch-sp-8:  32px;
+  --switch-sp-10: 40px;
+  --switch-sp-12: 48px;
+  --switch-sp-16: 64px;
+
+  /* ─── RADII ──────────────────────────────────────────────────── */
+  --switch-radius-xs:  2px;   /* badges */
+  --switch-radius-sm:  3px;   /* buttons, inputs */
+  --switch-radius-md:  5px;   /* cards */
+  --switch-radius-lg:  8px;   /* rare; mobile QR cards */
+
+  /* ─── SHADOWS ─────────────────────────────────────────────────── */
+  --switch-shadow-button:    0px 2px 4px 0px rgba(0,0,0,0.13);
+  --switch-shadow-text:      0px 0px 1px 0px rgba(0,0,0,0.25);  /* button-label inner */
+  --switch-shadow-card:      0px 2px 8px 0px rgba(0,0,0,0.06);
+  --switch-shadow-popover:   0px 4px 16px 0px rgba(0,0,0,0.12);
+  --switch-shadow-focus:     0 0 0 2px rgba(7,40,200,0.30);
+
+  /* ─── MOTION ─────────────────────────────────────────────────── */
+  --switch-ease:        cubic-bezier(0.25, 0.46, 0.45, 0.94); /* ease-out */
+  --switch-dur-fast:    120ms;
+  --switch-dur-base:    180ms;
+  --switch-dur-slow:    240ms;
+
+  /* ─── LAYOUT ─────────────────────────────────────────────────── */
+  --switch-page-max:    1232px;
+  --switch-header-h:    56px;
+  --switch-row-h:       56px;
+  --switch-row-h-tight: 40px;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SEMANTIC TYPOGRAPHY
+   Apply directly with the .switch-* classes, or use the CSS vars.
+   ──────────────────────────────────────────────────────────────── */
+
+.switch-display {
+  font-family: var(--switch-font-sans);
+  font-weight: 900;
+  font-size: var(--switch-fs-64);
+  line-height: var(--switch-lh-tight);
+  letter-spacing: var(--switch-ls-display);
+  color: var(--switch-fg);
+}
+
+.switch-h1 {
+  font-family: var(--switch-font-sans);
+  font-weight: 700;
+  font-size: var(--switch-fs-24);
+  line-height: 1.25;
+  color: var(--switch-fg);
+}
+
+.switch-h2 {
+  font-family: var(--switch-font-sans);
+  font-weight: 700;
+  font-size: var(--switch-fs-18);
+  line-height: 1.333;
+  color: var(--switch-fg);
+}
+
+.switch-h3 {
+  font-family: var(--switch-font-sans);
+  font-weight: 700;
+  font-size: var(--switch-fs-16);
+  line-height: 1.5;
+  color: var(--switch-fg);
+}
+
+.switch-body {
+  font-family: var(--switch-font-sans);
+  font-weight: 400;
+  font-size: var(--switch-fs-14);
+  line-height: 1.428;
+  color: var(--switch-fg);
+}
+
+.switch-body-sm {
+  font-family: var(--switch-font-sans);
+  font-weight: 400;
+  font-size: var(--switch-fs-12);
+  line-height: 1.333;
+  color: var(--switch-fg);
+}
+
+.switch-helper {
+  font-family: var(--switch-font-sans);
+  font-weight: 400;
+  font-size: var(--switch-fs-11);
+  line-height: 1.333;
+  color: var(--switch-fg-muted);
+}
+
+.switch-table-header {
+  font-family: var(--switch-font-sans);
+  font-weight: 600;
+  font-size: var(--switch-fs-14);
+  line-height: 1.428;
+  color: var(--switch-fg);
+}
+
+.switch-table-cell {
+  font-family: var(--switch-font-sans);
+  font-weight: 400;
+  font-size: var(--switch-fs-12);
+  line-height: 1.333;
+  color: var(--switch-fg);
+}
+
+.switch-button-label {
+  font-family: var(--switch-font-sans);
+  font-weight: 700;
+  font-size: var(--switch-fs-14);
+  line-height: 1.143;
+  color: var(--switch-white);
+  text-shadow: var(--switch-shadow-text);
+}
+
+.switch-badge-label {
+  font-family: var(--switch-font-tight);
+  font-weight: 700;
+  font-size: var(--switch-fs-10);
+  line-height: 1.2;
+  letter-spacing: var(--switch-ls-caps);
+  text-transform: uppercase;
+}
+
+.switch-link {
+  font-family: var(--switch-font-sans);
+  font-weight: 700;
+  color: var(--switch-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+.switch-link:hover { color: var(--switch-primary-soft); }
+
+.switch-mono-num {
+  /* tabular numbers for tables and money columns */
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
