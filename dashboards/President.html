@@ -438,13 +438,19 @@ html, body {
 }
 
 .pres-section-h {
-  display: flex; align-items: baseline; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   padding: 4px 0;
 }
 .pres-section-h h2 {
   margin: 0; font-size: 13px; font-weight: 700;
   letter-spacing: 0.10em; text-transform: uppercase;
   color: var(--pres-text);
+  display: flex; align-items: center; gap: 10px;
+}
+.pres-section-h h2 .section-logo {
+  height: 28px; width: auto; max-width: 80px;
+  object-fit: contain; flex-shrink: 0;
+  display: inline-block; vertical-align: middle;
 }
 .pres-section-h .meta {
   font-size: 11px; color: var(--pres-text-mute);
@@ -1818,7 +1824,7 @@ const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => (
 const TabBoU = ({ t, data }) => (
   <>
     <div className="pres-section-h">
-      <h2>{t("Bank of Uganda · Macroeconomy")}</h2>
+      <h2><img className="section-logo" src="../assets/Bank of Uganda.png" alt="BoU" />{t("Bank of Uganda · Macroeconomy")}</h2>
       <span className="meta">{t("Real-time · NPS feed")}</span>
     </div>
     <div className="pres-grid cols-4">
@@ -1878,7 +1884,7 @@ const TabBoU = ({ t, data }) => (
 const TabFIA = ({ t, data }) => (
   <>
     <div className="pres-section-h">
-      <h2>{t("Financial Intelligence Authority")}</h2>
+      <h2><img className="section-logo" src="../assets/financial-intelligence-authority-of-uganda-fia-logo.png" alt="FIA" />{t("Financial Intelligence Authority")}</h2>
       <span className="meta">{t("Live · investigation activities")}</span>
     </div>
     <div className="pres-grid cols-4">
@@ -1934,7 +1940,7 @@ const TabFIA = ({ t, data }) => (
 const TabURA = ({ t, data }) => (
   <>
     <div className="pres-section-h">
-      <h2>{t("Uganda Revenue Authority")}</h2>
+      <h2><img className="section-logo" src="../assets/ura-logo.png" alt="URA" />{t("Uganda Revenue Authority")}</h2>
       <span className="meta">{t("Tax collection & cross-checks")}</span>
     </div>
     <div className="pres-grid cols-4">
@@ -1996,7 +2002,7 @@ const TabURA = ({ t, data }) => (
 const TabPDM = ({ t, data, activeRegion, setActiveRegion }) => (
   <>
     <div className="pres-section-h">
-      <h2>{t("Parish Development Model")}</h2>
+      <h2><img className="section-logo" src="../assets/PDM logo.jpg" alt="PDM" />{t("Parish Development Model")}</h2>
       <span className="meta">{t("Allocated vs disbursed · YTD")}</span>
     </div>
     <div className="pres-grid cols-4">
