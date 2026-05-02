@@ -391,6 +391,28 @@ html, body {
   box-shadow: 0 0 0 3px rgba(26, 107, 60, 0.18);
 }
 
+.tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px; background: var(--pres-bad);
+  color: #fff; font-size: 10px; font-weight: 700;
+  margin-left: 5px; line-height: 1;
+}
+.lang-toggle {
+  display: inline-flex; align-items: center;
+  background: var(--pres-panel); border-radius: 6px;
+  padding: 2px; border: 1px solid var(--pres-line);
+}
+.lang-toggle button {
+  background: none; border: none; cursor: pointer;
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; color: var(--pres-text-dim);
+  font-family: inherit; line-height: 1.6; transition: background 0.15s;
+}
+.lang-toggle button.is-active {
+  background: var(--pres-accent); color: #fff;
+}
+
 /* ---------- Side nav ---------- */
 .pres-nav {
   grid-area: nav;
@@ -613,7 +635,11 @@ html, body {
   display: flex; flex-direction: column; gap: 4px;
   border-radius: 2px;
 }
-.alert.crit { border-left-color: var(--pres-bad); background: rgba(201,32,40,0.03); }
+@keyframes pulse-crit {
+  0%,  100% { box-shadow: none; }
+  50%       { box-shadow: 0 0 0 4px rgba(201,32,40,0.18); }
+}
+.alert.crit { border-left-color: var(--pres-bad); background: rgba(201,32,40,0.03); animation: pulse-crit 2.5s ease-in-out infinite; }
 .alert.warn { border-left-color: var(--pres-warn); background: rgba(122,82,0,0.03); }
 .alert.info { border-left-color: var(--pres-accent-2); background: rgba(7,40,200,0.03); }
 .alert.good { border-left-color: var(--pres-good); background: rgba(26,107,60,0.03); }
@@ -701,6 +727,38 @@ html, body {
 .h-line { height: 1px; background: var(--pres-line); width: 100%; }
 
 .tweaks-panel { z-index: 100; }
+
+/* ---------- News tab ---------- */
+.news-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 20px;
+  align-content: start;
+}
+.news-card {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 16px; border-radius: 6px;
+  background: var(--pres-panel);
+  border: 1px solid var(--pres-line);
+  border-top: 3px solid var(--news-accent, var(--pres-line));
+  transition: box-shadow 0.15s;
+  text-decoration: none; color: inherit;
+}
+.news-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+.news-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.news-tag {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #fff;
+}
+.news-meta { font-size: 10px; color: var(--pres-text-mute); letter-spacing: 0.03em; }
+.news-title { font-size: 13px; font-weight: 700; line-height: 1.4; color: var(--pres-text); }
+.news-summary { font-size: 12px; line-height: 1.55; color: var(--pres-text-dim); flex: 1; }
+.news-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.news-source { font-size: 10px; color: var(--pres-text-mute); }
+.news-link { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--pres-accent); opacity: 0.7; }
 
 </style>
 </head>
@@ -1140,6 +1198,9 @@ Object.assign(window, {
   TweakText, TweakNumber, TweakColor, TweakButton,
 });
 
+window.LangCtx = React.createContext(s => s);
+window.NavCtx  = React.createContext({ setTab: () => {} });
+
 </script>
 <script type="text/babel">
 // president-icon.jsx — inline SVG icons (replaces Material Icons font ligatures)
@@ -1169,6 +1230,8 @@ const ICON_PATHS = {
   description:      "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z",
   settings:         "M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1a.566.566 0 0 0-.18-.03c-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.06.02.12.03.18.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z",
   swap_horiz:       "M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z",
+  newspaper:        "M4 6H2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z",
+  open_in_new:      "M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z",
 };
 
 const Icon = ({ name, size = 18, style = {} }) => {
@@ -1236,9 +1299,9 @@ const PRES_DATA = {
       { id: "gdp",   label: "Real-time activity index",  value: 128.4, unit: "pts",  delta: +2.3, spark: spark(11, 28, 80, 40) },
       { id: "vol",   label: "Switch volume · today",     value: 8.91,  unit: "T UGX", delta: +5.7, spark: spark(22, 28, 60, 50), tnum: true },
       { id: "tx",    label: "Switch transactions · today", value: 23.18, unit: "M",   delta: +3.1, spark: spark(33, 28, 70, 30), tnum: true },
-      { id: "tax",   label: "URA tax collected · MTD",   value: 2.14,  unit: "T UGX", delta: +1.4, spark: spark(44, 28, 50, 40), tnum: true },
-      { id: "fraud", label: "FIA blocks · today",         value: 250,   unit: "tx",   delta: -8.2, spark: spark(55, 28, 80, 60), tnum: false, good: true },
-      { id: "pdm",   label: "PDM disbursed · YTD",        value: 4.67,  unit: "T UGX", delta: +0.9, spark: spark(66, 28, 50, 30), tnum: true },
+      { id: "tax",   label: "URA tax collected · MTD",   value: 2.14,  unit: "T UGX", delta: +1.4, spark: spark(44, 28, 50, 40), tnum: true,  drillTab: "ura" },
+      { id: "fraud", label: "FIA blocks · today",         value: 250,   unit: "tx",   delta: -8.2, spark: spark(55, 28, 80, 60), tnum: false, good: true, drillTab: "fia" },
+      { id: "pdm",   label: "PDM disbursed · YTD",        value: 4.67,  unit: "T UGX", delta: +0.9, spark: spark(66, 28, 50, 30), tnum: true,  drillTab: "pdm" },
     ],
     typeMix: [
       { name: "P2P",       value: 9.2, pct: 41 },
@@ -1545,21 +1608,27 @@ const ColumnBars = ({ data, height = 140, color = "var(--pres-accent)" }) => {
 };
 
 const Delta = ({ value, good, bad, suffix = "%" }) => {
+  const t = React.useContext(window.LangCtx);
   const isUp = value > 0;
   const cls = (good && isUp) || (bad && !isUp) ? "up" : (good && !isUp) || (bad && isUp) ? "down" : isUp ? "up" : "down";
   return (
     <span className={`delta ${cls}`}>
       <Icon name={isUp ? "arrow_upward" : "arrow_downward"} size={14} />
-      {Math.abs(value).toFixed(1)}{suffix} <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>vs prior</span>
+      {Math.abs(value).toFixed(1)}{suffix} <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>{t("vs prior")}</span>
     </span>
   );
 };
 
 const KpiTile = ({ k, big, sparkColor }) => {
+  const t = React.useContext(window.LangCtx);
+  const { setTab } = React.useContext(window.NavCtx);
   const color = k.bad ? "var(--pres-bad)" : k.good ? "var(--pres-good)" : (sparkColor || "var(--pres-accent)");
   return (
-    <div className={`pres-card pres-kpi ${big ? "feature" : ""}`}>
-      <div className="label">{k.label}</div>
+    <div className={`pres-card pres-kpi ${big ? "feature" : ""}`}
+         style={k.drillTab ? { cursor: "pointer" } : undefined}
+         onClick={k.drillTab ? () => setTab(k.drillTab) : undefined}
+         title={k.drillTab ? `Open ${k.drillTab.toUpperCase()} tab` : undefined}>
+      <div className="label">{t(k.label)}{k.drillTab && <span style={{ marginLeft: 5, opacity: 0.4, fontSize: "0.85em" }}>↗</span>}</div>
       <div className="value tnum">
         {k.valueText || (typeof k.value === "number" ? (k.value < 100 && !Number.isInteger(k.value) ? k.value.toFixed(2) : k.value.toLocaleString("en-US")) : k.value)}
         <span className="unit">{k.unit}</span>
@@ -1608,6 +1677,7 @@ const activityColor = (a) => {
 };
 
 const UgandaMap = ({ data, valueKey = "disb", maxKey = "alloc", activeId, onPick, showLabels = true, mode = "rate" }) => {
+  const t = React.useContext(window.LangCtx);
   const [hoverId, setHoverId] = React.useState(null);
   const byId = Object.fromEntries(data.map(r => [r.id, r]));
 
@@ -1699,7 +1769,7 @@ const UgandaMap = ({ data, valueKey = "disb", maxKey = "alloc", activeId, onPick
             )}
             {d.alloc != null && (
               <div style={{ fontSize: 11, color: "var(--pres-text-dim)", marginTop: 2 }}>
-                {d.disb}B disbursed<br />{d.alloc}B allocated
+                {d.disb}B {t("disbursed")}<br />{d.alloc}B {t("allocated")}
               </div>
             )}
           </div>
@@ -1709,31 +1779,34 @@ const UgandaMap = ({ data, valueKey = "disb", maxKey = "alloc", activeId, onPick
   );
 };
 
-const MapLegend = ({ mode = "rate" }) => (
-  <div className="map-legend" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-    {mode === "rate" ? (
-      <>
-        <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>Disbursement rate:</span>
-        {[["#1A6B3C", "≥80%"], ["#FF7A00", "60–79%"], ["#C92028", "<60%"]].map(([c, l]) => (
-          <span key={l} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
-            <span style={{ width: 10, height: 10, borderRadius: 2, background: c, display: "inline-block" }} />
-            {l}
-          </span>
-        ))}
-      </>
-    ) : (
-      <>
-        <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>Activity:</span>
-        <div style={{ display: "flex", gap: 1 }}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ width: 16, height: 10, borderRadius: 1, background: `rgba(255,122,0,${0.15 + i * 0.14})` }} />
+const MapLegend = ({ mode = "rate" }) => {
+  const t = React.useContext(window.LangCtx);
+  return (
+    <div className="map-legend" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      {mode === "rate" ? (
+        <>
+          <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>{t("Disbursement rate:")}</span>
+          {[["#1A6B3C", "≥80%"], ["#FF7A00", "60–79%"], ["#C92028", "<60%"]].map(([c, l]) => (
+            <span key={l} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: c, display: "inline-block" }} />
+              {l}
+            </span>
           ))}
-        </div>
-        <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>High</span>
-      </>
-    )}
-  </div>
-);
+        </>
+      ) : (
+        <>
+          <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>{t("Activity:")}</span>
+          <div style={{ display: "flex", gap: 1 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} style={{ width: 16, height: 10, borderRadius: 1, background: `rgba(255,122,0,${0.15 + i * 0.14})` }} />
+            ))}
+          </div>
+          <span style={{ fontSize: 11, color: "var(--pres-text-dim)" }}>{t("High")}</span>
+        </>
+      )}
+    </div>
+  );
+};
 
 Object.assign(window, { UgandaMap, MapLegend });
 
@@ -1777,7 +1850,7 @@ const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => (
         <div className="pres-card">
           <div className="card-h"><span>{t("Channel mix · today")}</span><span className="actions"><Icon name="more_horiz" size={16} /></span></div>
           <div className="row" style={{ gap: 16, alignItems: "center" }}>
-            <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: "TX TODAY" }} />
+            <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: t("TX TODAY") }} />
             <div className="col" style={{ flex: 1 }}>
               {data.overview.channelMix.map((c, i) => (
                 <div key={i} className="row sb" style={{ fontSize: 12 }}>
@@ -2065,7 +2138,119 @@ const TabPDM = ({ t, data, activeRegion, setActiveRegion }) => (
   </>
 );
 
-Object.assign(window, { TabOverview, TabBoU, TabFIA, TabURA, TabPDM });
+// =============== NEWS ===============
+const NEWS_TAG_COLORS = {
+  Politics:  { bg: "#0728C8", accent: "#0728C8" },
+  Taxes:     { bg: "#FF7A00", accent: "#FF7A00" },
+  Finances:  { bg: "#1A6B3C", accent: "#1A6B3C" },
+  Security:  { bg: "#C92028", accent: "#C92028" },
+};
+
+const NEWS_DATA = [
+  {
+    tag: "Security",
+    date: "20 May 2025",
+    title: "Parliament Passes Bill Allowing Military Trials of Civilians, Defying Supreme Court",
+    summary: "Uganda's NRM-majority parliament passed the UPDF (Amendment) Bill 2025, granting military courts authority to try civilians — directly contradicting a January 2025 Supreme Court ruling. Opposition Leader Joel Ssenyonyi led a walkout; the UN Human Rights Chief urged President Museveni to reject the bill.",
+    source: "Daily Monitor",
+  },
+  {
+    tag: "Finances",
+    date: "22 May 2025",
+    title: "Bank of Uganda Holds Central Bank Rate at 9.75% Amid Contained Inflation",
+    summary: "The BoU Monetary Policy Committee kept the Central Bank Rate at 9.75%, citing stable headline inflation of 3.5% in April 2025 — well below the 5% target. Real GDP grew 6.0% in H1 FY2024/25. Governor Atingi-Ego flagged near-term risks from global trade uncertainty.",
+    source: "Business Times Uganda",
+  },
+  {
+    tag: "Finances",
+    date: "30 May 2025",
+    title: "Uganda Eyes UGX 57.4 Trillion Resource Envelope for FY 2025/26 Budget",
+    summary: "Finance Minister Kasaija launched National Budget Month with a UGX 57.441 trillion resource envelope. Domestic revenues targeted at UGX 33.68 trillion, with URA aiming to fully fund the national budget domestically. Theme: Full Monetization through Agriculture, Industrialization & Digital Transformation.",
+    source: "Ministry of Finance",
+  },
+  {
+    tag: "Finances",
+    date: "01 May 2025",
+    title: "Uganda Coffee Exports Hit Record: US$214M in April, Annual Earnings Top US$1.97B",
+    summary: "Uganda exported 694,318 bags of coffee in April 2025 worth US$214.38M — value up 152.56% vs April 2024 — driven by drought in Brazil and Vietnam pushing global prices to record highs. Full-year (May 2024–April 2025) coffee earnings reached US$1.97 billion, cementing Uganda as Africa's top coffee exporter.",
+    source: "Sunrise Uganda",
+  },
+  {
+    tag: "Finances",
+    date: "17 May 2025",
+    title: "Trade Deficit Narrows 58% as Uganda Exports Surge 72% Year-on-Year",
+    summary: "Uganda's trade deficit fell to US$126.85M in April 2025 from US$303.91M a year earlier as exports surged 72.1% to US$1.11 billion. The shilling appreciated 0.4% against the USD in May, supported by coffee inflows and remittances. FY2024/25 GDP growth reached 6.3%, led by agriculture at 6.6%.",
+    source: "The Cooperator News",
+  },
+  {
+    tag: "Taxes",
+    date: "19 Apr 2025",
+    title: "Eight Tax Amendment Bills Tabled for FY 2025/26: Fuel, Cigarettes, Digital Services in Focus",
+    summary: "Finance Minister Kasaija tabled eight tax bills proposing: fuel excise duty up UGX 150/litre, cigarette excise doubled to UGX 150,000 per 1,000 sticks, a new 1.5% infrastructure import levy, and replacing the 5% Digital Services Tax with a 15% withholding tax on non-resident platforms.",
+    source: "Daily Monitor / KPMG Uganda",
+  },
+  {
+    tag: "Taxes",
+    date: "09 May 2025",
+    title: "4th Tax Expenditure Report: UGX 3.6 Trillion in Revenue Foregone in FY 2023/24",
+    summary: "Uganda's Ministry of Finance revealed UGX 3,609 billion in foregone revenue — 1.78% of GDP and 13% of total tax revenue — for FY 2023/24. Customs duty exemptions led at UGX 1,137 billion (32% of total). VAT expenditures declined year-on-year due to improved URA administrative controls.",
+    source: "Ministry of Finance / URA",
+  },
+  {
+    tag: "Taxes",
+    date: "30 Apr 2025",
+    title: "URA Expands EFRIS to 12 New Sectors from July 2025, Targets UGX 37T Revenue",
+    summary: "URA mandated 12 additional sectors — real estate, construction, transport, fuel retail, entertainment — to adopt EFRIS electronic receipting from 1 July 2025, targeting a UGX 5 trillion annual leakage plug. Withholding tax exemption applications for the July 2025–June 2026 cycle are now open.",
+    source: "Daily Monitor / Parliament Watch",
+  },
+  {
+    tag: "Politics",
+    date: "19 Apr 2025",
+    title: "Parliament Divided Over Cement, Beer and Spirits Taxes Ahead of 2026 Elections",
+    summary: "Sharp divisions erupted in Uganda's Finance Committee as opposition MPs challenged new levies: doubling cement tax to UGX 1,000/50kg, raising beer excise to UGX 900/litre, and hiking spirits tax from 60% to 80%. Finance Minister Musasizi defended the measures to push the tax-to-GDP ratio toward 20–25%.",
+    source: "Daily Monitor",
+  },
+  {
+    tag: "Taxes",
+    date: "23 Apr 2025",
+    title: "Uganda to Abolish 5% Digital Services Tax, Replace with 15% Withholding Tax on Non-Residents",
+    summary: "Uganda's tax bills propose replacing the existing 5% Digital Services Tax with a 15% withholding tax on non-resident digital service providers. Additional proposals: a 3-year income tax exemption for new citizen-owned startups with capital under UGX 500M, and anti-fragmentation VAT rules. Bills take effect 1 July 2025.",
+    source: "KPMG Uganda",
+  },
+];
+
+const TabNews = ({ t }) => {
+  const tagLabels = { Politics: t("Politics"), Taxes: t("Taxes"), Finances: t("Finances"), Security: t("Security") };
+  return (
+    <>
+      <div className="pres-section-h" style={{ padding: "20px 20px 0" }}>
+        <h2><Icon name="newspaper" size={20} style={{ marginRight: 8, verticalAlign: "middle" }} />{t("Uganda · Latest Intelligence")}</h2>
+        <span className="meta">{t("Politics · Taxes · Finances · Security")} · May 2025</span>
+      </div>
+      <div className="news-grid">
+        {NEWS_DATA.map((n, i) => {
+          const col = NEWS_TAG_COLORS[n.tag] || {};
+          return (
+            <div key={i} className="news-card" style={{ "--news-accent": col.accent }}>
+              <div className="news-card-top">
+                <span className="news-tag" style={{ background: col.bg }}>{tagLabels[n.tag] || n.tag}</span>
+                <span className="news-meta">{n.date}</span>
+              </div>
+              <div className="news-title">{n.title}</div>
+              <div className="news-summary">{n.summary}</div>
+              <div className="news-footer">
+                <span className="news-source">{n.source}</span>
+                <span className="news-link"><Icon name="open_in_new" size={11} />{t("Source")}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+Object.assign(window, { TabOverview, TabBoU, TabFIA, TabURA, TabPDM, TabNews });
 
 </script>
 <script type="text/babel">
@@ -2182,6 +2367,60 @@ const I18N = {
     "English": "Olungereza",
     "Luganda": "Oluganda",
     "Switch · Office of the President": "Switch · Ofiisi ya Pulezidenti",
+
+    // UI chrome
+    "vs prior":          "vs ebiseera ebiyita",
+    "Disbursement rate:":"Omuwendo gw'okugaba:",
+    "Activity:":         "Emirimu:",
+    "High":              "Mingi",
+    "disbursed":         "eyagabwa",
+    "allocated":         "eyaweereddwayo",
+    "This month":        "Omwezi guno",
+    "TX TODAY":          "TX LEERO",
+    "auto":              "eyokka",
+
+    // Overview KPIs
+    "Real-time activity index":    "Endaba y'emirimu ya kati",
+    "Switch volume · today":       "Omuwendo gw'ensimbi · leero",
+    "Switch transactions · today": "Ebikolwa bya Switch · leero",
+    "URA tax collected · MTD":     "Omusolo gw'URA · omwezi",
+    "FIA blocks · today":          "FIA eziziyize · leero",
+    "PDM disbursed · YTD":         "PDM eyagabwa · omwaka",
+
+    // BoU KPIs
+    "Aggregate participant liquidity": "Ensimbi z'abeenywanyi byonna",
+    "Digital share of payments":       "Omugabo gw'okusasula kw'edijitiro",
+    "Avg payment size":                "Obunene bw'okusasula (akatono)",
+    "Active merchants":                "Abasasuzi abeenyigira",
+
+    // FIA KPIs
+    "Total transactions, today": "Ebikolwa byonna, leero",
+    "Fraud transactions, today": "Ebikolwa by'obubbi, leero",
+    "Total tx amount, today":    "Omuwendo gwonna, leero",
+    "Blocked tx amount, today":  "Ensimbi ezizibiddwa, leero",
+
+    // URA KPIs
+    "Tax collected · YTD":           "Omusolo gw'omwaka",
+    "Tax collected · MTD":           "Omusolo gw'omwezi",
+    "Declared vs cashflow gap":      "Enjawukana: ebyalangiriddwa vs ensimbi",
+    "Unregistered taxpayers (est.)": "Abasasula omusolo abateetabye (enkaka)",
+
+    // PDM KPIs
+    "Allocated · YTD":   "Eyaweereddwayo · omwaka",
+    "Disbursed · YTD":   "Eyagabwa · omwaka",
+    "Disbursement rate": "Omuwendo gw'okugaba",
+    "Active SACCOs":     "SACCO ezibeera zikola",
+
+    // News tab
+    "Intelligence":                         "Amawulire",
+    "News":                                 "Amawulire",
+    "Uganda · Latest Intelligence":         "Uganda · Amawulire Agasookera",
+    "Politics · Taxes · Finances · Security": "Ebyobufuzi · Omusolo · Ebyenfuna · Obukuumi",
+    "Source":                               "Ffuula",
+    "Politics":                             "Ebyobufuzi",
+    "Taxes":                                "Omusolo",
+    "Finances":                             "Ebyenfuna",
+    "Security":                             "Obukuumi",
   }
 };
 
@@ -2212,17 +2451,33 @@ function App() {
   const t    = (s) => (I18N[tweaks.language] && I18N[tweaks.language][s]) || s;
   const data = window.PRES_DATA;
 
+  const alertCounts = React.useMemo(() => {
+    const counts = {};
+    data.alerts.forEach(a => {
+      const agency = a.meta.split(" · ")[0].toLowerCase();
+      counts[agency] = (counts[agency] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
+  const pickRegionFromOverview = (id) => { setActiveRegion(id); setTab("pdm"); };
+
   const tabBody = {
-    overview: <TabOverview t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
+    overview: <TabOverview t={t} data={data} activeRegion={activeRegion} setActiveRegion={pickRegionFromOverview} />,
     bou:      <TabBoU      t={t} data={data} />,
     fia:      <TabFIA      t={t} data={data} />,
     ura:      <TabURA      t={t} data={data} />,
     pdm:      <TabPDM      t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
+    news:     <TabNews     t={t} />,
   };
 
-  const clock = now.toLocaleTimeString("en-GB", { hour12: false });
+  const clock      = now.toLocaleTimeString("en-GB", { hour12: false });
+  const todayLabel = now.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const periodEnd  = now.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, ".");
 
   return (
+    <window.NavCtx.Provider value={{ setTab }}>
+    <window.LangCtx.Provider value={t}>
     <div className={`pres density-${tweaks.density === "comfortable" ? "comfortable" : "compact"}`}
          data-screen-label={`01 ${tab.toUpperCase()}`}>
 
@@ -2244,15 +2499,20 @@ function App() {
               onClick={() => setTab(tb.id)}>
               <span className="dot" />
               {t(tb.label)}
+              {tb.id === "fia" && alertCounts["fia"] ? <span className="tab-badge">{alertCounts["fia"]}</span> : null}
             </button>
           ))}
         </div>
         <div className="pres-topbar-meta">
-          <span>{t("Period")}: 21.11.23</span>
+          <span>{t("Period")}: {periodEnd}</span>
           <span className="muted">·</span>
           <span>UGX</span>
           <span className="muted">{data.fxRate}</span>
           <span className="clock">{clock} EAT</span>
+          <span className="lang-toggle">
+            <button className={tweaks.language === "en" ? "is-active" : ""} onClick={() => setTweak("language", "en")}>EN</button>
+            <button className={tweaks.language === "lg" ? "is-active" : ""} onClick={() => setTweak("language", "lg")}>Luganda</button>
+          </span>
           <span className="pres-pill">
             <span className="swatch" />
             {t("All systems live")}
@@ -2273,10 +2533,15 @@ function App() {
         ))}
 
         <div className="pres-nav-section">{t("Period")}</div>
-        <button className="pres-nav-item"><Icon name="today"          size={18} />Today</button>
-        <button className="pres-nav-item is-active"><Icon name="date_range" size={18} />21 Nov 2023</button>
-        <button className="pres-nav-item"><Icon name="calendar_month" size={18} />This month</button>
-        <button className="pres-nav-item"><Icon name="event_repeat"   size={18} />Custom</button>
+        <button className="pres-nav-item is-active"><Icon name="today" size={18} />{t("Today")}, {todayLabel}</button>
+        <button className="pres-nav-item"><Icon name="calendar_month" size={18} />{t("This month")}</button>
+
+        <div className="pres-nav-section">{t("Intelligence")}</div>
+        <button className={`pres-nav-item ${tab === "news" ? "is-active" : ""}`}
+                onClick={() => setTab("news")}>
+          <Icon name="newspaper" size={18} />{t("News")}
+          <span style={{ marginLeft: "auto", fontSize: 10, background: "var(--pres-accent)", color: "#fff", borderRadius: 8, padding: "1px 6px", fontWeight: 700 }}>10</span>
+        </button>
 
         <div className="pres-nav-foot">
           <div style={{ fontWeight: 600, color: "var(--pres-text-dim)" }}>President of Uganda</div>
@@ -2332,6 +2597,8 @@ function App() {
         </TweakSection>
       </TweaksPanel>
     </div>
+    </window.LangCtx.Provider>
+    </window.NavCtx.Provider>
   );
 }
 
