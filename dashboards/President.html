@@ -314,6 +314,13 @@ html, body {
 }
 
 .pres.density-comfortable { font-size: 14px; }
+.pres.govmail-active {
+  grid-template-columns: 220px 1fr 0;
+  grid-template-areas:
+    "brand topbar topbar"
+    "nav   main   main";
+}
+.pres.govmail-active .pres-alerts { display: none; }
 
 /* ---------- Brand block ---------- */
 .pres-brand {
@@ -493,6 +500,7 @@ html, body {
 }
 .mail-dd-status.s-unread { color: var(--pres-accent); background: rgba(255,122,0,0.12); }
 .mail-dd-status.s-urgent { color: var(--pres-bad); background: rgba(220,53,69,0.10); }
+.mail-dd-status.s-action_required { color: var(--switch-primary); background: rgba(7,40,200,0.10); }
 .mail-dd-footer { border-top: 1px solid var(--pres-line); padding: 10px 16px; flex-shrink: 0; }
 .mail-dd-open-btn {
   width: 100%; appearance: none; background: var(--pres-accent);
@@ -562,10 +570,29 @@ html, body {
 }
 .govmail-status-dot.s-unread { background: var(--pres-accent); }
 .govmail-status-dot.s-urgent { background: var(--pres-bad); }
+.govmail-status-dot.s-action_required { background: var(--switch-primary); }
 .govmail-urgent-label {
   font-size: 10px; font-weight: 700; color: var(--pres-bad);
   text-transform: uppercase; letter-spacing: 0.06em;
 }
+.govmail-action-required-label {
+  font-size: 10px; font-weight: 700; color: var(--switch-primary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.govmail-action-required-banner {
+  margin: 0 24px 0; padding: 8px 14px;
+  background: rgba(7,40,200,0.07); border: 1px solid rgba(7,40,200,0.20);
+  border-radius: 2px; font-size: 12px; font-weight: 600;
+  color: var(--switch-primary); display: flex; align-items: center; gap: 8px;
+}
+.govmail-action-btn.approve {
+  background: var(--pres-good); border-color: var(--pres-good); color: #fff;
+}
+.govmail-action-btn.approve:hover { opacity: 0.85; }
+.govmail-action-btn.decline {
+  background: var(--pres-bad); border-color: var(--pres-bad); color: #fff;
+}
+.govmail-action-btn.decline:hover { opacity: 0.85; }
 .govmail-detail {
   display: flex; flex-direction: column; overflow-y: auto;
 }
@@ -1683,7 +1710,7 @@ const PRES_DATA = {
 window.PRES_DATA = PRES_DATA;
 
 // ─── GOV MAIL SEED DATA ────────────────────────────────────────────────────
-const MAIL_SEED = [
+window.MAIL_SEED = [
   {
     id: "m1", tab: "inbox", sender_org: "FIA",
     sender_name: "Director General, FIA",
@@ -1703,6 +1730,16 @@ const MAIL_SEED = [
     timestamp: "2026-05-02T15:15:00+03:00",
     status: "read",
     attachments: ["MPC_Brief_Q3_2025-26.pdf"]
+  },
+  {
+    id: "m7", tab: "inbox", sender_org: "URA",
+    sender_name: "Commissioner General, URA",
+    recipient: "Office of the President",
+    subject: "Action Required: Approval of FY 2026/27 Tax Budget",
+    body: "Your Excellency,\n\nThe Uganda Revenue Authority respectfully submits the proposed national tax budget for the Financial Year 2026/27 for Presidential approval.\n\nThe total resource envelope proposed stands at UGX 34.2 trillion — an increase of 12.3% over the current FY 2025/26 approved budget of UGX 30.5 trillion. Key components are:\n\n  • Income Tax (PAYE + Corporate):   UGX 12.8 trillion\n  • Value Added Tax (VAT):           UGX  9.6 trillion\n  • Customs & Excise Duties:         UGX  7.4 trillion\n  • Other Tax Revenues:              UGX  4.4 trillion\n\nParliamentary tabling is scheduled for 15 May 2026. Presidential approval is required before formal submission to the Finance Committee.\n\nKindly indicate your approval or decline at your earliest convenience.\n\nRespectfully,\nCommissioner General\nUganda Revenue Authority",
+    timestamp: "2026-05-03T08:00:00+03:00",
+    status: "action_required",
+    attachments: ["URA_FY2026-27_Tax_Budget_Proposal.pdf", "Budget_Comparison_FY25-26_vs_FY26-27.xlsx"]
   },
   {
     id: "m3", tab: "inbox", sender_org: "URA",
@@ -2429,72 +2466,72 @@ const NEWS_TAG_COLORS = {
 const NEWS_DATA = [
   {
     tag: "Security",
-    date: "20 May 2025",
+    date: "20 May 2026",
     title: "Parliament Passes Bill Allowing Military Trials of Civilians, Defying Supreme Court",
-    summary: "Uganda's NRM-majority parliament passed the UPDF (Amendment) Bill 2025, granting military courts authority to try civilians — directly contradicting a January 2025 Supreme Court ruling. Opposition Leader Joel Ssenyonyi led a walkout; the UN Human Rights Chief urged President Museveni to reject the bill.",
+    summary: "Uganda's NRM-majority parliament passed the UPDF (Amendment) Bill 2026, granting military courts authority to try civilians — directly contradicting a January 2026 Supreme Court ruling. Opposition Leader Joel Ssenyonyi led a walkout; the UN Human Rights Chief urged President Museveni to reject the bill.",
     source: "Daily Monitor",
   },
   {
     tag: "Finances",
-    date: "22 May 2025",
+    date: "22 May 2026",
     title: "Bank of Uganda Holds Central Bank Rate at 9.75% Amid Contained Inflation",
-    summary: "The BoU Monetary Policy Committee kept the Central Bank Rate at 9.75%, citing stable headline inflation of 3.5% in April 2025 — well below the 5% target. Real GDP grew 6.0% in H1 FY2024/25. Governor Atingi-Ego flagged near-term risks from global trade uncertainty.",
+    summary: "The BoU Monetary Policy Committee kept the Central Bank Rate at 9.75%, citing stable headline inflation of 3.5% in April 2026 — well below the 5% target. Real GDP grew 6.0% in H1 FY2025/26. Governor Atingi-Ego flagged near-term risks from global trade uncertainty.",
     source: "Business Times Uganda",
   },
   {
     tag: "Finances",
-    date: "30 May 2025",
-    title: "Uganda Eyes UGX 57.4 Trillion Resource Envelope for FY 2025/26 Budget",
+    date: "30 May 2026",
+    title: "Uganda Eyes UGX 57.4 Trillion Resource Envelope for FY 2026/27 Budget",
     summary: "Finance Minister Kasaija launched National Budget Month with a UGX 57.441 trillion resource envelope. Domestic revenues targeted at UGX 33.68 trillion, with URA aiming to fully fund the national budget domestically. Theme: Full Monetization through Agriculture, Industrialization & Digital Transformation.",
     source: "Ministry of Finance",
   },
   {
     tag: "Finances",
-    date: "01 May 2025",
+    date: "01 May 2026",
     title: "Uganda Coffee Exports Hit Record: US$214M in April, Annual Earnings Top US$1.97B",
-    summary: "Uganda exported 694,318 bags of coffee in April 2025 worth US$214.38M — value up 152.56% vs April 2024 — driven by drought in Brazil and Vietnam pushing global prices to record highs. Full-year (May 2024–April 2025) coffee earnings reached US$1.97 billion, cementing Uganda as Africa's top coffee exporter.",
+    summary: "Uganda exported 694,318 bags of coffee in April 2026 worth US$214.38M — value up 152.56% vs April 2025 — driven by drought in Brazil and Vietnam pushing global prices to record highs. Full-year (May 2025–April 2026) coffee earnings reached US$1.97 billion, cementing Uganda as Africa's top coffee exporter.",
     source: "Sunrise Uganda",
   },
   {
     tag: "Finances",
-    date: "17 May 2025",
+    date: "17 May 2026",
     title: "Trade Deficit Narrows 58% as Uganda Exports Surge 72% Year-on-Year",
-    summary: "Uganda's trade deficit fell to US$126.85M in April 2025 from US$303.91M a year earlier as exports surged 72.1% to US$1.11 billion. The shilling appreciated 0.4% against the USD in May, supported by coffee inflows and remittances. FY2024/25 GDP growth reached 6.3%, led by agriculture at 6.6%.",
+    summary: "Uganda's trade deficit fell to US$126.85M in April 2026 from US$303.91M a year earlier as exports surged 72.1% to US$1.11 billion. The shilling appreciated 0.4% against the USD in May, supported by coffee inflows and remittances. FY2025/26 GDP growth reached 6.3%, led by agriculture at 6.6%.",
     source: "The Cooperator News",
   },
   {
     tag: "Taxes",
-    date: "19 Apr 2025",
-    title: "Eight Tax Amendment Bills Tabled for FY 2025/26: Fuel, Cigarettes, Digital Services in Focus",
+    date: "19 Apr 2026",
+    title: "Eight Tax Amendment Bills Tabled for FY 2026/27: Fuel, Cigarettes, Digital Services in Focus",
     summary: "Finance Minister Kasaija tabled eight tax bills proposing: fuel excise duty up UGX 150/litre, cigarette excise doubled to UGX 150,000 per 1,000 sticks, a new 1.5% infrastructure import levy, and replacing the 5% Digital Services Tax with a 15% withholding tax on non-resident platforms.",
     source: "Daily Monitor / KPMG Uganda",
   },
   {
     tag: "Taxes",
-    date: "09 May 2025",
-    title: "4th Tax Expenditure Report: UGX 3.6 Trillion in Revenue Foregone in FY 2023/24",
-    summary: "Uganda's Ministry of Finance revealed UGX 3,609 billion in foregone revenue — 1.78% of GDP and 13% of total tax revenue — for FY 2023/24. Customs duty exemptions led at UGX 1,137 billion (32% of total). VAT expenditures declined year-on-year due to improved URA administrative controls.",
+    date: "09 May 2026",
+    title: "4th Tax Expenditure Report: UGX 3.6 Trillion in Revenue Foregone in FY 2024/25",
+    summary: "Uganda's Ministry of Finance revealed UGX 3,609 billion in foregone revenue — 1.78% of GDP and 13% of total tax revenue — for FY 2024/25. Customs duty exemptions led at UGX 1,137 billion (32% of total). VAT expenditures declined year-on-year due to improved URA administrative controls.",
     source: "Ministry of Finance / URA",
   },
   {
     tag: "Taxes",
-    date: "30 Apr 2025",
-    title: "URA Expands EFRIS to 12 New Sectors from July 2025, Targets UGX 37T Revenue",
-    summary: "URA mandated 12 additional sectors — real estate, construction, transport, fuel retail, entertainment — to adopt EFRIS electronic receipting from 1 July 2025, targeting a UGX 5 trillion annual leakage plug. Withholding tax exemption applications for the July 2025–June 2026 cycle are now open.",
+    date: "30 Apr 2026",
+    title: "URA Expands EFRIS to 12 New Sectors from July 2026, Targets UGX 37T Revenue",
+    summary: "URA mandated 12 additional sectors — real estate, construction, transport, fuel retail, entertainment — to adopt EFRIS electronic receipting from 1 July 2026, targeting a UGX 5 trillion annual leakage plug. Withholding tax exemption applications for the July 2026–June 2027 cycle are now open.",
     source: "Daily Monitor / Parliament Watch",
   },
   {
     tag: "Politics",
-    date: "19 Apr 2025",
+    date: "19 Apr 2026",
     title: "Parliament Divided Over Cement, Beer and Spirits Taxes Ahead of 2026 Elections",
     summary: "Sharp divisions erupted in Uganda's Finance Committee as opposition MPs challenged new levies: doubling cement tax to UGX 1,000/50kg, raising beer excise to UGX 900/litre, and hiking spirits tax from 60% to 80%. Finance Minister Musasizi defended the measures to push the tax-to-GDP ratio toward 20–25%.",
     source: "Daily Monitor",
   },
   {
     tag: "Taxes",
-    date: "23 Apr 2025",
+    date: "23 Apr 2026",
     title: "Uganda to Abolish 5% Digital Services Tax, Replace with 15% Withholding Tax on Non-Residents",
-    summary: "Uganda's tax bills propose replacing the existing 5% Digital Services Tax with a 15% withholding tax on non-resident digital service providers. Additional proposals: a 3-year income tax exemption for new citizen-owned startups with capital under UGX 500M, and anti-fragmentation VAT rules. Bills take effect 1 July 2025.",
+    summary: "Uganda's tax bills propose replacing the existing 5% Digital Services Tax with a 15% withholding tax on non-resident digital service providers. Additional proposals: a 3-year income tax exemption for new citizen-owned startups with capital under UGX 500M, and anti-fragmentation VAT rules. Bills take effect 1 July 2026.",
     source: "KPMG Uganda",
   },
 ];
@@ -2505,7 +2542,7 @@ const TabNews = ({ t }) => {
     <>
       <div className="pres-section-h" style={{ padding: "20px 20px 0" }}>
         <h2><Icon name="newspaper" size={20} style={{ marginRight: 8, verticalAlign: "middle" }} />{t("Uganda · Latest Intelligence")}</h2>
-        <span className="meta">{t("Politics · Taxes · Finances · Security")} · May 2025</span>
+        <span className="meta">{t("Politics · Taxes · Finances · Security")} · May 2026</span>
       </div>
       <div className="news-grid">
         {NEWS_DATA.map((n, i) => {
@@ -2734,7 +2771,11 @@ const TabGovMail = ({ t }) => {
 
   const openMessage = (id) => {
     setSelectedId(id);
-    setMessages(prev => prev.map(m => m.id === id && m.status !== "urgent" ? { ...m, status: "read" } : m));
+    setMessages(prev => prev.map(m => m.id === id && m.status === "unread" ? { ...m, status: "read" } : m));
+  };
+
+  const resolveAction = (id, decision) => {
+    setMessages(prev => prev.map(m => m.id === id ? { ...m, status: "read", _decision: decision } : m));
   };
 
   return (
@@ -2776,6 +2817,9 @@ const TabGovMail = ({ t }) => {
                   {m.status === "urgent" && (
                     <span className="govmail-urgent-label">⚠ Urgent</span>
                   )}
+                  {m.status === "action_required" && (
+                    <span className="govmail-action-required-label">! Action Required</span>
+                  )}
                   <span>{formatMailTime(m.timestamp)}</span>
                 </div>
               </div>
@@ -2807,9 +2851,24 @@ const TabGovMail = ({ t }) => {
                   </div>
                 </div>
               )}
+              {selected.status === "action_required" && (
+                <div className="govmail-action-required-banner">
+                  <Icon name="mail" size={14} />
+                  {t("This message requires your decision before it can be actioned.")}
+                </div>
+              )}
               <div className="govmail-detail-actions">
-                <button className="govmail-action-btn"><Icon name="reply" size={14} />{t("Reply")}</button>
-                <button className="govmail-action-btn"><Icon name="forward" size={14} />{t("Forward")}</button>
+                {selected.status === "action_required" ? (<>
+                  <button className="govmail-action-btn approve" onClick={() => resolveAction(selected.id, "approved")}>
+                    <Icon name="check_circle" size={14} />{t("Approve")}
+                  </button>
+                  <button className="govmail-action-btn decline" onClick={() => resolveAction(selected.id, "declined")}>
+                    <Icon name="error" size={14} />{t("Decline")}
+                  </button>
+                </>) : (<>
+                  <button className="govmail-action-btn"><Icon name="reply" size={14} />{t("Reply")}</button>
+                  <button className="govmail-action-btn"><Icon name="forward" size={14} />{t("Forward")}</button>
+                </>)}
               </div>
             </>
           }
@@ -2868,7 +2927,7 @@ function App() {
 
   const openFromDropdown = (id) => {
     setSelectedId(id);
-    setMessages(prev => prev.map(m => m.id === id && m.status !== "urgent" ? { ...m, status: "read" } : m));
+    setMessages(prev => prev.map(m => m.id === id && m.status === "unread" ? { ...m, status: "read" } : m));
     setDdOpen(false);
     setTab("govmail");
   };
@@ -2911,7 +2970,7 @@ function App() {
     <window.MailCtx.Provider value={mailCtxValue}>
     <window.NavCtx.Provider value={{ setTab }}>
     <window.LangCtx.Provider value={t}>
-    <div className={`pres density-${tweaks.density === "comfortable" ? "comfortable" : "compact"}`}
+    <div className={`pres density-${tweaks.density === "comfortable" ? "comfortable" : "compact"}${tab === "govmail" ? " govmail-active" : ""}`}
          data-screen-label={`01 ${tab.toUpperCase()}`}>
 
       {/* ── Brand ────────────────────────────────────────────────── */}
@@ -2987,7 +3046,7 @@ function App() {
                           <span>{formatMailTime(m.timestamp)}</span>
                           {m.status !== "read" && (
                             <span className={`mail-dd-status s-${m.status}`}>
-                              {m.status === "urgent" ? "⚠ Urgent" : "● Unread"}
+                              {m.status === "urgent" ? "⚠ Urgent" : m.status === "action_required" ? "! Action Required" : "● Unread"}
                             </span>
                           )}
                         </div>
