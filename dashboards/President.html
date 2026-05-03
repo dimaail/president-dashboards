@@ -735,6 +735,28 @@ html, body {
   background: linear-gradient(180deg, rgba(255,122,0,0.06), transparent 60%), var(--pres-panel);
   border-color: rgba(255, 122, 0, 0.30);
 }
+.fia-popup {
+  position: absolute; z-index: 200;
+  top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--pres-panel);
+  border: 1px solid var(--pres-line-2);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+  padding: 12px 14px;
+  pointer-events: none;
+}
+.fia-popup-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--pres-text-dim); margin-bottom: 8px;
+}
+.fia-period-btn {
+  cursor: pointer; border: none; background: none; padding: 2px 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  border-radius: 3px; color: var(--pres-text-dim);
+}
+.fia-period-btn.active {
+  background: rgba(255,122,0,0.14); color: var(--pres-accent);
+}
 
 /* KPI tile */
 .pres-kpi { display: flex; flex-direction: column; gap: 6px; min-height: 110px; }
@@ -870,6 +892,27 @@ html, body {
 @keyframes pulse-crit {
   0%,  100% { box-shadow: none; }
   50%       { box-shadow: 0 0 0 4px rgba(201,32,40,0.18); }
+}
+@keyframes nps-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+.nps-live-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--pres-good); animation: nps-pulse 1.1s ease-in-out infinite;
+}
+.nps-bar-wrap {
+  display: flex; align-items: flex-end; gap: 1.5px; padding: 0 2px;
+}
+.nps-bar {
+  flex: 1; border-radius: 1px 1px 0 0; transition: height 0.65s ease-out;
+}
+.nps-axis {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--pres-text-dim); margin-top: 4px;
+}
+.nps-subline {
+  font-size: 10px; color: var(--pres-text-dim); margin-top: 2px;
 }
 .alert.crit { border-left-color: var(--pres-bad); background: rgba(201,32,40,0.03); animation: pulse-crit 2.5s ease-in-out infinite; }
 .alert.warn { border-left-color: var(--pres-warn); background: rgba(122,82,0,0.03); }
@@ -1736,16 +1779,56 @@ const PRES_DATA = {
       { name: "Shell companies",            q: 19, vol:  57.0, trend:  +7.6 },
       { name: "Cross-border MoMo agents",   q: 31, vol:  72.8, trend:  -2.2 },
     ],
-    blocked: [
-      { idx: 1, debtor: "KCBLUGKA9655886677", debFI: "MOMO",         creditor: "ACC1165694448", crFI: "Airtel Uganda",   amt: 386102.83, type: "p2p", date: "21.11.23 14:32" },
-      { idx: 2, debtor: "KCBLUGKA9655886677", debFI: "Crane Bank",   creditor: "ACC0981556488", crFI: "Global Trust",    amt: 129809.60, type: "p2p", date: "21.11.23 14:31" },
-      { idx: 3, debtor: "KCBLUGKA9655886677", debFI: "Bank of India",creditor: "ACC8509670541", crFI: "MOMO",            amt: 304222.92, type: "p2p", date: "21.11.23 14:31" },
-      { idx: 4, debtor: "ACC6222260602",       debFI: "Crane Bank",   creditor: "KCBLUGKA…6677", crFI: "MyUGPay",         amt: 518745.90, type: "p2p", date: "21.11.23 14:28" },
-      { idx: 5, debtor: "KCBLUGKA9655886677", debFI: "Airtel Uganda",creditor: "ACC7158724665", crFI: "Bank of India",   amt: 631174.58, type: "p2p", date: "21.11.23 14:25" },
-      { idx: 6, debtor: "ACC3717792711",       debFI: "Bank of Africa",creditor: "KCBLUGKA…6677", crFI: "Bank of India",  amt: 306137.09, type: "p2p", date: "21.11.23 14:22" },
-      { idx: 7, debtor: "ACC3561047924",       debFI: "Airtel Uganda",creditor: "KCBLUGKA…6677", crFI: "MOMO",           amt: 579002.84, type: "p2p", date: "21.11.23 14:18" },
-      { idx: 8, debtor: "KCBLUGKA9655886677", debFI: "MyUGPay",      creditor: "ACC7427916244", crFI: "MOMO",            amt: 433090.51, type: "p2p", date: "21.11.23 14:11" },
-    ],
+    blockedFunds: {
+      total: 2.50,
+      breakdown: [
+        { name: "MTN Mobile Money", amt: 0.84, type: "telecom" },
+        { name: "Airtel Money",     amt: 0.71, type: "telecom" },
+        { name: "Stanbic Bank",     amt: 0.38, type: "bank" },
+        { name: "DFCU Bank",        amt: 0.22, type: "bank" },
+        { name: "Absa Uganda",      amt: 0.18, type: "bank" },
+        { name: "Centenary Bank",   amt: 0.12, type: "bank" },
+        { name: "Others",           amt: 0.05, type: "other" },
+      ],
+    },
+    fraud: {
+      today: {
+        amount: 0.88, txTotal: 8600, txFraud: 250,
+        shareTxPct: 2.91, shareValPct: 10.23,
+        breakdown: [
+          { name: "MTN Mobile Money", amt: 0.31, txCount: 88,  type: "telecom" },
+          { name: "Airtel Money",     amt: 0.24, txCount: 71,  type: "telecom" },
+          { name: "Stanbic Bank",     amt: 0.14, txCount: 41,  type: "bank" },
+          { name: "DFCU Bank",        amt: 0.09, txCount: 28,  type: "bank" },
+          { name: "Absa Uganda",      amt: 0.06, txCount: 17,  type: "bank" },
+          { name: "Others",           amt: 0.04, txCount: 5,   type: "other" },
+        ],
+      },
+      mtd: {
+        amount: 18.4, txTotal: 198000, txFraud: 5120,
+        shareTxPct: 2.59, shareValPct: 9.28,
+        breakdown: [
+          { name: "MTN Mobile Money", amt: 6.40, txCount: 1840, type: "telecom" },
+          { name: "Airtel Money",     amt: 5.10, txCount: 1530, type: "telecom" },
+          { name: "Stanbic Bank",     amt: 2.88, txCount:  820, type: "bank" },
+          { name: "DFCU Bank",        amt: 1.90, txCount:  560, type: "bank" },
+          { name: "Absa Uganda",      amt: 1.24, txCount:  240, type: "bank" },
+          { name: "Others",           amt: 0.88, txCount:  130, type: "other" },
+        ],
+      },
+      ytd: {
+        amount: 214.6, txTotal: 2340000, txFraud: 61400,
+        shareTxPct: 2.62, shareValPct: 9.94,
+        breakdown: [
+          { name: "MTN Mobile Money", amt:  74.8, txCount: 22100, type: "telecom" },
+          { name: "Airtel Money",     amt:  59.6, txCount: 17800, type: "telecom" },
+          { name: "Stanbic Bank",     amt:  33.4, txCount:  9800, type: "bank" },
+          { name: "DFCU Bank",        amt:  22.1, txCount:  6400, type: "bank" },
+          { name: "Absa Uganda",      amt:  14.8, txCount:  3400, type: "bank" },
+          { name: "Others",           amt:   9.9, txCount:  1900, type: "other" },
+        ],
+      },
+    },
   },
   // ============ URA ============
   ura: {
@@ -1786,7 +1869,6 @@ const PRES_DATA = {
       { id: "alloc", label: "Allocated · YTD",   value: 6.91, unit: "T UGX", delta: +0.0, spark: spark(501, 24, 60, 20) },
       { id: "disb",  label: "Disbursed · YTD",   value: 4.67, unit: "T UGX", delta: +0.9, spark: spark(502, 24, 60, 25) },
       { id: "ratio", label: "Disbursement rate", value: 67.6, unit: "%",     delta: +1.2, spark: spark(503, 24, 60, 20) },
-      { id: "saccos",label: "Active SACCOs",     value: 10.42, unit: "K",     delta: +0.4, spark: spark(504, 24, 60, 20) },
     ],
     pillars: [
       { name: "Production, Storage, Processing & Marketing", alloc: 4.20, disb: 3.04 },
@@ -2202,7 +2284,7 @@ const Delta = ({ value, good, bad, suffix = "%" }) => {
   return (
     <span className={`delta ${cls}`}>
       <Icon name={isUp ? "arrow_upward" : "arrow_downward"} size={14} />
-      {Math.abs(value).toFixed(1)}{suffix} <span className="muted" style={{ fontWeight: 400, marginLeft: 4 }}>{t("vs prior")}</span>
+      {Math.abs(value).toFixed(1)}{suffix}
     </span>
   );
 };
@@ -2594,88 +2676,343 @@ const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => {
 
       {mapMode && <OverviewMapPanel mode={mapMode} data={data} onClose={closeMap} />}
 
-      <div className="pres-grid" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
-        <div className="pres-card">
-          <div className="card-h">
-            <span>{t("Real-time activity · regions")}</span>
-            <span className="actions">
-              <span className="chip flat">{t("By transaction volume")}</span>
-            </span>
-          </div>
-          <UgandaMap data={REGIONS} activeId={activeRegion} onPick={setActiveRegion} valueKey="disb" maxKey="alloc" mode="rate" />
-          <MapLegend mode="rate" />
-        </div>
-
-        <div className="pres-card">
-          <div className="card-h"><span>{t("Cross-agency signal")}</span><span className="chip accent">{t("auto")}</span></div>
-          <table className="pres-table">
-            <thead><tr><th>{t("Agency")}</th><th>{t("Indicator")}</th><th className="num">{t("Today")}</th><th className="num">{t("Δ")}</th></tr></thead>
-            <tbody>
-              <tr><td>BoU</td><td>{t("Settlement uptime")}</td><td className="num">99.997%</td><td className="num"><span className="chip ok">OK</span></td></tr>
-              <tr><td>URA</td><td>{t("MTD vs target")}</td><td className="num">+1.4%</td><td className="num"><span className="chip ok">+</span></td></tr>
-              <tr><td>FIA</td><td>{t("Blocked tx amount")}</td><td className="num">2.50B</td><td className="num"><span className="chip warn">↑</span></td></tr>
-              <tr><td>PDM</td><td>{t("Disbursement rate")}</td><td className="num">67.6%</td><td className="num"><span className="chip warn">!</span></td></tr>
-              <tr><td>BoU</td><td>{t("Liquidity floor breaches")}</td><td className="num">2</td><td className="num"><span className="chip bad">↑</span></td></tr>
-              <tr>
-                <td>BoU</td>
-                <td>
-                  {t("Real-Time Activity Index")}
-                  {" "}<span
-                    title="Composite index of high-frequency economic signals. Components: NPS transaction volume (30%), URA daily tax inflow (25%), PDM disbursement pace (25%), BoU interbank liquidity (20%). Normalized to baseline 100 = 12-month rolling average. Updated every 15 minutes."
-                    style={{ cursor: "help", opacity: 0.55, fontSize: "0.85em" }}>ⓘ</span>
-                </td>
-                <td className="num">128.4 pts</td>
-                <td className="num"><span className="chip ok">↑</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </>
   );
 };
 
 // =============== SWITCH ===============
-const TabSwitch = ({ t, data }) => (
-  <>
-    <div className="pres-section-h">
-      <h2>{t("Switch · Payment Network")}</h2>
-      <span className="meta">{t("Live · all systems")} · {data.asOf}</span>
-    </div>
+// ── NPS live bar chart — smooth scrolling, 60-second window ─────────────────
+function NpsBarChart({ avgVal, color, label, unit, fmtVal, subline, t }) {
+  const N   = 60;   // visible seconds
+  const GAP = 1.5;  // px gap between bars
 
+  const barsRef    = React.useRef(null);
+  const prevRef    = React.useRef(avgVal);
+  const phaseRef   = React.useRef(0);
+  const epochRef   = React.useRef(0);
+  const lastSecRef = React.useRef(-1);
+  const containerRef = React.useRef(null);
+  const [barW,   setBarW]   = React.useState(8);
+  const [, redraw] = React.useReducer(c => c + 1, 0);
+
+  // Warm-start with EMA-correlated initial bars
+  if (!barsRef.current) {
+    let v = avgVal;
+    barsRef.current = Array.from({ length: N + 1 }, () => {
+      const tgt = avgVal * (0.78 + Math.random() * 0.44);
+      v = Math.round(v * 0.58 + tgt * 0.42);
+      return v;
+    });
+  }
+
+  // Measure container so bars fill it exactly
+  React.useEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return;
+      const w = containerRef.current.getBoundingClientRect().width;
+      setBarW(Math.max(2, (w - GAP * N) / N));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
+  // RAF loop: continuously updates phase + appends new bar each second
+  React.useEffect(() => {
+    epochRef.current = performance.now();
+    let rafId;
+    const tick = ts => {
+      const elapsed = ts - epochRef.current;
+      const sec = Math.floor(elapsed / 1000);
+      phaseRef.current = (elapsed % 1000) / 1000;
+
+      if (sec > lastSecRef.current) {
+        lastSecRef.current = sec;
+        const roll = Math.random();
+        let tgt;
+        if      (roll < 0.05) tgt = avgVal * (1.8 + Math.random() * 0.6);  // burst spike
+        else if (roll < 0.12) tgt = avgVal * (0.30 + Math.random() * 0.20); // quiet dip
+        else                  tgt = avgVal * (0.78 + Math.random() * 0.44); // normal
+        const next = Math.round(prevRef.current * 0.50 + tgt * 0.50);
+        prevRef.current = next;
+        barsRef.current = [...barsRef.current.slice(1), next];
+      }
+
+      redraw();
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  const bars  = barsRef.current;
+  const phase = phaseRef.current;
+  if (!bars) return null;
+
+  const maxVal     = Math.max(...bars) * 1.22;
+  const slotW      = barW + GAP;
+  const translateX = -(phase * slotW).toFixed(2);
+  const curVal     = bars[N - 1]; // last completed second
+
+  return (
     <div className="pres-card">
       <div className="card-h">
-        <span>{t("Switch volume · 30d (T UGX)")}</span>
-        <div className="seg-toggle"><button className="is-active">30D</button><button>QTR</button><button>YTD</button></div>
+        <span>{t(label)}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span className="nps-live-dot" />
+          <span className="chip ok">{t("LIVE")}</span>
+        </span>
       </div>
-      <AreaChart data={Array.from({length: 30}, (_, i) => 6 + Math.sin(i/3)*1.6 + i*0.08)} height={200} labels={Array.from({length: 30}, (_, i) => i % 5 === 0 ? `${i + 1}` : "")} />
-    </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "6px 0 8px" }}>
+        <span style={{ fontSize: 32, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.01em" }}>{fmtVal(curVal)}</span>
+        <span className="muted" style={{ fontSize: 11 }}>{unit}</span>
+      </div>
 
-    <div className="pres-grid cols-2">
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Channel mix · today")}</span><span className="actions"><Icon name="more_horiz" size={16} /></span></div>
-        <div className="row" style={{ gap: 16, alignItems: "center" }}>
-          <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: t("TX TODAY") }} />
-          <div className="col" style={{ flex: 1 }}>
-            {data.overview.channelMix.map((c, i) => (
-              <div key={i} className="row sb" style={{ fontSize: 12 }}>
-                <span className="row" style={{ gap: 8 }}>
-                  <span style={{ width: 8, height: 8, background: c.color }} />
-                  {c.name}
-                </span>
-                <span className="tnum">{c.pct}%</span>
-              </div>
-            ))}
-          </div>
+      <div ref={containerRef} style={{ overflow: "hidden", position: "relative" }}>
+        <div style={{
+          display: "flex", alignItems: "flex-end",
+          height: 120, gap: GAP,
+          transform: `translateX(${translateX}px)`,
+          width: `${(N + 1) * slotW - GAP}px`,
+        }}>
+          {bars.map((v, i) => {
+            const isIncoming = i === N;
+            const frac = maxVal > 0 ? Math.min(v, maxVal) / maxVal : 0;
+            const h    = Math.max(2, frac * 100 * (isIncoming ? phase : 1));
+            const opacity = isIncoming
+              ? Math.min(0.95, phase * 2.2)
+              : 0.16 + 0.80 * (i / (N - 1));
+            return (
+              <div key={i} style={{
+                width: barW, flexShrink: 0,
+                height: `${h}%`,
+                background: color, opacity,
+                borderRadius: "1px 1px 0 0",
+              }} />
+            );
+          })}
         </div>
       </div>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Transaction type mix")}</span></div>
-        <BarsHoriz rows={data.overview.typeMix.map(t => ({ name: t.name, value: t.pct }))} suffix="%" max={100} />
+
+      <div className="nps-axis">
+        <span>−60s</span><span>−45s</span><span>−30s</span><span>−15s</span><span>now</span>
       </div>
+      <div className="nps-subline">{subline}</div>
     </div>
-  </>
-);
+  );
+}
+
+// ── NPS joint dual-axis area chart (60-second rolling window) ────────────────
+const AVG_TX  = 300;       // tx / sec (used by both components below)
+const AVG_VAL = 2_700_000; // UGX / sec  (300 × 9 000)
+const NOISE   = 0.38;      // ±38% random variance
+
+function NpsJointChart({ t }) {
+  const N = 60; // 60-second window, one data point per second
+  // EMA-smoothed init so the wave looks organic from the start
+  const initArr = avg => {
+    let v = avg;
+    return Array.from({ length: N }, () => {
+      v = Math.round(v * 0.68 + avg * (1 + (Math.random() - 0.5) * 0.5) * 0.32);
+      return v;
+    });
+  };
+  const [txD,  setTxD]  = React.useState(() => initArr(AVG_TX));
+  const [valD, setValD] = React.useState(() => initArr(AVG_VAL));
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      setTxD(prev => {
+        const tgt = Math.round(AVG_TX  * (1 + (Math.random() - 0.5) * NOISE * 2));
+        return [...prev.slice(1), Math.round(prev[prev.length - 1] * 0.62 + tgt * 0.38)];
+      });
+      setValD(prev => {
+        const tgt = Math.round(AVG_VAL * (1 + (Math.random() - 0.5) * NOISE * 2));
+        return [...prev.slice(1), Math.round(prev[prev.length - 1] * 0.62 + tgt * 0.38)];
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // SVG geometry
+  const W = 820, H = 220;
+  const PAD = { t: 32, r: 66, b: 36, l: 60 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+
+  const txMax  = Math.max(...txD)  * 1.22;
+  const valMax = Math.max(...valD) * 1.22;
+  const base   = PAD.t + cH;
+
+  const xAt  = i => PAD.l + (i / (N - 1)) * cW;
+  const yTx  = v => PAD.t + cH - (v / txMax)  * cH;
+  const yVal = v => PAD.t + cH - (v / valMax) * cH;
+
+  const pts  = (arr, yFn) => arr.map((v, i) => `${xAt(i).toFixed(1)},${yFn(v).toFixed(1)}`).join(" ");
+  const area = (arr, yFn) =>
+    `M ${xAt(0).toFixed(1)},${base} L ${arr.map((v, i) => `${xAt(i).toFixed(1)},${yFn(v).toFixed(1)}`).join(" L ")} L ${xAt(N-1).toFixed(1)},${base} Z`;
+
+  const txTicks  = [0.25, 0.5, 0.75, 1].map(f => Math.round(txMax  * f));
+  const valTicks = [0.25, 0.5, 0.75, 1].map(f => Math.round(valMax * f));
+
+  const xTicks = [
+    { i: 0,               lbl: "−60s" },
+    { i: Math.round(N/4), lbl: "−45s" },
+    { i: Math.round(N/2), lbl: "−30s" },
+    { i: Math.round(3*N/4), lbl: "−15s" },
+    { i: N - 1,           lbl: "NOW"  },
+  ];
+
+  const curTx  = txD[N - 1];
+  const curVal = valD[N - 1];
+
+  return (
+    <div className="pres-card">
+      <div className="card-h">
+        <span>{t("NPS Live · Volume & Value")}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "var(--pres-text-dim)" }}>
+            <span style={{ width: 20, height: 3, background: "#FF7A00", borderRadius: 2, display: "inline-block" }} />
+            {t("Volume (tx/s)")}
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "var(--pres-text-dim)" }}>
+            <span style={{ width: 20, height: 3, background: "#1A6B3C", borderRadius: 2, display: "inline-block" }} />
+            {t("Value (M UGX/s)")}
+          </span>
+          <span className="nps-live-dot" />
+          <span className="chip ok">{t("LIVE")}</span>
+        </span>
+      </div>
+
+      <div style={{ display: "flex", gap: 28, margin: "2px 0 2px" }}>
+        <span>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "#FF7A00", lineHeight: 1 }}>{curTx.toLocaleString()}</span>
+          <span style={{ fontSize: 11, marginLeft: 5, color: "var(--pres-text-dim)" }}>tx/s</span>
+        </span>
+        <span>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "#1A6B3C", lineHeight: 1 }}>{(curVal / 1e6).toFixed(2)}</span>
+          <span style={{ fontSize: 11, marginLeft: 5, color: "var(--pres-text-dim)" }}>M UGX/s</span>
+        </span>
+      </div>
+
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
+        <defs>
+          <linearGradient id="jg-tx" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#FF7A00" stopOpacity="0.42" />
+            <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.04" />
+          </linearGradient>
+          <linearGradient id="jg-val" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#1A6B3C" stopOpacity="0.36" />
+            <stop offset="100%" stopColor="#1A6B3C" stopOpacity="0.04" />
+          </linearGradient>
+        </defs>
+
+        {/* Grid lines */}
+        {txTicks.map((v, i) => (
+          <line key={i} x1={PAD.l} x2={W - PAD.r} y1={yTx(v)} y2={yTx(v)}
+            stroke="rgba(0,0,0,0.065)" strokeWidth={1} />
+        ))}
+
+        {/* Left Y-axis — volume */}
+        {txTicks.map((v, i) => (
+          <text key={i} x={PAD.l - 6} y={yTx(v) + 4} textAnchor="end" fontSize={9} fill="#FF7A00" fillOpacity={0.8}>{v}</text>
+        ))}
+        <text transform={`rotate(-90,15,${PAD.t + cH / 2})`} x={15} y={PAD.t + cH / 2 + 4}
+          textAnchor="middle" fontSize={9} fill="#FF7A00" fillOpacity={0.7}>tx / sec</text>
+
+        {/* Right Y-axis — value */}
+        {valTicks.map((v, i) => (
+          <text key={i} x={W - PAD.r + 6} y={yVal(v) + 4} textAnchor="start" fontSize={9} fill="#1A6B3C" fillOpacity={0.8}>{(v / 1e6).toFixed(1)}</text>
+        ))}
+        <text transform={`rotate(90,${W - 14},${PAD.t + cH / 2})`} x={W - 14} y={PAD.t + cH / 2 + 4}
+          textAnchor="middle" fontSize={9} fill="#1A6B3C" fillOpacity={0.7}>M UGX/s</text>
+
+        {/* Area fills — value behind, volume in front */}
+        <path d={area(valD, yVal)} fill="url(#jg-val)" />
+        <path d={area(txD,  yTx)}  fill="url(#jg-tx)"  />
+
+        {/* Stroked lines */}
+        <polyline points={pts(valD, yVal)} fill="none" stroke="#1A6B3C" strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+        <polyline points={pts(txD,  yTx)}  fill="none" stroke="#FF7A00" strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+
+        {/* Tick dots on both series */}
+        {xTicks.map(({ i }) => (
+          <g key={i}>
+            <circle cx={xAt(i)} cy={yTx(txD[i])}   r={3} fill="#FF7A00" stroke="#fff" strokeWidth={1} />
+            <circle cx={xAt(i)} cy={yVal(valD[i])} r={3} fill="#1A6B3C" stroke="#fff" strokeWidth={1} />
+          </g>
+        ))}
+
+        {/* NOW dashed vertical line */}
+        <line x1={xAt(N - 1)} x2={xAt(N - 1)} y1={PAD.t - 8} y2={base}
+          stroke="rgba(201,32,40,0.62)" strokeWidth={1.5} strokeDasharray="4 3" />
+        <text x={xAt(N - 1)} y={PAD.t - 12} textAnchor="middle"
+          fontSize={9} fontWeight="700" fill="rgba(201,32,40,0.78)">NOW</text>
+
+        {/* Live end-of-line dots */}
+        <circle cx={xAt(N - 1)} cy={yTx(curTx)}   r={4.5} fill="#FF7A00" stroke="#fff" strokeWidth={1.5} />
+        <circle cx={xAt(N - 1)} cy={yVal(curVal)} r={4.5} fill="#1A6B3C" stroke="#fff" strokeWidth={1.5} />
+
+        {/* X-axis tick marks + labels */}
+        {xTicks.map(({ i, lbl }) => (
+          <g key={i}>
+            <line x1={xAt(i)} x2={xAt(i)} y1={base} y2={base + 4} stroke="rgba(0,0,0,0.2)" strokeWidth={1} />
+            <text x={xAt(i)} y={H - 5} textAnchor="middle" fontSize={9} fill="rgba(0,0,0,0.42)">{lbl}</text>
+          </g>
+        ))}
+      </svg>
+
+      <div className="nps-subline">60-second rolling window · avg 300 tx/s · avg ticket UGX 9,000 · avg value flow UGX 2.7 M/s</div>
+    </div>
+  );
+}
+
+function TabSwitch({ t, data }) {
+  return (
+    <>
+      <div className="pres-section-h">
+        <h2>{t("Switch · Payment Network")}</h2>
+        <span className="meta">{t("Live · all systems")} · {data.asOf}</span>
+      </div>
+
+      <NpsBarChart
+        avgVal={AVG_VAL}
+        color="#1A6B3C"
+        label="NPS Transaction Value"
+        unit="M UGX / sec"
+        fmtVal={v => (v / 1_000_000).toFixed(2)}
+        subline="avg UGX 2.7 M / sec · avg ticket UGX 9,000 · 60-second rolling window"
+        t={t}
+      />
+
+      <NpsJointChart t={t} />
+
+      <div className="pres-grid cols-2">
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Channel mix · today")}</span><span className="actions"><Icon name="more_horiz" size={16} /></span></div>
+          <div className="row" style={{ gap: 16, alignItems: "center" }}>
+            <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: t("TX TODAY") }} />
+            <div className="col" style={{ flex: 1 }}>
+              {data.overview.channelMix.map((c, i) => (
+                <div key={i} className="row sb" style={{ fontSize: 12 }}>
+                  <span className="row" style={{ gap: 8 }}>
+                    <span style={{ width: 8, height: 8, background: c.color }} />
+                    {c.name}
+                  </span>
+                  <span className="tnum">{c.pct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Transaction type mix")}</span></div>
+          <BarsHoriz rows={data.overview.typeMix.map(r => ({ name: r.name, value: r.pct }))} suffix="%" max={100} />
+        </div>
+      </div>
+    </>
+  );
+}
 
 // =============== BoU ===============
 // Multi-line SVG chart for M0/M1/M2/M3
@@ -2923,60 +3260,162 @@ const TabBoU = ({ t, data }) => {
 };
 
 // =============== FIA ===============
-const TabFIA = ({ t, data }) => (
-  <>
-    <div className="pres-section-h">
-      <h2><img className="section-logo" src="../assets/financial-intelligence-authority-of-uganda-fia-logo.png" alt="FIA" />{t("Financial Intelligence Authority")}</h2>
-      <span className="meta">{t("Live · investigation activities")}</span>
-    </div>
-    <div className="pres-grid cols-4">
-      {data.fia.kpis.map(k => <KpiTile key={k.id} k={k} />)}
-    </div>
-    <div className="pres-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Fraud cases · by type")}</span></div>
-        <BarsHoriz rows={data.fia.cases.map(c => ({ name: c.name, value: c.q }))} suffix="" />
-        <div className="muted" style={{ fontSize: 11, paddingTop: 8 }}>{t("Volume (UGX) shown in detail view; click a row.")}</div>
+function TabFIA({ t, data }) {
+  const [period, setPeriod]       = React.useState("today");
+  const [hovered, setHovered]     = React.useState(null);
+
+  const fraud   = data.fia.fraud[period];
+  const blocked = data.fia.blockedFunds;
+
+  const fmtAmt = v => v >= 1000 ? `${(v/1000).toFixed(1)} T` : v >= 1 ? `${v.toFixed(2)} B` : `${(v*1000).toFixed(0)} M`;
+
+  return (
+    <>
+      <div className="pres-section-h">
+        <h2><img className="section-logo" src="../assets/financial-intelligence-authority-of-uganda-fia-logo.png" alt="FIA" />{t("Financial Intelligence Authority")}</h2>
+        <span className="meta">{t("Live · investigation activities")}</span>
       </div>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("High-risk entities")}</span></div>
-        <table className="pres-table">
-          <thead><tr><th>{t("Sector")}</th><th className="num">{t("Entities")}</th><th className="num">{t("Volume (B UGX)")}</th><th className="num">{t("30d Δ")}</th></tr></thead>
-          <tbody>
-            {data.fia.highRisk.map((r, i) => (
-              <tr key={i}>
-                <td>{r.name}</td>
-                <td className="num">{r.q}</td>
-                <td className="num">{r.vol.toFixed(1)}</td>
-                <td className="num"><span className={`chip ${r.trend >= 10 ? "bad" : r.trend >= 0 ? "warn" : "ok"}`}>{r.trend >= 0 ? "+" : ""}{r.trend.toFixed(1)}%</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="pres-grid cols-4">
+        {data.fia.kpis.map(k => <KpiTile key={k.id} k={k} />)}
       </div>
-    </div>
-    <div className="pres-card">
-      <div className="card-h"><span>{t("Recently blocked transactions")}</span><span className="chip accent">{t("auto-blocked")}</span></div>
-      <table className="pres-table">
-        <thead><tr><th>#</th><th>{t("Debtor")}</th><th>{t("Debtor FI")}</th><th>{t("Creditor")}</th><th>{t("Creditor FI")}</th><th className="num">{t("Amount")}</th><th>{t("Type")}</th><th>{t("Block date")}</th></tr></thead>
-        <tbody>
-          {data.fia.blocked.map(r => (
-            <tr key={r.idx}>
-              <td className="mute2">{String(r.idx).padStart(2, "0")}</td>
-              <td className="mono">{r.debtor}</td>
-              <td>{r.debFI}</td>
-              <td className="mono">{r.creditor}</td>
-              <td>{r.crFI}</td>
-              <td className="num">{r.amt.toLocaleString("en-US", { minimumFractionDigits: 2 })} UGX</td>
-              <td><span className="chip flat">{r.type.toUpperCase()}</span></td>
-              <td className="mute2">{r.date}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </>
-);
+
+      {/* Dashboard widgets row */}
+      <div className="pres-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+
+        {/* Widget 1 — Blocked Funds */}
+        <div className="pres-card" style={{ overflow: "visible" }}
+          onMouseEnter={() => setHovered("blocked")}
+          onMouseLeave={() => setHovered(null)}
+        >
+          <div className="card-h">
+            <span>{t("Blocked Funds")}</span>
+            <span className="chip bad">{t("frozen")}</span>
+          </div>
+          <div style={{ textAlign: "center", padding: "20px 0 12px" }}>
+            <div style={{ fontSize: 44, fontWeight: 700, color: "var(--pres-bad)", lineHeight: 1, letterSpacing: "-0.01em" }}>
+              {blocked.total.toFixed(2)}
+              <span style={{ fontSize: 17, fontWeight: 400, marginLeft: 6, color: "var(--pres-text-dim)" }}>B UGX</span>
+            </div>
+            <div className="muted" style={{ fontSize: 11, marginTop: 10 }}>{t("Total amount currently blocked")}</div>
+          </div>
+          {hovered === "blocked" && (
+            <div className="fia-popup">
+              <div className="fia-popup-title">{t("Breakdown by institution")}</div>
+              <table className="pres-table">
+                <thead><tr>
+                  <th>{t("Institution")}</th>
+                  <th>{t("Type")}</th>
+                  <th className="num">{t("Amount (B UGX)")}</th>
+                  <th className="num">{t("Share")}</th>
+                </tr></thead>
+                <tbody>
+                  {blocked.breakdown.map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.name}</td>
+                      <td><span className={`chip ${r.type === "telecom" ? "accent" : "flat"}`}>{r.type}</span></td>
+                      <td className="num">{r.amt.toFixed(2)}</td>
+                      <td className="num">{((r.amt / blocked.total) * 100).toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Widget 2 — Fraud */}
+        <div className="pres-card" style={{ overflow: "visible" }}
+          onMouseEnter={() => setHovered("fraud")}
+          onMouseLeave={() => setHovered(null)}
+        >
+          <div className="card-h">
+            <span>{t("Fraud")}</span>
+            <span style={{ display: "flex", gap: 2 }}>
+              {["today", "mtd", "ytd"].map(p => (
+                <button key={p} className={`fia-period-btn${period === p ? " active" : ""}`}
+                  onMouseDown={e => { e.stopPropagation(); setPeriod(p); }}
+                >{p.toUpperCase()}</button>
+              ))}
+            </span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, padding: "14px 0 6px" }}>
+            <div style={{ textAlign: "center" }}>
+              <div className="muted" style={{ fontSize: 10, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("Fraud amount")}</div>
+              <div style={{ fontSize: 30, fontWeight: 700, color: "var(--pres-bad)", lineHeight: 1 }}>
+                {fmtAmt(fraud.amount)}
+                <span style={{ fontSize: 13, fontWeight: 400, marginLeft: 4, color: "var(--pres-text-dim)" }}>UGX</span>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div className="muted" style={{ fontSize: 10, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("Fraud transactions")}</div>
+              <div style={{ fontSize: 30, fontWeight: 700, color: "var(--pres-warn)", lineHeight: 1 }}>
+                {fraud.txFraud.toLocaleString()}
+                <span style={{ fontSize: 13, fontWeight: 400, marginLeft: 4, color: "var(--pres-text-dim)" }}>tx</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div style={{ background: "var(--pres-panel-hi)", borderRadius: 4, padding: "8px 12px" }}>
+              <div className="muted" style={{ fontSize: 10 }}>{t("Share of tx count")}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "var(--pres-bad)" }}>{fraud.shareTxPct.toFixed(2)}%</div>
+            </div>
+            <div style={{ background: "var(--pres-panel-hi)", borderRadius: 4, padding: "8px 12px" }}>
+              <div className="muted" style={{ fontSize: 10 }}>{t("Share of tx value")}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "var(--pres-bad)" }}>{fraud.shareValPct.toFixed(2)}%</div>
+            </div>
+          </div>
+          {hovered === "fraud" && (
+            <div className="fia-popup">
+              <div className="fia-popup-title">{t("Breakdown by institution")} · {period.toUpperCase()}</div>
+              <table className="pres-table">
+                <thead><tr>
+                  <th>{t("Institution")}</th>
+                  <th>{t("Type")}</th>
+                  <th className="num">{t("Fraud amt (B UGX)")}</th>
+                  <th className="num">{t("Fraud tx")}</th>
+                </tr></thead>
+                <tbody>
+                  {fraud.breakdown.map((r, i) => (
+                    <tr key={i}>
+                      <td>{r.name}</td>
+                      <td><span className={`chip ${r.type === "telecom" ? "accent" : "flat"}`}>{r.type}</span></td>
+                      <td className="num">{r.amt >= 100 ? `${r.amt.toFixed(1)}` : r.amt.toFixed(2)}</td>
+                      <td className="num">{r.txCount.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="pres-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Fraud cases · by type")}</span></div>
+          <BarsHoriz rows={data.fia.cases.map(c => ({ name: c.name, value: c.q }))} suffix="" />
+          <div className="muted" style={{ fontSize: 11, paddingTop: 8 }}>{t("Volume (UGX) shown in detail view; click a row.")}</div>
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("High-risk entities")}</span></div>
+          <table className="pres-table">
+            <thead><tr><th>{t("Sector")}</th><th className="num">{t("Entities")}</th><th className="num">{t("Volume (B UGX)")}</th><th className="num">{t("30d Δ")}</th></tr></thead>
+            <tbody>
+              {data.fia.highRisk.map((r, i) => (
+                <tr key={i}>
+                  <td>{r.name}</td>
+                  <td className="num">{r.q}</td>
+                  <td className="num">{r.vol.toFixed(1)}</td>
+                  <td className="num"><span className={`chip ${r.trend >= 10 ? "bad" : r.trend >= 0 ? "warn" : "ok"}`}>{r.trend >= 0 ? "+" : ""}{r.trend.toFixed(1)}%</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
 
 // =============== URA ===============
 function TabURA({ t, data }) {
@@ -3229,7 +3668,7 @@ const TabPDM = ({ t, data, activeRegion, setActiveRegion }) => (
       <h2><img className="section-logo" src="../assets/PDM logo.jpg" alt="PDM" />{t("Parish Development Model")}</h2>
       <span className="meta">{t("Allocated vs disbursed · YTD")}</span>
     </div>
-    <div className="pres-grid cols-4">
+    <div className="pres-grid cols-3">
       {data.pdm.kpis.map(k => <KpiTile key={k.id} k={k} />)}
     </div>
     <div className="pres-grid" style={{ gridTemplateColumns: "1.5fr 1fr" }}>
@@ -3457,15 +3896,20 @@ const I18N = {
     "Entities": "Bizinensi",
     "Volume (B UGX)": "Ensimbi (B UGX)",
     "30d Δ": "Enkyukakyuka 30d",
-    "Recently blocked transactions": "Ebikolwa ebizibiddwa awaakayo",
-    "auto-blocked": "ziziddwa eyokka",
-    "Debtor": "Eyasendebbwa",
-    "Debtor FI": "Bbanka y'eyasendebbwa",
-    "Creditor": "Eyasenze",
-    "Creditor FI": "Bbanka y'eyasenze",
-    "Amount": "Ensimbi",
+    "Blocked Funds": "Ensimbi Ezizibiddwa",
+    "frozen": "ezizibiddwa",
+    "Total amount currently blocked": "Omuwendo gwonna oguzizibiddwa kati",
+    "Fraud": "Obubbi",
+    "Fraud amount": "Ensimbi z'obubbi",
+    "Fraud transactions": "Ebikolwa by'obubbi",
+    "Share of tx count": "Omugabo mu bikolwa",
+    "Share of tx value": "Omugabo mu muwendo",
+    "Breakdown by institution": "Okugabana ku kitongole",
+    "Institution": "Ekitongole",
+    "Amount (B UGX)": "Ensimbi (B UGX)",
+    "Fraud amt (B UGX)": "Ensimbi z'obubbi (B)",
+    "Fraud tx": "Ebikolwa by'obubbi",
     "Type": "Ekika",
-    "Block date": "Olunaku lw'okuziyiza",
     "Uganda Revenue Authority": "Ekitongole ky'Omusolo",
     "Tax collection & cross-checks": "Okusolooza n'okukebera omusolo",
     "Tax collected · monthly (T UGX)": "Omusolo · buli mwezi",
@@ -3834,7 +4278,6 @@ function App() {
         <div className="pres-topbar-meta">
           <span>{t("Period")}: {periodEnd}</span>
           <span className="muted">·</span>
-          <span>UGX</span>
           <span className="muted">{data.fxRate}</span>
           <span className="clock">{clock} EAT</span>
           <span className="lang-toggle">
@@ -3899,10 +4342,6 @@ function App() {
             )}
           </span>
 
-          <span className="pres-pill">
-            <span className="swatch" />
-            {t("All systems live")}
-          </span>
         </div>
       </div>
 
