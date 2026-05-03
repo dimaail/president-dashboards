@@ -1525,13 +1525,46 @@ const spark = (seed, n = 24, base = 50, amp = 30) => {
 
 // Uganda regions (rough centroids, normalized 0..100)
 const REGIONS = [
-  { id: "central",  name: "Central",  cx: 60, cy: 60, alloc: 1840, disb: 1490, activity: 92 }, // Kampala, Wakiso, Mukono
-  { id: "western",  name: "Western",  cx: 25, cy: 60, alloc: 1240, disb:  890, activity: 68 }, // Mbarara, Kasese
-  { id: "eastern",  name: "Eastern",  cx: 80, cy: 50, alloc: 1380, disb: 1020, activity: 74 }, // Mbale, Jinja
-  { id: "northern", name: "Northern", cx: 55, cy: 25, alloc:  980, disb:  640, activity: 51 }, // Gulu, Lira
-  { id: "westnile", name: "West Nile",cx: 25, cy: 18, alloc:  610, disb:  390, activity: 42 }, // Arua
-  { id: "karamoja", name: "Karamoja", cx: 85, cy: 22, alloc:  430, disb:  240, activity: 31 }, // Moroto
+  { id: "central",  name: "Central",  cx: 60, cy: 60, alloc: 1840, disb: 1490, activity: 92, taxCollected: 1284, taxPlan: 1420, budgetExec:  890, budgetPlan: 1050 },
+  { id: "western",  name: "Western",  cx: 25, cy: 60, alloc: 1240, disb:  890, activity: 68, taxCollected:  269, taxPlan:  310, budgetExec:  320, budgetPlan:  480 },
+  { id: "eastern",  name: "Eastern",  cx: 80, cy: 50, alloc: 1380, disb: 1020, activity: 74, taxCollected:  314, taxPlan:  360, budgetExec:  295, budgetPlan:  420 },
+  { id: "northern", name: "Northern", cx: 55, cy: 25, alloc:  980, disb:  640, activity: 51, taxCollected:  102, taxPlan:  140, budgetExec:  180, budgetPlan:  310 },
+  { id: "westnile", name: "West Nile",cx: 25, cy: 18, alloc:  610, disb:  390, activity: 42, taxCollected:   51, taxPlan:   80, budgetExec:   98, budgetPlan:  170 },
+  { id: "karamoja", name: "Karamoja", cx: 85, cy: 22, alloc:  430, disb:  240, activity: 31, taxCollected:   21, taxPlan:   40, budgetExec:   52, budgetPlan:  110 },
 ];
+
+const TAX_BREAKDOWN = {
+  national: [
+    { name: "VAT",                  pct: 38 },
+    { name: "Corporate Income Tax", pct: 24 },
+    { name: "Personal Income Tax",  pct: 18 },
+    { name: "Rental Income Tax",    pct:  6 },
+    { name: "Dividend Tax",         pct:  4 },
+    { name: "Excise Duty",          pct: 10 },
+  ],
+  central:  [{ name: "VAT", pct: 42 }, { name: "Corporate Income Tax", pct: 28 }, { name: "Personal Income Tax", pct: 16 }, { name: "Rental Income Tax", pct:  5 }, { name: "Dividend Tax", pct: 4 }, { name: "Excise Duty", pct:  5 }],
+  western:  [{ name: "VAT", pct: 38 }, { name: "Corporate Income Tax", pct: 22 }, { name: "Personal Income Tax", pct: 14 }, { name: "Rental Income Tax", pct:  8 }, { name: "Dividend Tax", pct: 3 }, { name: "Excise Duty", pct: 15 }],
+  eastern:  [{ name: "VAT", pct: 40 }, { name: "Corporate Income Tax", pct: 20 }, { name: "Personal Income Tax", pct: 13 }, { name: "Rental Income Tax", pct:  7 }, { name: "Dividend Tax", pct: 2 }, { name: "Excise Duty", pct: 18 }],
+  northern: [{ name: "VAT", pct: 35 }, { name: "Corporate Income Tax", pct: 15 }, { name: "Personal Income Tax", pct: 12 }, { name: "Rental Income Tax", pct: 10 }, { name: "Dividend Tax", pct: 2 }, { name: "Excise Duty", pct: 26 }],
+  westnile: [{ name: "VAT", pct: 33 }, { name: "Corporate Income Tax", pct: 12 }, { name: "Personal Income Tax", pct: 11 }, { name: "Rental Income Tax", pct: 12 }, { name: "Dividend Tax", pct: 1 }, { name: "Excise Duty", pct: 31 }],
+  karamoja: [{ name: "VAT", pct: 28 }, { name: "Corporate Income Tax", pct:  8 }, { name: "Personal Income Tax", pct: 10 }, { name: "Rental Income Tax", pct: 14 }, { name: "Dividend Tax", pct: 1 }, { name: "Excise Duty", pct: 39 }],
+};
+
+const BUDGET_BREAKDOWN = {
+  national: [
+    { name: "Infrastructure Development", pct: 30 },
+    { name: "Agriculture",                pct: 22 },
+    { name: "Industrialization",          pct: 14 },
+    { name: "Defense",                    pct: 12 },
+    { name: "Social Sector",              pct: 22 },
+  ],
+  central:  [{ name: "Infrastructure Development", pct: 35 }, { name: "Agriculture", pct: 15 }, { name: "Industrialization", pct: 18 }, { name: "Defense", pct: 12 }, { name: "Social Sector", pct: 20 }],
+  western:  [{ name: "Infrastructure Development", pct: 28 }, { name: "Agriculture", pct: 25 }, { name: "Industrialization", pct: 12 }, { name: "Defense", pct: 10 }, { name: "Social Sector", pct: 25 }],
+  eastern:  [{ name: "Infrastructure Development", pct: 26 }, { name: "Agriculture", pct: 28 }, { name: "Industrialization", pct: 10 }, { name: "Defense", pct: 11 }, { name: "Social Sector", pct: 25 }],
+  northern: [{ name: "Infrastructure Development", pct: 22 }, { name: "Agriculture", pct: 30 }, { name: "Industrialization", pct:  8 }, { name: "Defense", pct: 18 }, { name: "Social Sector", pct: 22 }],
+  westnile: [{ name: "Infrastructure Development", pct: 20 }, { name: "Agriculture", pct: 32 }, { name: "Industrialization", pct:  6 }, { name: "Defense", pct: 20 }, { name: "Social Sector", pct: 22 }],
+  karamoja: [{ name: "Infrastructure Development", pct: 18 }, { name: "Agriculture", pct: 35 }, { name: "Industrialization", pct:  4 }, { name: "Defense", pct: 22 }, { name: "Social Sector", pct: 21 }],
+};
 
 const PRES_DATA = {
   asOf: "21 Nov 2023 · 14:38:02 EAT",
@@ -1539,12 +1572,12 @@ const PRES_DATA = {
   // ============ OVERVIEW KPIs ============
   overview: {
     kpis: [
-      { id: "gdp",   label: "Real-time activity index",  value: 128.4, unit: "pts",  delta: +2.3, spark: spark(11, 28, 80, 40) },
-      { id: "vol",   label: "Switch volume · today",     value: 8.91,  unit: "T UGX", delta: +5.7, spark: spark(22, 28, 60, 50), tnum: true },
-      { id: "tx",    label: "Switch transactions · today", value: 23.18, unit: "M",   delta: +3.1, spark: spark(33, 28, 70, 30), tnum: true },
-      { id: "tax",   label: "URA tax collected · MTD",   value: 2.14,  unit: "T UGX", delta: +1.4, spark: spark(44, 28, 50, 40), tnum: true,  drillTab: "ura" },
-      { id: "fraud", label: "FIA blocks · today",         value: 250,   unit: "tx",   delta: -8.2, spark: spark(55, 28, 80, 60), tnum: false, good: true, drillTab: "fia" },
-      { id: "pdm",   label: "PDM disbursed · YTD",        value: 4.67,  unit: "T UGX", delta: +0.9, spark: spark(66, 28, 50, 30), tnum: true,  drillTab: "pdm" },
+      { id: "ura_tax",  label: "URA TAX COLLECTED · MTD",                   value: 2.14, unit: "T UGX", delta: +1.4, deltaLabel: "vs prior month", spark: spark(44, 30, 50, 40), tnum: true, mapTrigger: "tax" },
+      { id: "bou_corr", label: "CORRESPONDENT BALANCES AT BOU · ALL BANKS", value: 3.87, unit: "T UGX", delta: +0.6, deltaLabel: "vs prior day",   spark: spark(77, 30, 60, 30), tnum: true, mapTrigger: "banks-corr" },
+      { id: "bou_for",  label: "BOU BALANCES AT FOREIGN BANKS",              value: 2.21, unit: "T UGX", delta: -0.3, deltaLabel: "vs prior day",   spark: spark(88, 30, 55, 25), tnum: true, mapTrigger: "banks-for" },
+      { id: "budget",   label: "BUDGET EXECUTION · % OF PLAN",               value: 67.6, unit: "%",    delta: -2.1, deltaLabel: "vs plan",         spark: spark(99, 30, 65, 20), tnum: true, mapTrigger: "budget" },
+      { id: "pdm_disb", label: "PDM DISBURSEMENT · % OF APPLICATIONS",       value: 71.3, unit: "%",    delta: +0.9, deltaLabel: "vs prior month", spark: spark(110, 30, 68, 15), tnum: true },
+      { id: "fia_blk",  label: "FIA BLOCKS · TODAY",                         value: 250,  unit: "tx",   delta: -8.2, deltaLabel: "vs prior day",   subtitle: "248B UGX", spark: spark(55, 30, 80, 60), good: true },
     ],
     typeMix: [
       { name: "P2P",       value: 9.2, pct: 41 },
@@ -1559,15 +1592,99 @@ const PRES_DATA = {
       { name: "Card",         pct:  8, color: "var(--pres-good)" },
       { name: "Crypto / fiat ramp", pct:  3, color: "var(--pres-warn)" },
     ],
+    bankLists: {
+      correspondent: [
+        { name: "Stanbic Bank Uganda",             bal: 0.82 },
+        { name: "Standard Chartered Bank Uganda",  bal: 0.61 },
+        { name: "Centenary Bank",                  bal: 0.48 },
+        { name: "DFCU Bank",                       bal: 0.44 },
+        { name: "Absa Bank Uganda",                bal: 0.38 },
+        { name: "Housing Finance Bank",            bal: 0.31 },
+        { name: "Equity Bank Uganda",              bal: 0.28 },
+        { name: "KCB Bank Uganda",                 bal: 0.26 },
+        { name: "Diamond Trust Bank Uganda",       bal: 0.19 },
+        { name: "Finance Trust Bank",              bal: 0.10 },
+      ],
+      foreign: [
+        { name: "Bank of England (GBP reserve)",    bal: 0.74 },
+        { name: "Federal Reserve Bank of New York", bal: 0.52 },
+        { name: "Banque de France (ECB framework)", bal: 0.38 },
+        { name: "Standard Bank South Africa",       bal: 0.27 },
+        { name: "Citibank New York",                bal: 0.18 },
+        { name: "Deutsche Bank Frankfurt",          bal: 0.12 },
+      ],
+    },
   },
   // ============ BoU ============
   bou: {
     kpis: [
-      { id: "liq", label: "Aggregate participant liquidity", value: 14.3, unit: "T UGX", delta: +1.2, spark: spark(101, 24, 60, 25) },
-      { id: "dig", label: "Digital share of payments",       value: 78.4, unit: "%",     delta: +2.6, spark: spark(102, 24, 70, 30) },
-      { id: "avg", label: "Avg payment size",                 value: 384,  unit: "K UGX", delta: -1.8, spark: spark(103, 24, 50, 30) },
-      { id: "act", label: "Active merchants",                 value: 218,  unit: "K",     delta: +4.4, spark: spark(104, 24, 60, 30) },
+      { id: "m0", label: "M0 · Currency in Circulation", value: 8.74,  unit: "T UGX", delta: +1.6, deltaLabel: "vs prior month", spark: spark(101, 12, 62, 14) },
+      { id: "m1", label: "M1 · Narrow Money",            value: 15.1,  unit: "T UGX", delta: +2.1, deltaLabel: "vs prior month", spark: spark(102, 12, 66, 14) },
+      { id: "m2", label: "M2 · Broad Money",             value: 26.4,  unit: "T UGX", delta: +3.4, deltaLabel: "vs prior month", spark: spark(103, 12, 70, 14) },
+      { id: "m3", label: "M3 · Extended Broad Money",    value: 32.4,  unit: "T UGX", delta: +2.8, deltaLabel: "vs prior month", spark: spark(104, 12, 73, 14) },
     ],
+    mAggregates: [
+      { m: "Jan", m0: 7.84, m1: 13.20, m2: 23.4, m3: 28.6 },
+      { m: "Feb", m0: 7.91, m1: 13.40, m2: 23.8, m3: 29.1 },
+      { m: "Mar", m0: 8.12, m1: 13.80, m2: 24.2, m3: 29.8 },
+      { m: "Apr", m0: 8.28, m1: 14.10, m2: 24.6, m3: 30.2 },
+      { m: "May", m0: 8.41, m1: 14.40, m2: 25.1, m3: 30.8 },
+      { m: "Jun", m0: 8.18, m1: 14.00, m2: 24.8, m3: 30.4 },
+      { m: "Jul", m0: 8.36, m1: 14.30, m2: 25.3, m3: 31.1 },
+      { m: "Aug", m0: 8.52, m1: 14.60, m2: 25.7, m3: 31.6 },
+      { m: "Sep", m0: 8.47, m1: 14.50, m2: 25.5, m3: 31.3 },
+      { m: "Oct", m0: 8.61, m1: 14.90, m2: 26.1, m3: 32.0 },
+      { m: "Nov", m0: 8.74, m1: 15.10, m2: 26.4, m3: 32.4 },
+    ],
+    businessActivity: {
+      current: 53.1,
+      delta: +1.2,
+      history: [
+        { m: "Jan", idx: 49.8 }, { m: "Feb", idx: 50.4 }, { m: "Mar", idx: 51.2 },
+        { m: "Apr", idx: 52.1 }, { m: "May", idx: 51.8 }, { m: "Jun", idx: 50.9 },
+        { m: "Jul", idx: 51.4 }, { m: "Aug", idx: 52.3 }, { m: "Sep", idx: 51.7 },
+        { m: "Oct", idx: 52.8 }, { m: "Nov", idx: 53.1 },
+      ],
+    },
+    correspondentAccounts: [
+      { bank: "Federal Reserve Bank of New York", country: "USA",    usd: 1840, kes: null,   tzs: null,    rwf: null,   ugxEq: 6847 },
+      { bank: "Bank of England",                  country: "UK",     usd:  210, kes: null,   tzs: null,    rwf: null,   ugxEq:  781 },
+      { bank: "Citibank N.A. (New York)",          country: "USA",    usd:  384, kes: 8600,   tzs: 184000,  rwf: 18400,  ugxEq: 1729 },
+      { bank: "Standard Chartered (London)",       country: "UK",     usd:  186, kes: 4200,   tzs:  96000,  rwf:  9600,  ugxEq:  852 },
+      { bank: "Central Bank of Kenya",             country: "Kenya",  usd:   48, kes: 12840,  tzs: null,    rwf: null,   ugxEq:  297 },
+      { bank: "Bank of Tanzania",                  country: "Tanzania",usd:  32, kes: null,   tzs: 842000,  rwf: null,   ugxEq:  187 },
+      { bank: "National Bank of Rwanda",           country: "Rwanda", usd:   24, kes: null,   tzs: null,    rwf: 24800,  ugxEq:  165 },
+      { bank: "Deutsche Bundesbank",               country: "Germany",usd: null, kes: null,   tzs: null,    rwf: null,   ugxEq:  412 },
+    ],
+    mtn: {
+      totalFloat: 1.66,
+      accounts: [
+        { bank: "Stanbic Bank Uganda",  bal: 0.48 },
+        { bank: "Standard Chartered",   bal: 0.31 },
+        { bank: "Centenary Bank",       bal: 0.28 },
+        { bank: "Absa Bank Uganda",     bal: 0.22 },
+        { bank: "DFCU Bank",            bal: 0.18 },
+        { bank: "Equity Bank Uganda",   bal: 0.14 },
+        { bank: "Others",               bal: 0.05 },
+      ],
+      revenueMTD: 84.2,  revenueYTD: 847.6,
+      turnoverMTD: 8.4,  turnoverYTD: 84.1,
+      spark: spark(150, 12, 60, 20),
+    },
+    airtel: {
+      totalFloat: 1.41,
+      accounts: [
+        { bank: "Absa Bank Uganda",     bal: 0.38 },
+        { bank: "KCB Bank Uganda",      bal: 0.28 },
+        { bank: "Standard Chartered",   bal: 0.24 },
+        { bank: "DFCU Bank",            bal: 0.21 },
+        { bank: "Centenary Bank",       bal: 0.18 },
+        { bank: "Others",               bal: 0.12 },
+      ],
+      revenueMTD: 71.8,  revenueYTD: 719.4,
+      turnoverMTD: 7.1,  turnoverYTD: 71.3,
+      spark: spark(160, 12, 58, 20),
+    },
     rails: [
       { name: "Mobile money", pct: 58, vol: 5.16, tx: 13.4 },
       { name: "Bank-to-bank", pct: 31, vol: 2.76, tx: 5.1 },
@@ -1786,6 +1903,160 @@ window.fmt = fmt;
 window.fmtShort = fmtShort;
 window.REGIONS = REGIONS;
 
+// Top 50 Uganda taxpayers — sorted by total account balance descending
+const URA_TAXPAYERS = [
+  {id:1,  name:"MTN Uganda Ltd",                       tin:"1000234812", sector:"Telecom",       totalBal:284.6, paidTaxes:42.8, txCount:28412, status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****4521",bal:142.3},{bank:"Standard Chartered",acc:"0102****8834",bal:89.1},{bank:"DFCU Bank",acc:"0104****2217",bal:31.8}],
+   wallets:[{p:"MTN MoMo",num:"0772****891",bal:18.4},{p:"Airtel Money",num:"0752****034",bal:3.0}]},
+  {id:2,  name:"Umeme Ltd",                             tin:"1000187640", sector:"Energy",        totalBal:241.3, paidTaxes:38.2, txCount:18744, status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****3341",bal:121.4},{bank:"Stanbic Bank Uganda",acc:"0300****7788",bal:96.8},{bank:"Absa Bank Uganda",acc:"0001****5512",bal:23.1}],
+   wallets:[{p:"MTN MoMo",num:"0776****120",bal:2.0}]},
+  {id:3,  name:"Stanbic Bank Uganda Ltd",               tin:"1000092831", sector:"Banking",       totalBal:198.4, paidTaxes:31.4, txCount:42180, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0001",bal:148.2},{bank:"Standard Chartered",acc:"0102****4412",bal:50.2}],
+   wallets:[]},
+  {id:4,  name:"Airtel Uganda Ltd",                     tin:"1000315427", sector:"Telecom",       totalBal:176.8, paidTaxes:28.6, txCount:24187, status:"active",
+   accounts:[{bank:"Absa Bank Uganda",acc:"0001****6621",bal:88.4},{bank:"Centenary Bank",acc:"0301****4423",bal:61.2},{bank:"KCB Bank Uganda",acc:"0801****7712",bal:18.1}],
+   wallets:[{p:"Airtel Money",num:"0752****441",bal:9.1}]},
+  {id:5,  name:"Standard Chartered Bank Uganda",        tin:"1000048293", sector:"Banking",       totalBal:162.3, paidTaxes:26.1, txCount:31024, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0002",bal:122.1},{bank:"Stanbic Bank Uganda",acc:"0300****9981",bal:40.2}],
+   wallets:[]},
+  {id:6,  name:"Uganda Breweries Ltd",                  tin:"1000143218", sector:"FMCG",          totalBal:112.4, paidTaxes:22.4, txCount:14288, status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****6612",bal:68.1},{bank:"Stanbic Bank Uganda",acc:"0300****3318",bal:34.2},{bank:"DFCU Bank",acc:"0104****8841",bal:10.1}],
+   wallets:[{p:"MTN MoMo",num:"0774****812",bal:0.1}]},
+  {id:7,  name:"Nile Breweries Ltd",                    tin:"1000158834", sector:"FMCG",          totalBal:98.6,  paidTaxes:19.8, txCount:12481, status:"active",
+   accounts:[{bank:"Absa Bank Uganda",acc:"0001****7712",bal:58.4},{bank:"Standard Chartered",acc:"0102****9913",bal:32.1},{bank:"Centenary Bank",acc:"0301****5517",bal:8.1}],
+   wallets:[{p:"Airtel Money",num:"0754****228",bal:0.0}]},
+  {id:8,  name:"TotalEnergies Marketing Uganda",        tin:"1000201463", sector:"Energy",        totalBal:87.3,  paidTaxes:16.2, txCount:10124, status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****2241",bal:52.4},{bank:"Stanbic Bank Uganda",acc:"0300****6643",bal:29.7},{bank:"Absa Bank Uganda",acc:"0001****3318",bal:5.2}],
+   wallets:[{p:"MTN MoMo",num:"0777****612",bal:0.0}]},
+  {id:9,  name:"Absa Bank Uganda Ltd",                  tin:"1000067128", sector:"Banking",       totalBal:81.2,  paidTaxes:14.8, txCount:22380, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0003",bal:61.4},{bank:"Centenary Bank",acc:"0301****8812",bal:19.8}],
+   wallets:[]},
+  {id:10, name:"DFCU Bank Ltd",                         tin:"1000074182", sector:"Banking",       totalBal:74.8,  paidTaxes:13.2, txCount:18024, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0004",bal:56.2},{bank:"Stanbic Bank Uganda",acc:"0300****4418",bal:18.6}],
+   wallets:[]},
+  {id:11, name:"Vivo Energy Uganda (Shell)",            tin:"1000224813", sector:"Energy",        totalBal:48.4,  paidTaxes:9.8,  txCount:8124,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****8812",bal:28.1},{bank:"Standard Chartered",acc:"0102****7714",bal:16.2},{bank:"Equity Bank Uganda",acc:"0902****3341",bal:4.1}],
+   wallets:[{p:"MTN MoMo",num:"0771****341",bal:0.0}]},
+  {id:12, name:"Centenary Bank Uganda",                 tin:"1000031842", sector:"Banking",       totalBal:43.6,  paidTaxes:8.4,  txCount:28142, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0005",bal:33.4},{bank:"Stanbic Bank Uganda",acc:"0300****2217",bal:10.2}],
+   wallets:[{p:"MTN MoMo",num:"0778****841",bal:0.1}]},
+  {id:13, name:"Hima Cement Ltd (Lafarge)",             tin:"1000178312", sector:"Manufacturing", totalBal:39.8,  paidTaxes:7.6,  txCount:6418,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****5521",bal:24.3},{bank:"Absa Bank Uganda",acc:"0001****8841",bal:12.4},{bank:"DFCU Bank",acc:"0104****6612",bal:3.1}],
+   wallets:[]},
+  {id:14, name:"British American Tobacco Uganda",       tin:"1000089241", sector:"FMCG",          totalBal:36.4,  paidTaxes:12.2, txCount:4128,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****4421",bal:22.1},{bank:"Stanbic Bank Uganda",acc:"0300****5518",bal:11.8},{bank:"Absa Bank Uganda",acc:"0001****9912",bal:2.5}],
+   wallets:[]},
+  {id:15, name:"Equity Bank Uganda Ltd",                tin:"1000196482", sector:"Banking",       totalBal:34.8,  paidTaxes:6.2,  txCount:19814, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0006",bal:26.8},{bank:"Centenary Bank",acc:"0301****3341",bal:8.0}],
+   wallets:[{p:"Airtel Money",num:"0755****192",bal:0.0}]},
+  {id:16, name:"KCB Bank Uganda Ltd",                   tin:"1000213847", sector:"Banking",       totalBal:31.2,  paidTaxes:5.8,  txCount:16481, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0007",bal:24.1},{bank:"Stanbic Bank Uganda",acc:"0300****6612",bal:7.1}],
+   wallets:[]},
+  {id:17, name:"Century Bottling Company (Coca-Cola)",  tin:"1000134812", sector:"FMCG",          totalBal:29.4,  paidTaxes:5.4,  txCount:7241,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****3318",bal:17.4},{bank:"Standard Chartered",acc:"0102****8821",bal:9.8},{bank:"Centenary Bank",acc:"0301****7712",bal:2.2}],
+   wallets:[{p:"MTN MoMo",num:"0776****481",bal:0.1}]},
+  {id:18, name:"Mukwano Industries Uganda Ltd",         tin:"1000112834", sector:"Manufacturing", totalBal:27.8,  paidTaxes:4.8,  txCount:5841,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****3318",bal:16.2},{bank:"Centenary Bank",acc:"0301****8812",bal:8.4},{bank:"DFCU Bank",acc:"0104****4421",bal:3.2}],
+   wallets:[{p:"MTN MoMo",num:"0774****221",bal:0.0}]},
+  {id:19, name:"Bidco Uganda Ltd",                      tin:"1000162184", sector:"Manufacturing", totalBal:25.6,  paidTaxes:4.2,  txCount:5218,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****7712",bal:14.8},{bank:"Absa Bank Uganda",acc:"0001****4421",bal:8.1},{bank:"DFCU Bank",acc:"0104****2218",bal:2.7}],
+   wallets:[{p:"Airtel Money",num:"0757****382",bal:0.0}]},
+  {id:20, name:"Roofings Group Uganda",                 tin:"1000148214", sector:"Manufacturing", totalBal:23.4,  paidTaxes:3.8,  txCount:4182,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****1121",bal:13.8},{bank:"Stanbic Bank Uganda",acc:"0300****8812",bal:7.4},{bank:"Centenary Bank",acc:"0301****6618",bal:2.2}],
+   wallets:[]},
+  {id:21, name:"Diamond Trust Bank Uganda",             tin:"1000088124", sector:"Banking",       totalBal:18.4,  paidTaxes:3.2,  txCount:12481, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0008",bal:13.8},{bank:"Stanbic Bank Uganda",acc:"0300****5512",bal:4.6}],
+   wallets:[]},
+  {id:22, name:"Tororo Cement Industries",              tin:"1000124831", sector:"Manufacturing", totalBal:17.2,  paidTaxes:3.4,  txCount:3841,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****7718",bal:10.1},{bank:"Absa Bank Uganda",acc:"0001****2218",bal:5.2},{bank:"Centenary Bank",acc:"0301****4412",bal:1.9}],
+   wallets:[]},
+  {id:23, name:"Housing Finance Bank Uganda",           tin:"1000058412", sector:"Banking",       totalBal:16.8,  paidTaxes:3.0,  txCount:8412,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0009",bal:12.8},{bank:"Stanbic Bank Uganda",acc:"0300****9912",bal:4.0}],
+   wallets:[]},
+  {id:24, name:"Uganda Airlines",                       tin:"1000298412", sector:"Aviation",      totalBal:15.4,  paidTaxes:2.1,  txCount:4182,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****3318",bal:9.1},{bank:"Standard Chartered",acc:"0102****6612",bal:4.8},{bank:"Absa Bank Uganda",acc:"0001****8812",bal:1.5}],
+   wallets:[{p:"MTN MoMo",num:"0773****841",bal:0.0}]},
+  {id:25, name:"Safal Steel Uganda (Mabati)",           tin:"1000218124", sector:"Manufacturing", totalBal:14.2,  paidTaxes:2.8,  txCount:2841,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****2218",bal:8.4},{bank:"Absa Bank Uganda",acc:"0001****5512",bal:4.2},{bank:"DFCU Bank",acc:"0104****3318",bal:1.6}],
+   wallets:[]},
+  {id:26, name:"Uganda Clays Ltd",                      tin:"1000072148", sector:"Manufacturing", totalBal:12.8,  paidTaxes:2.4,  txCount:2418,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****7712",bal:7.6},{bank:"DFCU Bank",acc:"0104****4418",bal:3.8},{bank:"Equity Bank Uganda",acc:"0902****8812",bal:1.4}],
+   wallets:[{p:"Airtel Money",num:"0753****812",bal:0.0}]},
+  {id:27, name:"Cipla Quality Chemical Industries",     tin:"1000231842", sector:"Pharma",        totalBal:11.6,  paidTaxes:2.2,  txCount:2184,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****8818",bal:7.2},{bank:"Stanbic Bank Uganda",acc:"0300****4412",bal:3.4},{bank:"KCB Bank Uganda",acc:"0801****2218",bal:1.0}],
+   wallets:[]},
+  {id:28, name:"PostBank Uganda Ltd",                   tin:"1000041284", sector:"Banking",       totalBal:10.8,  paidTaxes:1.8,  txCount:14284, status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0010",bal:8.4},{bank:"Centenary Bank",acc:"0301****9912",bal:2.4}],
+   wallets:[{p:"MTN MoMo",num:"0775****482",bal:0.1}]},
+  {id:29, name:"Bayport Financial Services Uganda",     tin:"1000184821", sector:"Finance",       totalBal:9.4,   paidTaxes:1.6,  txCount:8481,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****1128",bal:5.8},{bank:"DFCU Bank",acc:"0104****7718",bal:2.4},{bank:"Equity Bank Uganda",acc:"0902****3342",bal:1.2}],
+   wallets:[{p:"MTN MoMo",num:"0772****241",bal:0.0}]},
+  {id:30, name:"Uganda National Oil Company (UNOC)",    tin:"1000278412", sector:"Energy",        totalBal:8.8,   paidTaxes:1.4,  txCount:1284,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****4418",bal:5.4},{bank:"Stanbic Bank Uganda",acc:"0300****8812",bal:2.8},{bank:"Absa Bank Uganda",acc:"0001****7712",bal:0.6}],
+   wallets:[]},
+  {id:31, name:"Africell Uganda Ltd",                   tin:"1000194818", sector:"Telecom",       totalBal:4.8,   paidTaxes:0.8,  txCount:6284,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****2218",bal:2.8},{bank:"DFCU Bank",acc:"0104****8812",bal:1.4},{bank:"Equity Bank Uganda",acc:"0902****4421",bal:0.6}],
+   wallets:[{p:"Airtel Money",num:"0751****812",bal:0.0}]},
+  {id:32, name:"Uganda Telecom Ltd",                    tin:"1000081284", sector:"Telecom",       totalBal:4.2,   paidTaxes:0.6,  txCount:5841,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****3318",bal:2.4},{bank:"DFCU Bank",acc:"0104****9912",bal:1.2},{bank:"Housing Finance Bank",acc:"0201****8812",bal:0.6}],
+   wallets:[{p:"MTN MoMo",num:"0778****124",bal:0.0}]},
+  {id:33, name:"Kampala Serena Hotel",                  tin:"1000124182", sector:"Hospitality",   totalBal:3.8,   paidTaxes:0.8,  txCount:4182,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****6618",bal:2.2},{bank:"Stanbic Bank Uganda",acc:"0300****7712",bal:1.2},{bank:"Centenary Bank",acc:"0301****4418",bal:0.4}],
+   wallets:[]},
+  {id:34, name:"Speke Resort Munyonyo",                 tin:"1000168412", sector:"Hospitality",   totalBal:3.4,   paidTaxes:0.7,  txCount:3841,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****4418",bal:2.1},{bank:"DFCU Bank",acc:"0104****1128",bal:0.9},{bank:"KCB Bank Uganda",acc:"0801****8812",bal:0.4}],
+   wallets:[{p:"Airtel Money",num:"0754****821",bal:0.0}]},
+  {id:35, name:"Aga Khan University Hospital",          tin:"1000142814", sector:"Healthcare",    totalBal:3.1,   paidTaxes:0.6,  txCount:8481,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****5512",bal:1.8},{bank:"Standard Chartered",acc:"0102****3318",bal:0.9},{bank:"Centenary Bank",acc:"0301****6612",bal:0.4}],
+   wallets:[{p:"MTN MoMo",num:"0774****182",bal:0.1}]},
+  {id:36, name:"Jumia Uganda Ltd",                      tin:"1000264812", sector:"E-Commerce",    totalBal:2.8,   paidTaxes:0.4,  txCount:24182, status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****8818",bal:1.6},{bank:"Absa Bank Uganda",acc:"0001****2218",bal:0.8},{bank:"Equity Bank Uganda",acc:"0902****7712",bal:0.4}],
+   wallets:[{p:"MTN MoMo",num:"0772****482",bal:0.0},{p:"Airtel Money",num:"0753****182",bal:0.0}]},
+  {id:37, name:"East African Breweries Uganda",         tin:"1000311824", sector:"FMCG",          totalBal:2.6,   paidTaxes:0.5,  txCount:2841,  status:"active",
+   accounts:[{bank:"Standard Chartered",acc:"0102****8818",bal:1.5},{bank:"Stanbic Bank Uganda",acc:"0300****6612",bal:0.8},{bank:"Absa Bank Uganda",acc:"0001****3312",bal:0.3}],
+   wallets:[]},
+  {id:38, name:"Pioneer Easy Bus Company",              tin:"1000182414", sector:"Transport",     totalBal:2.4,   paidTaxes:0.3,  txCount:1841,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****7718",bal:1.4},{bank:"Equity Bank Uganda",acc:"0902****5512",bal:0.7},{bank:"Diamond Trust Bank",acc:"0501****4418",bal:0.3}],
+   wallets:[{p:"MTN MoMo",num:"0776****821",bal:0.0}]},
+  {id:39, name:"Cairo International Bank",              tin:"1000068124", sector:"Banking",       totalBal:2.2,   paidTaxes:0.4,  txCount:4182,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0011",bal:1.8},{bank:"Stanbic Bank Uganda",acc:"0300****4418",bal:0.4}],
+   wallets:[]},
+  {id:40, name:"EcoBank Uganda Ltd",                    tin:"1000198412", sector:"Banking",       totalBal:2.0,   paidTaxes:0.4,  txCount:6284,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0012",bal:1.6},{bank:"Centenary Bank",acc:"0301****8812",bal:0.4}],
+   wallets:[]},
+  {id:41, name:"Guaranty Trust Bank Uganda",            tin:"1000234182", sector:"Banking",       totalBal:0.98,  paidTaxes:0.18, txCount:3841,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0013",bal:0.78},{bank:"Stanbic Bank Uganda",acc:"0300****3318",bal:0.20}],
+   wallets:[]},
+  {id:42, name:"Orient Bank Uganda",                    tin:"1000084128", sector:"Banking",       totalBal:0.86,  paidTaxes:0.16, txCount:4182,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0014",bal:0.68},{bank:"Centenary Bank",acc:"0301****2218",bal:0.18}],
+   wallets:[]},
+  {id:43, name:"Kyagalanyi Coffee Ltd",                 tin:"1000114281", sector:"Agriculture",   totalBal:0.82,  paidTaxes:0.14, txCount:2418,  status:"locked",
+   accounts:[{bank:"Centenary Bank",acc:"0301****4418",bal:0.48},{bank:"DFCU Bank",acc:"0104****7712",bal:0.24},{bank:"Standard Chartered",acc:"0102****8812",bal:0.10}],
+   wallets:[{p:"MTN MoMo",num:"0775****182",bal:0.0}]},
+  {id:44, name:"Tropical Bank Uganda",                  tin:"1000098241", sector:"Banking",       totalBal:0.74,  paidTaxes:0.14, txCount:3284,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0015",bal:0.60},{bank:"Stanbic Bank Uganda",acc:"0300****1128",bal:0.14}],
+   wallets:[]},
+  {id:45, name:"National Pharmacy Uganda",              tin:"1000186284", sector:"Healthcare",    totalBal:0.68,  paidTaxes:0.12, txCount:1841,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****8812",bal:0.42},{bank:"Centenary Bank",acc:"0301****4418",bal:0.18},{bank:"DFCU Bank",acc:"0104****3318",bal:0.08}],
+   wallets:[{p:"MTN MoMo",num:"0772****812",bal:0.0}]},
+  {id:46, name:"Finance Trust Bank Uganda",             tin:"1000062481", sector:"Banking",       totalBal:0.62,  paidTaxes:0.12, txCount:8184,  status:"active",
+   accounts:[{bank:"Bank of Uganda",acc:"0000****0016",bal:0.50},{bank:"Centenary Bank",acc:"0301****6612",bal:0.12}],
+   wallets:[{p:"Airtel Money",num:"0756****412",bal:0.0}]},
+  {id:47, name:"Uganda Seed Company Ltd",               tin:"1000148181", sector:"Agriculture",   totalBal:0.56,  paidTaxes:0.10, txCount:1482,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****8818",bal:0.34},{bank:"Equity Bank Uganda",acc:"0902****4418",bal:0.16},{bank:"Housing Finance Bank",acc:"0201****2218",bal:0.06}],
+   wallets:[{p:"MTN MoMo",num:"0773****481",bal:0.0}]},
+  {id:48, name:"Reel Cinemas Uganda",                   tin:"1000264814", sector:"Entertainment", totalBal:0.48,  paidTaxes:0.08, txCount:8481,  status:"active",
+   accounts:[{bank:"Stanbic Bank Uganda",acc:"0300****2218",bal:0.30},{bank:"Absa Bank Uganda",acc:"0001****8812",bal:0.12},{bank:"DFCU Bank",acc:"0104****5512",bal:0.06}],
+   wallets:[{p:"MTN MoMo",num:"0771****842",bal:0.0},{p:"Airtel Money",num:"0753****418",bal:0.0}]},
+  {id:49, name:"NC Manufacturing Uganda Ltd",           tin:"1000318241", sector:"Manufacturing", totalBal:0.38,  paidTaxes:0.06, txCount:1284,  status:"active",
+   accounts:[{bank:"DFCU Bank",acc:"0104****8818",bal:0.24},{bank:"Equity Bank Uganda",acc:"0902****6612",bal:0.10},{bank:"Housing Finance Bank",acc:"0201****3318",bal:0.04}],
+   wallets:[]},
+  {id:50, name:"UGAFODE Microfinance Ltd",              tin:"1000184812", sector:"Finance",       totalBal:0.28,  paidTaxes:0.04, txCount:6284,  status:"active",
+   accounts:[{bank:"Centenary Bank",acc:"0301****4418",bal:0.18},{bank:"Equity Bank Uganda",acc:"0902****3312",bal:0.06},{bank:"PostBank Uganda",acc:"0401****8812",bal:0.04}],
+   wallets:[{p:"MTN MoMo",num:"0774****182",bal:0.0},{p:"Airtel Money",num:"0757****241",bal:0.0}]},
+];
+
 </script>
 <script type="text/babel">
 // president-charts.jsx — small reusable chart primitives (SVG, no libs)
@@ -1936,12 +2207,13 @@ const Delta = ({ value, good, bad, suffix = "%" }) => {
   );
 };
 
-const KpiTile = ({ k, big, sparkColor }) => {
+const KpiTile = ({ k, big, sparkColor, onMouseEnter }) => {
   const t = React.useContext(window.LangCtx);
   const { setTab } = React.useContext(window.NavCtx);
   const color = k.bad ? "var(--pres-bad)" : k.good ? "var(--pres-good)" : (sparkColor || "var(--pres-accent)");
   return (
     <div className={`pres-card pres-kpi ${big ? "feature" : ""}`}
+         onMouseEnter={onMouseEnter}
          style={k.drillTab ? { cursor: "pointer" } : undefined}
          onClick={k.drillTab ? () => setTab(k.drillTab) : undefined}
          title={k.drillTab ? `Open ${k.drillTab.toUpperCase()} tab` : undefined}>
@@ -1950,7 +2222,9 @@ const KpiTile = ({ k, big, sparkColor }) => {
         {k.valueText || (typeof k.value === "number" ? (k.value < 100 && !Number.isInteger(k.value) ? k.value.toFixed(2) : k.value.toLocaleString("en-US")) : k.value)}
         <span className="unit">{k.unit}</span>
       </div>
+      {k.subtitle && <div style={{ fontSize: 11, color: "var(--pres-text-dim)", marginTop: 1 }}>{k.subtitle}</div>}
       <Delta value={k.delta} good={k.good} bad={k.bad} />
+      {k.deltaLabel && <div style={{ fontSize: 10, opacity: 0.55, marginTop: 1, letterSpacing: "0.03em" }}>{k.deltaLabel}</div>}
       <div className="spark"><Sparkline data={k.spark} color={color} /></div>
     </div>
   );
@@ -2133,142 +2407,520 @@ Object.assign(window, { UgandaMap, MapLegend });
 // Each pane reads PRES_DATA, t() for i18n, and density flags.
 
 // =============== OVERVIEW ===============
-const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => (
+
+const OverviewRegionMap = ({ mapData, hoveredRegion, onHoverRegion, valueKey, maxKey }) => {
+  const byId = Object.fromEntries(mapData.map(r => [r.id, r]));
+  const fillFn = (reg) => {
+    const d = byId[reg.id];
+    if (!d) return "rgba(0,0,0,0.08)";
+    const rate = d[maxKey] ? d[valueKey] / d[maxKey] : 0;
+    const base = rateColor(rate);
+    return hoveredRegion === reg.id ? base : base + "cc";
+  };
+  return (
+    <div style={{ position: "relative" }}>
+      <svg viewBox="0 0 200 222" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "100%" }}>
+        <defs>
+          <filter id="ov-map-shadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.10" />
+          </filter>
+        </defs>
+        <path d={LAKE_VICTORIA_PATH} fill="#B8D8F0" opacity="0.70" />
+        <text x="100" y="214" textAnchor="middle" fontSize="7" fill="#5B8DB8" fontWeight="600" letterSpacing="0.08em">LAKE VICTORIA</text>
+        <path d={LAKE_ALBERT_PATH} fill="#B8D8F0" opacity="0.70" />
+        <text x="8" y="108" textAnchor="middle" fontSize="4.5" fill="#5B8DB8" fontWeight="500" transform="rotate(-35,8,108)">L.ALBERT</text>
+        {UGANDA_REGIONS_PATH2.map(reg => {
+          const d = byId[reg.id];
+          const rate = d && d[maxKey] ? d[valueKey] / d[maxKey] : null;
+          return (
+            <g key={reg.id}
+               onMouseEnter={() => onHoverRegion(reg.id)}
+               onMouseLeave={() => onHoverRegion(null)}
+               style={{ cursor: "pointer" }}>
+              <path d={reg.d} fill={fillFn(reg)}
+                stroke={hoveredRegion === reg.id ? "rgba(0,0,0,0.50)" : "rgba(0,0,0,0.20)"}
+                strokeWidth={hoveredRegion === reg.id ? "1.2" : "0.7"}
+                filter="url(#ov-map-shadow)"
+                style={{ transition: "fill 0.15s, stroke 0.15s" }} />
+              {d && (
+                <g>
+                  <text x={reg.lx} y={reg.ly} textAnchor="middle" fontSize="6" fontWeight="700"
+                    fill="rgba(255,255,255,0.95)" style={{ pointerEvents: "none" }}
+                    paintOrder="stroke" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" strokeLinejoin="round">
+                    {reg.name.toUpperCase()}
+                  </text>
+                  {rate !== null && (
+                    <text x={reg.lx} y={reg.ly + 9} textAnchor="middle" fontSize="7.5" fontWeight="800"
+                      fill="white" style={{ pointerEvents: "none" }}
+                      paintOrder="stroke" stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" strokeLinejoin="round">
+                      {Math.round(rate * 100)}%
+                    </text>
+                  )}
+                </g>
+              )}
+            </g>
+          );
+        })}
+        <g transform="translate(185,178)">
+          <circle cx="0" cy="0" r="9" fill="white" stroke="rgba(0,0,0,0.15)" strokeWidth="0.6" />
+          <path d="M0,-7 L3,2 L0,0 L-3,2 Z" fill="var(--pres-accent)" />
+          <path d="M0,7 L3,-2 L0,0 L-3,-2 Z" fill="rgba(0,0,0,0.20)" />
+          <text x="0" y="-9.5" textAnchor="middle" fontSize="5" fontWeight="700" fill="var(--pres-text)">N</text>
+        </g>
+      </svg>
+      {hoveredRegion && byId[hoveredRegion] && (() => {
+        const d = byId[hoveredRegion];
+        const rate = d[maxKey] ? d[valueKey] / d[maxKey] : null;
+        const rName = REGIONS.find(r => r.id === hoveredRegion)?.name || hoveredRegion;
+        return (
+          <div style={{
+            position: "absolute", top: 8, right: 8,
+            background: "var(--pres-panel)", border: "1px solid var(--pres-line-2)",
+            borderRadius: 8, padding: "8px 12px", minWidth: 120,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.12)", pointerEvents: "none"
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 12, color: "var(--pres-text)", marginBottom: 4 }}>{rName}</div>
+            {rate !== null && (
+              <div style={{ fontSize: 20, fontWeight: 800, color: rateColor(rate), lineHeight: 1 }}>
+                {Math.round(rate * 100)}%
+              </div>
+            )}
+            <div style={{ fontSize: 11, color: "var(--pres-text-dim)", marginTop: 2 }}>of plan</div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
+
+const OverviewMapPanel = ({ mode, data, onClose }) => {
+  const [hoverRegion, setHoverRegion] = React.useState(null);
+
+  if (mode === "banks-corr" || mode === "banks-for") {
+    const isCo = mode === "banks-corr";
+    const list = isCo ? data.overview.bankLists.correspondent : data.overview.bankLists.foreign;
+    const title = isCo ? "CORRESPONDENT BALANCES AT BOU · ALL BANKS" : "BOU BALANCES AT FOREIGN BANKS";
+    const total = list.reduce((s, b) => s + b.bal, 0);
+    return (
+      <div className="pres-card">
+        <div className="card-h">
+          <span>{title}</span>
+          <button className="chip flat" onClick={onClose} style={{ cursor: "pointer" }}>✕ Close</button>
+        </div>
+        <table className="pres-table">
+          <thead><tr><th>Bank</th><th className="num">Balance (T UGX)</th></tr></thead>
+          <tbody>
+            {list.map((b, i) => (
+              <tr key={i}><td>{b.name}</td><td className="num tnum">{b.bal.toFixed(2)}</td></tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr style={{ fontWeight: 700 }}>
+              <td>Total</td>
+              <td className="num tnum">{total.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    );
+  }
+
+  const isTax = mode === "tax";
+  const title = isTax ? "UGANDA MAP · TAX COLLECTED" : "UGANDA MAP · BUDGET EXECUTION";
+  const metricLabel = isTax ? "TAX COLLECTED · % OF PLAN" : "BUDGET EXECUTION · % OF PLAN";
+  const breakdownLabel = hoverRegion
+    ? ((REGIONS.find(r => r.id === hoverRegion)?.name || hoverRegion) + " · breakdown")
+    : "National average · hover region to drill down";
+  const breakdown = hoverRegion
+    ? (isTax ? TAX_BREAKDOWN[hoverRegion] : BUDGET_BREAKDOWN[hoverRegion])
+    : (isTax ? TAX_BREAKDOWN.national    : BUDGET_BREAKDOWN.national);
+  const mapData = REGIONS.map(r => ({
+    ...r, _val: isTax ? r.taxCollected : r.budgetExec, _max: isTax ? r.taxPlan : r.budgetPlan,
+  }));
+
+  return (
+    <div className="pres-card">
+      <div className="card-h">
+        <span>{title}</span>
+        <button className="chip flat" onClick={onClose} style={{ cursor: "pointer" }}>✕ Close</button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, alignItems: "start" }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--pres-text-dim)", marginBottom: 8, textTransform: "uppercase" }}>
+            {metricLabel}
+          </div>
+          <OverviewRegionMap
+            mapData={mapData}
+            hoveredRegion={hoverRegion}
+            onHoverRegion={setHoverRegion}
+            valueKey="_val"
+            maxKey="_max"
+          />
+          <MapLegend mode="rate" />
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--pres-text-dim)", marginBottom: 8, textTransform: "uppercase" }}>
+            {breakdownLabel}
+          </div>
+          <BarsHoriz rows={breakdown.map(b => ({ name: b.name, value: b.pct }))} suffix="%" max={100} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => {
+  const [mapMode, setMapMode] = React.useState(null);
+  const openMap = (mode) => setMapMode(mode);
+  const closeMap = () => setMapMode(null);
+
+  return (
+    <>
+      <div className="pres-section-h">
+        <h2>{t("Executive overview")}</h2>
+        <span className="meta">{t("Live · all systems")} · {data.asOf}</span>
+      </div>
+
+      <div className="pres-grid cols-3">
+        <KpiTile k={data.overview.kpis[0]} onMouseEnter={() => openMap("tax")} />
+        <KpiTile k={data.overview.kpis[1]} onMouseEnter={() => openMap("banks-corr")} />
+        <KpiTile k={data.overview.kpis[2]} onMouseEnter={() => openMap("banks-for")} />
+      </div>
+      <div className="pres-grid cols-3">
+        <KpiTile k={data.overview.kpis[3]} onMouseEnter={() => openMap("budget")} />
+        <KpiTile k={data.overview.kpis[4]} />
+        <KpiTile k={data.overview.kpis[5]} />
+      </div>
+
+      {mapMode && <OverviewMapPanel mode={mapMode} data={data} onClose={closeMap} />}
+
+      <div className="pres-grid" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+        <div className="pres-card">
+          <div className="card-h">
+            <span>{t("Real-time activity · regions")}</span>
+            <span className="actions">
+              <span className="chip flat">{t("By transaction volume")}</span>
+            </span>
+          </div>
+          <UgandaMap data={REGIONS} activeId={activeRegion} onPick={setActiveRegion} valueKey="disb" maxKey="alloc" mode="rate" />
+          <MapLegend mode="rate" />
+        </div>
+
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Cross-agency signal")}</span><span className="chip accent">{t("auto")}</span></div>
+          <table className="pres-table">
+            <thead><tr><th>{t("Agency")}</th><th>{t("Indicator")}</th><th className="num">{t("Today")}</th><th className="num">{t("Δ")}</th></tr></thead>
+            <tbody>
+              <tr><td>BoU</td><td>{t("Settlement uptime")}</td><td className="num">99.997%</td><td className="num"><span className="chip ok">OK</span></td></tr>
+              <tr><td>URA</td><td>{t("MTD vs target")}</td><td className="num">+1.4%</td><td className="num"><span className="chip ok">+</span></td></tr>
+              <tr><td>FIA</td><td>{t("Blocked tx amount")}</td><td className="num">2.50B</td><td className="num"><span className="chip warn">↑</span></td></tr>
+              <tr><td>PDM</td><td>{t("Disbursement rate")}</td><td className="num">67.6%</td><td className="num"><span className="chip warn">!</span></td></tr>
+              <tr><td>BoU</td><td>{t("Liquidity floor breaches")}</td><td className="num">2</td><td className="num"><span className="chip bad">↑</span></td></tr>
+              <tr>
+                <td>BoU</td>
+                <td>
+                  {t("Real-Time Activity Index")}
+                  {" "}<span
+                    title="Composite index of high-frequency economic signals. Components: NPS transaction volume (30%), URA daily tax inflow (25%), PDM disbursement pace (25%), BoU interbank liquidity (20%). Normalized to baseline 100 = 12-month rolling average. Updated every 15 minutes."
+                    style={{ cursor: "help", opacity: 0.55, fontSize: "0.85em" }}>ⓘ</span>
+                </td>
+                <td className="num">128.4 pts</td>
+                <td className="num"><span className="chip ok">↑</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// =============== SWITCH ===============
+const TabSwitch = ({ t, data }) => (
   <>
     <div className="pres-section-h">
-      <h2>{t("Executive overview")}</h2>
+      <h2>{t("Switch · Payment Network")}</h2>
       <span className="meta">{t("Live · all systems")} · {data.asOf}</span>
     </div>
 
-    <div className="pres-grid cols-3" style={{ gridTemplateColumns: "1.4fr 1fr 1fr" }}>
-      <KpiTile k={data.overview.kpis[0]} big />
-      <KpiTile k={data.overview.kpis[1]} />
-      <KpiTile k={data.overview.kpis[2]} />
-    </div>
-    <div className="pres-grid cols-3">
-      <KpiTile k={data.overview.kpis[3]} />
-      <KpiTile k={data.overview.kpis[4]} />
-      <KpiTile k={data.overview.kpis[5]} />
-    </div>
-
-    <div className="pres-grid" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
-      <div className="pres-card">
-        <div className="card-h">
-          <span>{t("Real-time activity · regions")}</span>
-          <span className="actions">
-            <span className="chip flat">{t("By transaction volume")}</span>
-          </span>
-        </div>
-        <UgandaMap data={REGIONS} activeId={activeRegion} onPick={setActiveRegion} valueKey="disb" maxKey="alloc" mode="rate" />
-        <MapLegend mode="rate" />
+    <div className="pres-card">
+      <div className="card-h">
+        <span>{t("Switch volume · 30d (T UGX)")}</span>
+        <div className="seg-toggle"><button className="is-active">30D</button><button>QTR</button><button>YTD</button></div>
       </div>
-
-      <div className="col" style={{ gap: 12 }}>
-        <div className="pres-card">
-          <div className="card-h"><span>{t("Channel mix · today")}</span><span className="actions"><Icon name="more_horiz" size={16} /></span></div>
-          <div className="row" style={{ gap: 16, alignItems: "center" }}>
-            <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: t("TX TODAY") }} />
-            <div className="col" style={{ flex: 1 }}>
-              {data.overview.channelMix.map((c, i) => (
-                <div key={i} className="row sb" style={{ fontSize: 12 }}>
-                  <span className="row" style={{ gap: 8 }}>
-                    <span style={{ width: 8, height: 8, background: c.color }} />
-                    {c.name}
-                  </span>
-                  <span className="tnum">{c.pct}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="pres-card">
-          <div className="card-h"><span>{t("Transaction type mix")}</span></div>
-          <BarsHoriz rows={data.overview.typeMix.map(t => ({ name: t.name, value: t.pct }))} suffix="%" max={100} />
-        </div>
-      </div>
+      <AreaChart data={Array.from({length: 30}, (_, i) => 6 + Math.sin(i/3)*1.6 + i*0.08)} height={200} labels={Array.from({length: 30}, (_, i) => i % 5 === 0 ? `${i + 1}` : "")} />
     </div>
 
     <div className="pres-grid cols-2">
       <div className="pres-card">
-        <div className="card-h"><span>{t("Switch volume · 30d (T UGX)")}</span><div className="seg-toggle"><button className="is-active">30D</button><button>QTR</button><button>YTD</button></div></div>
-        <AreaChart data={Array.from({length: 30}, (_, i) => 6 + Math.sin(i/3)*1.6 + i*0.08)} height={160} labels={Array.from({length: 30}, (_, i) => i % 5 === 0 ? `${i + 1}` : "")} />
+        <div className="card-h"><span>{t("Channel mix · today")}</span><span className="actions"><Icon name="more_horiz" size={16} /></span></div>
+        <div className="row" style={{ gap: 16, alignItems: "center" }}>
+          <Donut slices={data.overview.channelMix} label={{ value: "23.18M", unit: t("TX TODAY") }} />
+          <div className="col" style={{ flex: 1 }}>
+            {data.overview.channelMix.map((c, i) => (
+              <div key={i} className="row sb" style={{ fontSize: 12 }}>
+                <span className="row" style={{ gap: 8 }}>
+                  <span style={{ width: 8, height: 8, background: c.color }} />
+                  {c.name}
+                </span>
+                <span className="tnum">{c.pct}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       <div className="pres-card">
-        <div className="card-h"><span>{t("Cross-agency signal")}</span><span className="chip accent">{t("auto")}</span></div>
-        <table className="pres-table">
-          <thead><tr><th>{t("Agency")}</th><th>{t("Indicator")}</th><th className="num">{t("Today")}</th><th className="num">{t("Δ")}</th></tr></thead>
-          <tbody>
-            <tr><td>BoU</td><td>{t("Settlement uptime")}</td><td className="num">99.997%</td><td className="num"><span className="chip ok">OK</span></td></tr>
-            <tr><td>URA</td><td>{t("MTD vs target")}</td><td className="num">+1.4%</td><td className="num"><span className="chip ok">+</span></td></tr>
-            <tr><td>FIA</td><td>{t("Blocked tx amount")}</td><td className="num">2.50B</td><td className="num"><span className="chip warn">↑</span></td></tr>
-            <tr><td>PDM</td><td>{t("Disbursement rate")}</td><td className="num">67.6%</td><td className="num"><span className="chip warn">!</span></td></tr>
-            <tr><td>BoU</td><td>{t("Liquidity floor breaches")}</td><td className="num">2</td><td className="num"><span className="chip bad">↑</span></td></tr>
-          </tbody>
-        </table>
+        <div className="card-h"><span>{t("Transaction type mix")}</span></div>
+        <BarsHoriz rows={data.overview.typeMix.map(t => ({ name: t.name, value: t.pct }))} suffix="%" max={100} />
       </div>
     </div>
   </>
 );
 
 // =============== BoU ===============
-const TabBoU = ({ t, data }) => (
-  <>
-    <div className="pres-section-h">
-      <h2><img className="section-logo" src="../assets/Bank of Uganda.png" alt="BoU" />{t("Bank of Uganda · Macroeconomy")}</h2>
-      <span className="meta">{t("Real-time · NPS feed")}</span>
-    </div>
-    <div className="pres-grid cols-4">
-      {data.bou.kpis.map(k => <KpiTile key={k.id} k={k} />)}
-    </div>
-    <div className="pres-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Liquidity & digitalization · rails")}</span></div>
-        <BarsHoriz rows={data.bou.rails.map(r => ({ name: r.name, value: r.pct }))} suffix="%" max={100} />
+// Multi-line SVG chart for M0/M1/M2/M3
+const MultiLineChart = ({ data, keys, colors, labels, height = 210 }) => {
+  const W = 560, H = height;
+  const PAD = { top: 14, right: 20, bottom: 26, left: 46 };
+  const w = W - PAD.left - PAD.right;
+  const h = H - PAD.top - PAD.bottom;
+  const allVals = data.flatMap(d => keys.map(k => d[k]).filter(v => v != null));
+  const minV = Math.floor(Math.min(...allVals) * 0.96);
+  const maxV = Math.ceil(Math.max(...allVals) * 1.02);
+  const xScale = i => PAD.left + (i / (data.length - 1)) * w;
+  const yScale = v => PAD.top + h - ((v - minV) / (maxV - minV)) * h;
+  const linePath = key => data.map((d, i) => `${i === 0 ? "M" : "L"} ${xScale(i).toFixed(1)} ${yScale(d[key]).toFixed(1)}`).join(" ");
+  const yTicks = [minV, minV + (maxV - minV) * 0.33, minV + (maxV - minV) * 0.66, maxV];
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible", display: "block" }}>
+      {yTicks.map((v, i) => (
+        <g key={i}>
+          <line x1={PAD.left} x2={W - PAD.right} y1={yScale(v)} y2={yScale(v)} stroke="rgba(0,0,0,0.07)" strokeWidth={1} />
+          <text x={PAD.left - 5} y={yScale(v) + 4} textAnchor="end" fontSize={9} fill="rgba(0,0,0,0.38)">{v.toFixed(1)}</text>
+        </g>
+      ))}
+      {data.map((d, i) => (
+        <text key={i} x={xScale(i)} y={H - 4} textAnchor="middle" fontSize={9} fill="rgba(0,0,0,0.38)">{d.m}</text>
+      ))}
+      {keys.map((key, ki) => (
+        <path key={key} d={linePath(key)} fill="none" stroke={colors[ki]} strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+      ))}
+      {keys.map((key, ki) => {
+        const last = data[data.length - 1];
+        return <circle key={key} cx={xScale(data.length - 1)} cy={yScale(last[key])} r={3.5} fill={colors[ki]} />;
+      })}
+      {/* legend */}
+      {keys.map((key, ki) => (
+        <g key={key} transform={`translate(${PAD.left + ki * 90}, ${H - 2})`}>
+          <line x1={0} x2={14} y1={-8} y2={-8} stroke={colors[ki]} strokeWidth={2.2} />
+          <text x={18} y={-4} fontSize={9} fill="rgba(0,0,0,0.55)">{labels[ki]}</text>
+        </g>
+      ))}
+    </svg>
+  );
+};
+
+const TabBoU = ({ t, data }) => {
+  const M_COLORS = ["#1a73e8", "#0f9d58", "#f4a100", "#c2185b"];
+  const M_LABELS = ["M0", "M1", "M2", "M3"];
+  const M_KEYS   = ["m0", "m1", "m2", "m3"];
+  const ba = data.bou.businessActivity;
+  const baExpanding = ba.current >= 50;
+  return (
+    <>
+      <div className="pres-section-h">
+        <h2><img className="section-logo" src="../assets/Bank of Uganda.png" alt="BoU" />{t("Bank of Uganda · Macroeconomy")}</h2>
+        <span className="meta">{t("Real-time · NPS feed")}</span>
       </div>
+
+      {/* M0–M3 KPI tiles */}
+      <div className="pres-grid cols-4">
+        {data.bou.kpis.map((k, ki) => (
+          <KpiTile key={k.id} k={k} sparkColor={M_COLORS[ki]} />
+        ))}
+      </div>
+
+      {/* M aggregates chart + Business Activity */}
+      <div className="pres-grid" style={{ gridTemplateColumns: "1.6fr 1fr" }}>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Monetary aggregates · M0 – M3 (T UGX)")}</span><span className="chip flat">{t("Monthly · 2025")}</span></div>
+          <MultiLineChart data={data.bou.mAggregates} keys={M_KEYS} colors={M_COLORS} labels={M_LABELS} height={210} />
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Business Activity Index")}</span><span className="chip flat">{t("Composite PMI")}</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "8px 0 4px" }}>
+            <span style={{ fontSize: 42, fontWeight: 700, lineHeight: 1 }} className="tnum">{ba.current.toFixed(1)}</span>
+            <div>
+              <div style={{ fontSize: 11, color: baExpanding ? "var(--pres-good)" : "var(--pres-bad)", fontWeight: 600 }}>
+                {baExpanding ? t("Expansion") : t("Contraction")}
+              </div>
+              <div style={{ fontSize: 10, color: "var(--pres-text-dim)", marginTop: 2 }}>
+                {t("vs 50 = baseline")} · {ba.delta >= 0 ? "+" : ""}{ba.delta.toFixed(1)} {t("pts MoM")}
+              </div>
+            </div>
+          </div>
+          <div style={{ margin: "4px 0 8px", height: 2, borderRadius: 1, background: "var(--pres-border)", position: "relative" }}>
+            <div style={{ position: "absolute", left: `${((ba.current - 44) / 20) * 100}%`, top: -3, width: 8, height: 8, borderRadius: "50%", background: baExpanding ? "var(--pres-good)" : "var(--pres-bad)", transform: "translateX(-50%)" }} />
+            <div style={{ position: "absolute", left: `${((50 - 44) / 20) * 100}%`, top: -4, width: 1, height: 10, background: "var(--pres-text-dim)", opacity: 0.5 }} />
+          </div>
+          <div style={{ height: 112 }}>
+            <AreaChart data={ba.history.map(d => d.idx)} height={112} color="var(--pres-accent)" />
+          </div>
+          <div style={{ fontSize: 10, color: "var(--pres-text-dim)", marginTop: 4, lineHeight: 1.5 }}>
+            {t("Composite of NPS volume, tax inflow, PMI survey, and interbank liquidity.")}
+            {" "}{t("Above 50 = expanding.")}
+          </div>
+        </div>
+      </div>
+
+      {/* Existing rails + consumption */}
+      <div className="pres-grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Liquidity & digitalization · rails")}</span></div>
+          <BarsHoriz rows={data.bou.rails.map(r => ({ name: r.name, value: r.pct }))} suffix="%" max={100} />
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Consumption & business activity")}</span></div>
+          <table className="pres-table">
+            <thead><tr><th>{t("Indicator")}</th><th className="num">{t("Today")}</th><th className="num">{t("Δ")}</th><th>{t("Trend")}</th></tr></thead>
+            <tbody>
+              {data.bou.consumption.map((r, i) => (
+                <tr key={i}>
+                  <td>{r.name}</td>
+                  <td className="num tnum">{r.value}</td>
+                  <td className="num"><span className={`chip ${r.delta >= 0 ? "ok" : "bad"}`}>{r.delta >= 0 ? "+" : ""}{r.delta.toFixed(1)}%</span></td>
+                  <td style={{ width: 110 }}><div style={{ height: 24 }}><Sparkline data={r.spark} color={r.delta >= 0 ? "var(--pres-good)" : "var(--pres-bad)"} fill={false} /></div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Participant liquidity */}
       <div className="pres-card">
-        <div className="card-h"><span>{t("Consumption & business activity")}</span></div>
+        <div className="card-h"><span>{t("Participant liquidity (top 10)")}</span><span className="chip flat">{t("Live")}</span></div>
         <table className="pres-table">
-          <thead><tr><th>{t("Indicator")}</th><th className="num">{t("Today")}</th><th className="num">{t("Δ")}</th><th>{t("Trend")}</th></tr></thead>
+          <thead><tr><th>{t("Participant")}</th><th className="num">{t("Liquidity (T UGX)")}</th><th className="num">{t("Share")}</th><th>{t("Status")}</th><th style={{ width: 200 }}>{t("Liquidity buffer")}</th></tr></thead>
           <tbody>
-            {data.bou.consumption.map((r, i) => (
-              <tr key={i}>
-                <td>{r.name}</td>
-                <td className="num tnum">{r.value}</td>
-                <td className="num"><span className={`chip ${r.delta >= 0 ? "ok" : "bad"}`}>{r.delta >= 0 ? "+" : ""}{r.delta.toFixed(1)}%</span></td>
-                <td style={{ width: 110 }}><div style={{ height: 24 }}><Sparkline data={r.spark} color={r.delta >= 0 ? "var(--pres-good)" : "var(--pres-bad)"} fill={false} /></div></td>
-              </tr>
-            ))}
+            {data.bou.participants.map((p, i) => {
+              const pct = (p.liq / 2.5) * 100;
+              return (
+                <tr key={i}>
+                  <td>{p.name}</td>
+                  <td className="num">{p.liq.toFixed(2)}</td>
+                  <td className="num">{p.share.toFixed(1)}%</td>
+                  <td><span className={`chip ${p.status}`}>{p.status === "ok" ? t("Healthy") : p.status === "warn" ? t("Watch") : t("Resolution")}</span></td>
+                  <td>
+                    <div className="bar-track" style={{ height: 8 }}>
+                      <div style={{ height: "100%", borderRadius: 4, width: `${Math.min(100, pct)}%`, background: p.status === "ok" ? "var(--pres-good)" : p.status === "warn" ? "var(--pres-warn)" : "var(--pres-bad)" }} />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-    </div>
-    <div className="pres-card">
-      <div className="card-h"><span>{t("Participant liquidity (top 10)")}</span><span className="chip flat">{t("Live")}</span></div>
-      <table className="pres-table">
-        <thead><tr><th>{t("Participant")}</th><th className="num">{t("Liquidity (T UGX)")}</th><th className="num">{t("Share")}</th><th>{t("Status")}</th><th style={{ width: 200 }}>{t("Liquidity buffer")}</th></tr></thead>
-        <tbody>
-          {data.bou.participants.map((p, i) => {
-            const pct = (p.liq / 2.5) * 100;
-            return (
-              <tr key={i}>
-                <td>{p.name}</td>
-                <td className="num">{p.liq.toFixed(2)}</td>
-                <td className="num">{p.share.toFixed(1)}%</td>
-                <td><span className={`chip ${p.status}`}>{p.status === "ok" ? t("Healthy") : p.status === "warn" ? t("Watch") : t("Resolution")}</span></td>
-                <td>
-                  <div className="bar-track" style={{ height: 8 }}>
-                    <div className={`bar-fill ${p.status === "ok" ? "good" : p.status === "warn" ? "" : "bad"}`}
-                         style={{ width: `${Math.min(100, pct)}%`, background: p.status === "ok" ? "var(--pres-good)" : p.status === "warn" ? "var(--pres-warn)" : "var(--pres-bad)" }} />
-                  </div>
+
+      {/* Correspondent accounts — BoU at foreign banks */}
+      <div className="pres-card">
+        <div className="card-h">
+          <span>{t("Correspondent accounts · BoU at foreign banks")}</span>
+          <span className="chip flat">{t("All banks cumulative")}</span>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table className="pres-table" style={{ minWidth: 700 }}>
+            <thead>
+              <tr>
+                <th>{t("Institution")}</th>
+                <th>{t("Country")}</th>
+                <th className="num">USD (M)</th>
+                <th className="num">KES (M)</th>
+                <th className="num">TZS (M)</th>
+                <th className="num">RWF (M)</th>
+                <th className="num">UGX Equiv (B)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.bou.correspondentAccounts.map((r, i) => (
+                <tr key={i}>
+                  <td style={{ fontWeight: 500 }}>{r.bank}</td>
+                  <td style={{ color: "var(--pres-text-dim)", fontSize: 12 }}>{r.country}</td>
+                  <td className="num tnum">{r.usd != null ? r.usd.toLocaleString() : <span style={{ color: "var(--pres-text-dim)" }}>—</span>}</td>
+                  <td className="num tnum">{r.kes != null ? r.kes.toLocaleString() : <span style={{ color: "var(--pres-text-dim)" }}>—</span>}</td>
+                  <td className="num tnum">{r.tzs != null ? r.tzs.toLocaleString() : <span style={{ color: "var(--pres-text-dim)" }}>—</span>}</td>
+                  <td className="num tnum">{r.rwf != null ? r.rwf.toLocaleString() : <span style={{ color: "var(--pres-text-dim)" }}>—</span>}</td>
+                  <td className="num tnum" style={{ fontWeight: 600, color: "var(--pres-accent)" }}>{r.ugxEq.toLocaleString()}</td>
+                </tr>
+              ))}
+              <tr style={{ borderTop: "2px solid var(--pres-border)", fontWeight: 700 }}>
+                <td colSpan={6} style={{ textAlign: "right", paddingRight: 12, fontSize: 12, color: "var(--pres-text-dim)", letterSpacing: "0.05em" }}>{t("TOTAL UGX EQUIVALENT")}</td>
+                <td className="num tnum" style={{ color: "var(--pres-accent)" }}>
+                  {data.bou.correspondentAccounts.reduce((s, r) => s + r.ugxEq, 0).toLocaleString()}
                 </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  </>
-);
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* MTN + Airtel widgets */}
+      <div className="pres-grid cols-2">
+        {[
+          { key: "mtn",   label: "MTN MoMo",     accent: "#FFCC00", textColor: "#222" },
+          { key: "airtel",label: "Airtel Money",  accent: "#E40000", textColor: "#fff" },
+        ].map(({ key, label, accent, textColor }) => {
+          const mo = data.bou[key];
+          const maxBal = Math.max(...mo.accounts.map(a => a.bal));
+          return (
+            <div key={key} className="pres-card" style={{ padding: 0, overflow: "hidden" }}>
+              <div style={{ background: accent, padding: "12px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontWeight: 800, fontSize: 15, color: textColor, letterSpacing: "0.04em" }}>{label}</span>
+                <span style={{ marginLeft: "auto", fontWeight: 700, fontSize: 13, color: textColor, opacity: 0.85 }}>
+                  {mo.totalFloat.toFixed(2)} T UGX {t("float")}
+                </span>
+              </div>
+              <div style={{ padding: "14px 18px" }}>
+                {/* Float distribution */}
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pres-text-dim)", marginBottom: 8 }}>
+                  {t("Float distribution · commercial banks")}
+                </div>
+                {mo.accounts.map((a, i) => {
+                  const pct = (a.bal / mo.totalFloat) * 100;
+                  return (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+                      <span style={{ fontSize: 11, width: 160, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.bank}</span>
+                      <div style={{ flex: 1, height: 6, background: "var(--pres-border)", borderRadius: 3 }}>
+                        <div style={{ height: "100%", borderRadius: 3, width: `${(a.bal / maxBal) * 100}%`, background: accent, opacity: 0.85 }} />
+                      </div>
+                      <span className="tnum" style={{ fontSize: 11, width: 40, textAlign: "right", color: "var(--pres-text-dim)" }}>{a.bal.toFixed(2)}</span>
+                    </div>
+                  );
+                })}
+                {/* MTD / YTD stats */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, marginTop: 14, borderTop: "1px solid var(--pres-border)", paddingTop: 12 }}>
+                  {[
+                    { label: t("Revenue MTD"), val: mo.revenueMTD + "B", unit: "UGX" },
+                    { label: t("Revenue YTD"), val: mo.revenueYTD + "B", unit: "UGX" },
+                    { label: t("Turnover MTD"), val: mo.turnoverMTD + "T", unit: "UGX" },
+                    { label: t("Turnover YTD"), val: mo.turnoverYTD + "T", unit: "UGX" },
+                  ].map((s, i) => (
+                    <div key={i} style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 10, color: "var(--pres-text-dim)", marginBottom: 3 }}>{s.label}</div>
+                      <div className="tnum" style={{ fontSize: 16, fontWeight: 700 }}>{s.val}</div>
+                      <div style={{ fontSize: 9, color: "var(--pres-text-dim)" }}>{s.unit}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
 
 // =============== FIA ===============
 const TabFIA = ({ t, data }) => (
@@ -2327,66 +2979,248 @@ const TabFIA = ({ t, data }) => (
 );
 
 // =============== URA ===============
-const TabURA = ({ t, data }) => (
-  <>
-    <div className="pres-section-h">
-      <h2><img className="section-logo" src="../assets/ura-logo.png" alt="URA" />{t("Uganda Revenue Authority")}</h2>
-      <span className="meta">{t("Tax collection & cross-checks")}</span>
-    </div>
-    <div className="pres-grid cols-4">
-      {data.ura.kpis.map(k => <KpiTile key={k.id} k={k} />)}
-    </div>
-    <div className="pres-grid" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Tax collected · monthly (T UGX)")}</span><div className="seg-toggle"><button className="is-active">{t("Year")}</button><button>{t("Quarter")}</button><button>{t("Month")}</button></div></div>
-        <ColumnBars data={data.ura.monthly} height={180} />
+function TabURA({ t, data }) {
+  const [selectedId, setSelectedId] = React.useState(null);
+  const [search, setSearch] = React.useState("");
+  const [statuses, setStatuses] = React.useState(
+    () => Object.fromEntries(URA_TAXPAYERS.map(c => [c.id, c.status]))
+  );
+
+  const filtered = URA_TAXPAYERS.filter(c => {
+    const q = search.toLowerCase();
+    return !q || c.name.toLowerCase().includes(q) || c.tin.includes(q) || c.sector.toLowerCase().includes(q);
+  });
+
+  const selected = selectedId ? URA_TAXPAYERS.find(c => c.id === selectedId) : null;
+
+  const doLock   = id => setStatuses(s => ({ ...s, [id]: "locked" }));
+  const doUnlock = id => setStatuses(s => ({ ...s, [id]: "active" }));
+
+  return (
+    <>
+      <div className="pres-section-h">
+        <h2><img className="section-logo" src="../assets/ura-logo.png" alt="URA" />{t("Uganda Revenue Authority")}</h2>
+        <span className="meta">{t("Tax collection & cross-checks")}</span>
       </div>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Regional budget · target vs actual")}</span></div>
-        <BarsHoriz rows={data.ura.regional} suffix="T" />
+      <div className="pres-grid cols-4">
+        {data.ura.kpis.map(k => <KpiTile key={k.id} k={k} />)}
       </div>
-    </div>
-    <div className="pres-grid cols-2">
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Cross-check: declared vs cashflow")}</span><span className="chip warn">{t("6 high-risk")}</span></div>
-        <table className="pres-table">
-          <thead><tr><th>TIN</th><th>{t("Taxpayer")}</th><th className="num">{t("Declared")}</th><th className="num">{t("Cashflow")}</th><th className="num">{t("Gap")}</th><th>{t("Risk")}</th></tr></thead>
-          <tbody>
-            {data.ura.crossCheck.map((r, i) => (
-              <tr key={i}>
-                <td className="mono">{r.tin}</td>
-                <td>{r.name}</td>
-                <td className="num">{r.declared}</td>
-                <td className="num">{r.cashflow}</td>
-                <td className="num">{r.gap}</td>
-                <td><span className={`chip ${r.risk === "high" ? "bad" : "warn"}`}>{r.risk}</span></td>
+      <div className="pres-grid" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Tax collected · monthly (T UGX)")}</span><div className="seg-toggle"><button className="is-active">{t("Year")}</button><button>{t("Quarter")}</button><button>{t("Month")}</button></div></div>
+          <ColumnBars data={data.ura.monthly} height={180} />
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Regional budget · target vs actual")}</span></div>
+          <BarsHoriz rows={data.ura.regional} suffix="T" />
+        </div>
+      </div>
+      <div className="pres-grid cols-2">
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Cross-check: declared vs cashflow")}</span><span className="chip warn">{t("6 high-risk")}</span></div>
+          <table className="pres-table">
+            <thead><tr><th>TIN</th><th>{t("Taxpayer")}</th><th className="num">{t("Declared")}</th><th className="num">{t("Cashflow")}</th><th className="num">{t("Gap")}</th><th>{t("Risk")}</th></tr></thead>
+            <tbody>
+              {data.ura.crossCheck.map((r, i) => (
+                <tr key={i}>
+                  <td className="mono">{r.tin}</td>
+                  <td>{r.name}</td>
+                  <td className="num">{r.declared}</td>
+                  <td className="num">{r.cashflow}</td>
+                  <td className="num">{r.gap}</td>
+                  <td><span className={`chip ${r.risk === "high" ? "bad" : "warn"}`}>{r.risk}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="pres-card">
+          <div className="card-h"><span>{t("Unregistered taxpayers")}</span></div>
+          <div className="pres-grid cols-2" style={{ gap: 16 }}>
+            <div className="col" style={{ gap: 4 }}>
+              <span className="muted" style={{ fontSize: 11, letterSpacing: "0.10em", textTransform: "uppercase" }}>{t("Estimated taxpayers")}</span>
+              <span style={{ fontSize: 32, fontWeight: 700 }} className="tnum">318K</span>
+              <span className="muted" style={{ fontSize: 12 }}>{t("Potential revenue: UGX 124.7B / yr")}</span>
+            </div>
+            <div className="col" style={{ gap: 4 }}>
+              <span className="muted" style={{ fontSize: 11, letterSpacing: "0.10em", textTransform: "uppercase" }}>{t("Unregistered VAT")}</span>
+              <span style={{ fontSize: 32, fontWeight: 700 }} className="tnum">12.48K</span>
+              <span className="muted" style={{ fontSize: 12 }}>{t("Potential revenue: UGX 488.4B / yr")}</span>
+            </div>
+          </div>
+          <div className="h-line" style={{ margin: "8px 0" }}></div>
+          <div className="muted" style={{ fontSize: 12, lineHeight: 1.6 }}>
+            {t("Estimates derived from Switch C2B / B2B flows reconciled against URA TIN registry. Refreshed weekly. Click to drill into source matching rules.")}
+          </div>
+        </div>
+      </div>
+
+      {/* Key taxpayers table */}
+      <div className="pres-card" style={{ padding: 0 }}>
+        <div className="card-h" style={{ padding: "14px 18px 10px" }}>
+          <span>{t("Key taxpayers · top 50")}</span>
+          <input
+            type="text"
+            placeholder={t("Search by name, TIN, sector…")}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              padding: "4px 10px", borderRadius: 6, border: "1px solid var(--pres-border)",
+              background: "var(--pres-surface)", color: "var(--pres-text)",
+              fontSize: 12, width: 220, outline: "none"
+            }}
+          />
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table className="pres-table" style={{ minWidth: 760 }}>
+            <thead>
+              <tr>
+                <th style={{ width: 36 }}>#</th>
+                <th>{t("Company")}</th>
+                <th>{t("Sector")}</th>
+                <th className="num">{t("Balance (B UGX)")}</th>
+                <th className="num">{t("Taxes MTD (B UGX)")}</th>
+                <th className="num">{t("Tx MTD")}</th>
+                <th>{t("Status")}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="pres-card">
-        <div className="card-h"><span>{t("Unregistered taxpayers")}</span></div>
-        <div className="pres-grid cols-2" style={{ gap: 16 }}>
-          <div className="col" style={{ gap: 4 }}>
-            <span className="muted" style={{ fontSize: 11, letterSpacing: "0.10em", textTransform: "uppercase" }}>{t("Estimated taxpayers")}</span>
-            <span style={{ fontSize: 32, fontWeight: 700 }} className="tnum">318K</span>
-            <span className="muted" style={{ fontSize: 12 }}>{t("Potential revenue: UGX 124.7B / yr")}</span>
-          </div>
-          <div className="col" style={{ gap: 4 }}>
-            <span className="muted" style={{ fontSize: 11, letterSpacing: "0.10em", textTransform: "uppercase" }}>{t("Unregistered VAT")}</span>
-            <span style={{ fontSize: 32, fontWeight: 700 }} className="tnum">12.48K</span>
-            <span className="muted" style={{ fontSize: 12 }}>{t("Potential revenue: UGX 488.4B / yr")}</span>
-          </div>
+            </thead>
+            <tbody>
+              {filtered.map((c, i) => {
+                const st = statuses[c.id];
+                const isSelected = selectedId === c.id;
+                return (
+                  <tr
+                    key={c.id}
+                    onClick={() => setSelectedId(isSelected ? null : c.id)}
+                    style={{
+                      cursor: "pointer",
+                      borderLeft: isSelected ? "3px solid var(--pres-accent)" : "3px solid transparent",
+                      background: isSelected ? "rgba(255,126,0,0.06)" : undefined,
+                    }}
+                  >
+                    <td className="mono" style={{ color: "var(--pres-text-dim)" }}>{i + 1}</td>
+                    <td style={{ fontWeight: isSelected ? 600 : undefined }}>{c.name}</td>
+                    <td><span className="chip flat" style={{ fontSize: 10 }}>{c.sector}</span></td>
+                    <td className="num tnum">{c.totalBal.toFixed(1)}</td>
+                    <td className="num tnum">{c.paidTaxes.toFixed(1)}</td>
+                    <td className="num tnum">{c.txCount.toLocaleString()}</td>
+                    <td>
+                      <span className={`chip ${st === "locked" ? "bad" : "ok"}`} style={{ fontSize: 10 }}>
+                        {st === "locked" ? t("Locked") : t("Active")}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <div className="h-line" style={{ margin: "8px 0" }}></div>
-        <div className="muted" style={{ fontSize: 12, lineHeight: 1.6 }}>
-          {t("Estimates derived from Switch C2B / B2B flows reconciled against URA TIN registry. Refreshed weekly. Click to drill into source matching rules.")}
-        </div>
+
+        {/* Detail panel */}
+        {selected && (() => {
+          const st = statuses[selected.id];
+          return (
+            <div style={{
+              borderTop: "1px solid var(--pres-border)",
+              padding: "18px 20px",
+              background: "var(--pres-bg)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 700, fontSize: 15 }}>{selected.name}</span>
+                <span className="chip flat mono" style={{ fontSize: 11 }}>TIN {selected.tin}</span>
+                <span className="chip flat" style={{ fontSize: 11 }}>{selected.sector}</span>
+                <span className={`chip ${st === "locked" ? "bad" : "ok"}`} style={{ fontSize: 11 }}>
+                  {st === "locked" ? t("Locked") : t("Active")}
+                </span>
+                <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+                  <button
+                    disabled={st === "locked"}
+                    onClick={e => { e.stopPropagation(); doLock(selected.id); }}
+                    style={{
+                      padding: "5px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+                      border: "1px solid var(--pres-bad)", color: st === "locked" ? "var(--pres-text-dim)" : "var(--pres-bad)",
+                      background: "transparent", cursor: st === "locked" ? "not-allowed" : "pointer", opacity: st === "locked" ? 0.4 : 1
+                    }}
+                  >{t("Lock")}</button>
+                  <button
+                    disabled={st === "active"}
+                    onClick={e => { e.stopPropagation(); doUnlock(selected.id); }}
+                    style={{
+                      padding: "5px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600,
+                      border: "1px solid var(--pres-good)", color: st === "active" ? "var(--pres-text-dim)" : "var(--pres-good)",
+                      background: "transparent", cursor: st === "active" ? "not-allowed" : "pointer", opacity: st === "active" ? 0.4 : 1
+                    }}
+                  >{t("Unlock")}</button>
+                  <button
+                    onClick={e => { e.stopPropagation(); setSelectedId(null); }}
+                    style={{
+                      padding: "5px 10px", borderRadius: 6, fontSize: 13, border: "1px solid var(--pres-border)",
+                      background: "transparent", color: "var(--pres-text-dim)", cursor: "pointer"
+                    }}
+                  >✕</button>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                {/* Bank accounts */}
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pres-text-dim)", marginBottom: 8 }}>
+                    {t("Bank Accounts")}
+                  </div>
+                  <table className="pres-table">
+                    <thead><tr><th>{t("Bank")}</th><th>{t("Account")}</th><th className="num">{t("Balance (B)")}</th></tr></thead>
+                    <tbody>
+                      {selected.accounts.map((a, i) => (
+                        <tr key={i}>
+                          <td>{a.bank}</td>
+                          <td className="mono" style={{ fontSize: 11 }}>{a.acc}</td>
+                          <td className="num tnum">{a.bal.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* Right column: wallets + MTD stats */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pres-text-dim)", marginBottom: 8 }}>
+                      {t("Mobile Wallets")}
+                    </div>
+                    {selected.wallets.length === 0 ? (
+                      <span style={{ fontSize: 12, color: "var(--pres-text-dim)" }}>{t("No mobile wallets")}</span>
+                    ) : (
+                      <table className="pres-table">
+                        <thead><tr><th>{t("Provider")}</th><th>{t("Number")}</th><th className="num">{t("Balance (B)")}</th></tr></thead>
+                        <tbody>
+                          {selected.wallets.map((w, i) => (
+                            <tr key={i}>
+                              <td>{w.p}</td>
+                              <td className="mono" style={{ fontSize: 11 }}>{w.num}</td>
+                              <td className="num tnum">{w.bal.toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    <div style={{ flex: 1, background: "var(--pres-surface)", borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pres-text-dim)", marginBottom: 4 }}>{t("Transactions MTD")}</div>
+                      <div className="tnum" style={{ fontSize: 22, fontWeight: 700 }}>{selected.txCount.toLocaleString()}</div>
+                    </div>
+                    <div style={{ flex: 1, background: "var(--pres-surface)", borderRadius: 8, padding: "12px 14px" }}>
+                      <div style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pres-text-dim)", marginBottom: 4 }}>{t("Taxes Paid MTD")}</div>
+                      <div className="tnum" style={{ fontSize: 22, fontWeight: 700 }}>{selected.paidTaxes.toFixed(1)}<span style={{ fontSize: 12, fontWeight: 400, marginLeft: 4 }}>B UGX</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+}
 
 // =============== PDM ===============
 const TabPDM = ({ t, data, activeRegion, setActiveRegion }) => (
@@ -2881,6 +3715,7 @@ Object.assign(window, { TabGovMail });
 
 const TABS = [
   { id: "overview", icon: "dashboard",       label: "Overview" },
+  { id: "switch",   icon: "swap_horiz",      label: "Switch" },
   { id: "bou",      icon: "account_balance", label: "BoU" },
   { id: "fia",      icon: "shield",          label: "FIA" },
   { id: "ura",      icon: "request_quote",   label: "URA" },
@@ -2948,6 +3783,7 @@ function App() {
 
   const tabBody = {
     overview: <TabOverview t={t} data={data} activeRegion={activeRegion} setActiveRegion={pickRegionFromOverview} />,
+    switch:   <TabSwitch   t={t} data={data} />,
     bou:      <TabBoU      t={t} data={data} />,
     fia:      <TabFIA      t={t} data={data} />,
     ura:      <TabURA      t={t} data={data} />,
