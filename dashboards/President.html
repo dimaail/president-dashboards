@@ -413,6 +413,211 @@ html, body {
   background: var(--pres-accent); color: #fff;
 }
 
+/* ---------- Mail icon + dropdown ---------- */
+.mail-icon-btn {
+  position: relative;
+  appearance: none; background: transparent; border: none;
+  color: var(--pres-text-dim); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 4px;
+  transition: background 120ms, color 120ms;
+  flex-shrink: 0;
+}
+.mail-icon-btn:hover { background: rgba(0,0,0,0.06); color: var(--pres-text); }
+.mail-badge {
+  position: absolute; top: 1px; right: 1px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px; background: var(--pres-bad);
+  color: #fff; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; pointer-events: none;
+}
+.mail-dropdown-wrap { position: relative; }
+.mail-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 380px; max-height: 480px;
+  background: var(--pres-panel); border: 1px solid var(--pres-line);
+  border-radius: 4px; box-shadow: var(--switch-shadow-popover);
+  z-index: 200; display: flex; flex-direction: column; overflow: hidden;
+}
+.mail-dd-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--pres-line);
+  font-size: 13px; font-weight: 700; color: var(--pres-text);
+  flex-shrink: 0;
+}
+.mail-dd-close {
+  appearance: none; background: none; border: none; cursor: pointer;
+  color: var(--pres-text-dim); display: flex; align-items: center;
+  padding: 2px; border-radius: 2px; line-height: 1;
+}
+.mail-dd-close:hover { background: rgba(0,0,0,0.06); color: var(--pres-text); }
+.mail-dd-tabs {
+  display: flex; border-bottom: 1px solid var(--pres-line); flex-shrink: 0;
+}
+.mail-dd-tab {
+  appearance: none; background: none; border: none; cursor: pointer;
+  padding: 8px 16px; font-size: 12px; font-weight: 600;
+  color: var(--pres-text-dim); border-bottom: 2px solid transparent;
+  font-family: inherit; transition: color 120ms, border-color 120ms;
+}
+.mail-dd-tab.is-active { color: var(--pres-text); border-bottom-color: var(--pres-accent); }
+.mail-dd-list { overflow-y: auto; flex: 1; }
+.mail-dd-row {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 16px; border-bottom: 1px solid var(--pres-line);
+  cursor: pointer; transition: background 100ms;
+}
+.mail-dd-row:hover { background: rgba(0,0,0,0.03); }
+.mail-dd-row:last-child { border-bottom: none; }
+.mail-dd-row-top {
+  display: flex; align-items: center; gap: 8px;
+}
+.mail-dd-org {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--pres-text); background: var(--pres-line);
+  padding: 1px 6px; border-radius: 2px; flex-shrink: 0;
+}
+.mail-dd-subject {
+  font-size: 13px; color: var(--pres-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;
+}
+.mail-dd-row.is-unread .mail-dd-subject { font-weight: 700; }
+.mail-dd-row-bot {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--pres-text-mute);
+}
+.mail-dd-status {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 1px 6px; border-radius: 2px; text-transform: uppercase;
+}
+.mail-dd-status.s-unread { color: var(--pres-accent); background: rgba(255,122,0,0.12); }
+.mail-dd-status.s-urgent { color: var(--pres-bad); background: rgba(220,53,69,0.10); }
+.mail-dd-footer { border-top: 1px solid var(--pres-line); padding: 10px 16px; flex-shrink: 0; }
+.mail-dd-open-btn {
+  width: 100%; appearance: none; background: var(--pres-accent);
+  border: none; cursor: pointer; border-radius: 2px;
+  padding: 8px; font-size: 12px; font-weight: 700;
+  color: #fff; font-family: inherit; text-transform: uppercase;
+  letter-spacing: 0.06em; transition: opacity 150ms;
+}
+.mail-dd-open-btn:hover { opacity: 0.85; }
+
+/* ---------- Gov Mail page ---------- */
+.govmail {
+  display: grid; grid-template-rows: auto auto 1fr;
+  height: calc(100vh - 56px - 40px); gap: 0;
+}
+.govmail-toprow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 12px;
+}
+.govmail-toprow h2 { margin: 0; font-size: 16px; font-weight: 700; color: var(--pres-text); }
+.govmail-tabs {
+  display: flex; border-bottom: 1px solid var(--pres-line);
+}
+.govmail-tab {
+  appearance: none; background: none; border: none; cursor: pointer;
+  padding: 8px 20px; font-size: 12px; font-weight: 600;
+  color: var(--pres-text-dim); border-bottom: 2px solid transparent;
+  font-family: inherit; transition: color 120ms, border-color 120ms;
+}
+.govmail-tab.is-active { color: var(--pres-text); border-bottom-color: var(--pres-accent); }
+.govmail-body {
+  display: grid; grid-template-columns: 300px 1fr;
+  border: 1px solid var(--pres-line); border-top: none;
+  border-radius: 0 0 2px 2px; overflow: hidden;
+  background: var(--pres-panel); min-height: 0;
+}
+.govmail-list {
+  border-right: 1px solid var(--pres-line);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.govmail-list-row {
+  padding: 12px 16px; border-bottom: 1px solid var(--pres-line);
+  cursor: pointer; transition: background 100ms;
+  display: flex; flex-direction: column; gap: 4px;
+  border-left: 2px solid transparent;
+}
+.govmail-list-row:last-child { border-bottom: none; }
+.govmail-list-row:hover { background: rgba(0,0,0,0.03); }
+.govmail-list-row.is-selected { background: var(--switch-primary-bg); border-left-color: var(--pres-accent); }
+.govmail-list-row-top { display: flex; align-items: center; gap: 8px; }
+.govmail-list-org {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--pres-text); background: var(--pres-line);
+  padding: 1px 5px; border-radius: 2px; flex-shrink: 0;
+}
+.govmail-list-subject {
+  font-size: 13px; color: var(--pres-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.govmail-list-row.is-unread .govmail-list-subject { font-weight: 700; }
+.govmail-list-meta {
+  font-size: 11px; color: var(--pres-text-mute);
+  display: flex; align-items: center; gap: 6px;
+}
+.govmail-status-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.govmail-status-dot.s-unread { background: var(--pres-accent); }
+.govmail-status-dot.s-urgent { background: var(--pres-bad); }
+.govmail-urgent-label {
+  font-size: 10px; font-weight: 700; color: var(--pres-bad);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.govmail-detail {
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.govmail-detail-empty {
+  display: flex; align-items: center; justify-content: center;
+  flex: 1; color: var(--pres-text-mute); font-size: 13px; font-style: italic;
+}
+.govmail-detail-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--pres-line);
+  display: flex; flex-direction: column; gap: 5px; flex-shrink: 0;
+}
+.govmail-detail-subject {
+  font-size: 16px; font-weight: 700; color: var(--pres-text); margin: 0 0 6px;
+}
+.govmail-meta-row {
+  display: flex; gap: 6px; font-size: 12px; color: var(--pres-text-mute);
+}
+.govmail-meta-row strong { color: var(--pres-text-dim); min-width: 58px; }
+.govmail-detail-body {
+  padding: 20px 24px; flex: 1;
+  font-size: 13px; line-height: 1.7; color: var(--pres-text);
+  white-space: pre-line;
+}
+.govmail-detail-attachments {
+  padding: 0 24px 16px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
+}
+.govmail-attachments-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--pres-text-dim); margin-bottom: 4px;
+}
+.govmail-attachment-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.govmail-attachment-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border: 1px solid var(--pres-line);
+  border-radius: 2px; font-size: 12px; color: var(--pres-text);
+  cursor: pointer; transition: background 100ms;
+}
+.govmail-attachment-chip:hover { background: rgba(0,0,0,0.04); }
+.govmail-detail-actions {
+  padding: 12px 24px; border-top: 1px solid var(--pres-line);
+  display: flex; gap: 8px; flex-shrink: 0;
+}
+.govmail-action-btn {
+  appearance: none; border: 1px solid var(--pres-line);
+  background: var(--pres-panel); cursor: pointer; border-radius: 2px;
+  padding: 6px 16px; font-size: 12px; font-weight: 600;
+  color: var(--pres-text-dim); font-family: inherit;
+  transition: background 120ms, color 120ms;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.govmail-action-btn:hover { background: rgba(0,0,0,0.04); color: var(--pres-text); }
+
 /* ---------- Side nav ---------- */
 .pres-nav {
   grid-area: nav;
@@ -1198,8 +1403,14 @@ Object.assign(window, {
   TweakText, TweakNumber, TweakColor, TweakButton,
 });
 
-window.LangCtx = React.createContext(s => s);
-window.NavCtx  = React.createContext({ setTab: () => {} });
+window.LangCtx  = React.createContext(s => s);
+window.NavCtx   = React.createContext({ setTab: () => {} });
+window.MailCtx  = React.createContext({
+  messages: [], setMessages: () => {},
+  selectedId: null, setSelectedId: () => {},
+  ddOpen: false, setDdOpen: () => {},
+  ddTab: "inbox", setDdTab: () => {},
+});
 
 </script>
 <script type="text/babel">
@@ -1465,6 +1676,70 @@ const PRES_DATA = {
 };
 
 window.PRES_DATA = PRES_DATA;
+
+// ─── GOV MAIL SEED DATA ────────────────────────────────────────────────────
+const MAIL_SEED = [
+  {
+    id: "m1", tab: "inbox", sender_org: "FIA",
+    sender_name: "Director General, FIA",
+    recipient: "Office of the President",
+    subject: "Re: AML Compliance Report Q1 2026",
+    body: "Your Excellency,\n\nI write to provide the updated Anti-Money Laundering compliance report for Q1 2026. Fourteen institutions have been reviewed this quarter, with three flagged for enhanced due diligence.\n\nThe overall compliance rate stands at 87%, up from 81% in Q4 2025. Full details are attached.\n\nRespectfully,\nDirector General\nFinancial Intelligence Authority",
+    timestamp: "2026-05-03T10:42:00+03:00",
+    status: "unread",
+    attachments: ["AML_Q1_2026_Report.pdf", "Annex_A_Institution_List.xlsx"]
+  },
+  {
+    id: "m2", tab: "inbox", sender_org: "BoU",
+    sender_name: "Governor, Bank of Uganda",
+    recipient: "Office of the President",
+    subject: "Q3 Monetary Policy Brief",
+    body: "Your Excellency,\n\nPlease find enclosed the Bank of Uganda's Monetary Policy Brief for Q3 2025–26. Headline inflation has moderated to 4.2%, within the 5% target band.\n\nThe Monetary Policy Committee convenes on 14 May and will consider a 25 bps adjustment.\n\nWith respect,\nGovernor\nBank of Uganda",
+    timestamp: "2026-05-02T15:15:00+03:00",
+    status: "read",
+    attachments: ["MPC_Brief_Q3_2025-26.pdf"]
+  },
+  {
+    id: "m3", tab: "inbox", sender_org: "URA",
+    sender_name: "Commissioner General, URA",
+    recipient: "Office of the President",
+    subject: "Tax Revenue Summary — April 2026",
+    body: "Your Excellency,\n\nThis is an urgent briefing on April 2026 revenue performance. Total collections reached UGX 2.34 trillion, representing 96% of the monthly target.\n\nVAT and PAYE collections are below target by UGX 84 billion, primarily due to delayed remittances from five major taxpayers. Enforcement action has been initiated.\n\nUrgent policy guidance is requested on the three delinquent large taxpayers listed in the attached annex.\n\nCommissioner General\nUganda Revenue Authority",
+    timestamp: "2026-05-01T09:00:00+03:00",
+    status: "urgent",
+    attachments: ["Revenue_Summary_April_2026.pdf", "Delinquent_Taxpayers_Confidential.pdf"]
+  },
+  {
+    id: "m4", tab: "inbox", sender_org: "OP",
+    sender_name: "Chief of Staff, Office of the President",
+    recipient: "Office of the President",
+    subject: "Cabinet Meeting Agenda — May 5, 2026",
+    body: "Your Excellency,\n\nKindly find attached the agenda for the Cabinet Meeting scheduled for Tuesday, 5 May 2026 at 09:00 hrs in the Cabinet Room, State House Entebbe.\n\nItems include: (1) NDP IV mid-term review, (2) PDM phase 2 disbursement approval, (3) East Africa Community integration update.\n\nChief of Staff\nOffice of the President",
+    timestamp: "2026-04-30T14:30:00+03:00",
+    status: "unread",
+    attachments: ["Cabinet_Agenda_05_May_2026.pdf"]
+  },
+  {
+    id: "m5", tab: "outbox", sender_org: "OP",
+    sender_name: "Office of the President",
+    recipient: "Governor, Bank of Uganda",
+    subject: "Request: FX Reserve Update",
+    body: "Your Excellency the Governor,\n\nKindly provide an updated briefing on Uganda's foreign exchange reserve position as at end-April 2026, including months of import cover and any significant movements in reserve composition.\n\nThis briefing is required ahead of the regional economic summit on 10 May 2026.\n\nBy direction of H.E. the President",
+    timestamp: "2026-04-28T11:00:00+03:00",
+    status: "read",
+    attachments: []
+  },
+  {
+    id: "m6", tab: "outbox", sender_org: "OP",
+    sender_name: "Office of the President",
+    recipient: "Director General, FIA",
+    subject: "Directive: Enhanced Monitoring Protocol",
+    body: "Director General,\n\nFurther to the security briefing of 22 April 2026, H.E. the President directs that the Financial Intelligence Authority implement an enhanced monitoring protocol for cross-border transactions above USD 50,000 with immediate effect.\n\nA progress report is expected by 15 May 2026.\n\nBy direction of H.E. the President",
+    timestamp: "2026-04-25T09:30:00+03:00",
+    status: "read",
+    attachments: []
+  }
+];
 window.fmt = fmt;
 window.fmtShort = fmtShort;
 window.REGIONS = REGIONS;
@@ -2424,6 +2699,122 @@ const I18N = {
   }
 };
 
+// ─── GOV MAIL HELPERS ─────────────────────────────────────────────────────
+function formatMailTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffDays === 0) return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return d.toLocaleDateString("en-GB", { weekday: "short" });
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatMailTimeFull(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) +
+    " · " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + " EAT";
+}
+
+// ─── TAB GOV MAIL ─────────────────────────────────────────────────────────
+const TabGovMail = ({ t }) => {
+  const { messages, setMessages, selectedId, setSelectedId } = React.useContext(window.MailCtx);
+  const [mailTab, setMailTab] = React.useState("inbox");
+
+  const visible = messages.filter(m => m.tab === mailTab)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  const selected = messages.find(m => m.id === selectedId) || null;
+
+  const openMessage = (id) => {
+    setSelectedId(id);
+    setMessages(prev => prev.map(m => m.id === id && m.status !== "urgent" ? { ...m, status: "read" } : m));
+  };
+
+  return (
+    <div className="govmail">
+      <div className="govmail-toprow">
+        <h2><Icon name="mail" size={18} style={{ marginRight: 8, verticalAlign: "middle" }} />{t("Gov Mail")}</h2>
+      </div>
+      <div className="govmail-tabs">
+        {["inbox", "outbox"].map(id => (
+          <button key={id}
+            className={`govmail-tab ${mailTab === id ? "is-active" : ""}`}
+            onClick={() => { setMailTab(id); setSelectedId(null); }}>
+            {t(id === "inbox" ? "Inbox" : "Outbox")}
+            {id === "inbox" && messages.filter(m => m.tab === "inbox" && m.status !== "read").length > 0
+              ? ` (${messages.filter(m => m.tab === "inbox" && m.status !== "read").length})`
+              : ""}
+          </button>
+        ))}
+      </div>
+      <div className="govmail-body">
+        {/* ── Message list ── */}
+        <div className="govmail-list">
+          {visible.length === 0
+            ? <div style={{ padding: 20, color: "var(--pres-text-mute)", fontSize: 13, fontStyle: "italic" }}>{t("No messages")}</div>
+            : visible.map(m => (
+              <div key={m.id}
+                className={`govmail-list-row ${m.status !== "read" ? "is-unread" : ""} ${m.id === selectedId ? "is-selected" : ""}`}
+                onClick={() => openMessage(m.id)}>
+                <div className="govmail-list-row-top">
+                  <span className="govmail-list-org">{m.sender_org}</span>
+                  <span className="govmail-list-subject">
+                    {m.subject.length > 38 ? m.subject.slice(0, 38) + "…" : m.subject}
+                  </span>
+                </div>
+                <div className="govmail-list-meta">
+                  {m.status !== "read" && (
+                    <span className={`govmail-status-dot s-${m.status}`} />
+                  )}
+                  {m.status === "urgent" && (
+                    <span className="govmail-urgent-label">⚠ Urgent</span>
+                  )}
+                  <span>{formatMailTime(m.timestamp)}</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+        {/* ── Message detail ── */}
+        <div className="govmail-detail">
+          {!selected
+            ? <div className="govmail-detail-empty">{t("Select a message to read")}</div>
+            : <>
+              <div className="govmail-detail-header">
+                <p className="govmail-detail-subject">{selected.subject}</p>
+                <div className="govmail-meta-row"><strong>{t("From")}</strong>{selected.sender_name}</div>
+                <div className="govmail-meta-row"><strong>{t("To")}</strong>{selected.recipient}</div>
+                <div className="govmail-meta-row"><strong>{t("Date")}</strong>{formatMailTimeFull(selected.timestamp)}</div>
+              </div>
+              <div className="govmail-detail-body">{selected.body}</div>
+              {selected.attachments && selected.attachments.length > 0 && (
+                <div className="govmail-detail-attachments">
+                  <div className="govmail-attachments-label"><Icon name="attach_file" size={13} /> {t("Attachments")}</div>
+                  <div className="govmail-attachment-chips">
+                    {selected.attachments.map(f => (
+                      <span key={f} className="govmail-attachment-chip">
+                        <Icon name="description" size={13} />{f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="govmail-detail-actions">
+                <button className="govmail-action-btn"><Icon name="reply" size={14} />{t("Reply")}</button>
+                <button className="govmail-action-btn"><Icon name="forward" size={14} />{t("Forward")}</button>
+              </div>
+            </>
+          }
+        </div>
+      </div>
+    </div>
+  );
+};
+Object.assign(window, { TabGovMail });
+
 const TABS = [
   { id: "overview", icon: "dashboard",       label: "Overview" },
   { id: "bou",      icon: "account_balance", label: "BoU" },
@@ -2443,10 +2834,39 @@ function App() {
   const [tweaks, setTweak]              = useTweaks(TWEAK_DEFAULTS);
   const [now, setNow]                   = React.useState(new Date());
 
+  // Gov Mail state
+  const [messages, setMessages]         = React.useState(window.MAIL_SEED);
+  const [selectedId, setSelectedId]     = React.useState(null);
+  const [ddOpen, setDdOpen]             = React.useState(false);
+  const [ddTab, setDdTab]               = React.useState("inbox");
+  const ddRef                           = React.useRef(null);
+
+  const unreadCount = React.useMemo(
+    () => messages.filter(m => m.tab === "inbox" && m.status !== "read").length,
+    [messages]
+  );
+
   React.useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Close dropdown on outside click or Escape
+  React.useEffect(() => {
+    if (!ddOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setDdOpen(false); };
+    const onClick = (e) => { if (ddRef.current && !ddRef.current.contains(e.target)) setDdOpen(false); };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("mousedown", onClick); };
+  }, [ddOpen]);
+
+  const openFromDropdown = (id) => {
+    setSelectedId(id);
+    setMessages(prev => prev.map(m => m.id === id && m.status !== "urgent" ? { ...m, status: "read" } : m));
+    setDdOpen(false);
+    setTab("govmail");
+  };
 
   const t    = (s) => (I18N[tweaks.language] && I18N[tweaks.language][s]) || s;
   const data = window.PRES_DATA;
@@ -2469,13 +2889,21 @@ function App() {
     ura:      <TabURA      t={t} data={data} />,
     pdm:      <TabPDM      t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
     news:     <TabNews     t={t} />,
+    govmail:  <TabGovMail  t={t} />,
   };
 
   const clock      = now.toLocaleTimeString("en-GB", { hour12: false });
   const todayLabel = now.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
   const periodEnd  = now.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "2-digit" }).replace(/\//g, ".");
 
+  const ddMessages = messages.filter(m => m.tab === ddTab)
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 3);
+
+  const mailCtxValue = { messages, setMessages, selectedId, setSelectedId, ddOpen, setDdOpen, ddTab, setDdTab };
+
   return (
+    <window.MailCtx.Provider value={mailCtxValue}>
     <window.NavCtx.Provider value={{ setTab }}>
     <window.LangCtx.Provider value={t}>
     <div className={`pres density-${tweaks.density === "comfortable" ? "comfortable" : "compact"}`}
@@ -2513,6 +2941,64 @@ function App() {
             <button className={tweaks.language === "en" ? "is-active" : ""} onClick={() => setTweak("language", "en")}>EN</button>
             <button className={tweaks.language === "lg" ? "is-active" : ""} onClick={() => setTweak("language", "lg")}>Luganda</button>
           </span>
+
+          {/* ── Mail icon + dropdown ── */}
+          <span className="mail-dropdown-wrap" ref={ddRef}>
+            <button className="mail-icon-btn" title="Gov Mail" onClick={() => setDdOpen(o => !o)}>
+              <Icon name="mail" size={20} />
+              {unreadCount > 0 && <span className="mail-badge">{unreadCount}</span>}
+            </button>
+            {ddOpen && (
+              <div className="mail-dropdown">
+                <div className="mail-dd-head">
+                  State Mail
+                  <button className="mail-dd-close" onClick={() => setDdOpen(false)}>
+                    <Icon name="close" size={18} />
+                  </button>
+                </div>
+                <div className="mail-dd-tabs">
+                  {["inbox", "outbox"].map(id => (
+                    <button key={id}
+                      className={`mail-dd-tab ${ddTab === id ? "is-active" : ""}`}
+                      onClick={() => setDdTab(id)}>
+                      {id === "inbox" ? `Inbox${unreadCount > 0 ? ` (${unreadCount})` : ""}` : "Outbox"}
+                    </button>
+                  ))}
+                </div>
+                <div className="mail-dd-list">
+                  {ddMessages.length === 0
+                    ? <div style={{ padding: "16px", color: "var(--pres-text-mute)", fontSize: 12, fontStyle: "italic" }}>No messages</div>
+                    : ddMessages.map(m => (
+                      <div key={m.id}
+                        className={`mail-dd-row ${m.status !== "read" ? "is-unread" : ""}`}
+                        onClick={() => openFromDropdown(m.id)}>
+                        <div className="mail-dd-row-top">
+                          <span className="mail-dd-org">{m.sender_org}</span>
+                          <span className="mail-dd-subject">
+                            {m.subject.length > 45 ? m.subject.slice(0, 45) + "…" : m.subject}
+                          </span>
+                        </div>
+                        <div className="mail-dd-row-bot">
+                          <span>{formatMailTime(m.timestamp)}</span>
+                          {m.status !== "read" && (
+                            <span className={`mail-dd-status s-${m.status}`}>
+                              {m.status === "urgent" ? "⚠ Urgent" : "● Unread"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  }
+                </div>
+                <div className="mail-dd-footer">
+                  <button className="mail-dd-open-btn" onClick={() => { setDdOpen(false); setTab("govmail"); }}>
+                    Open Gov Mail
+                  </button>
+                </div>
+              </div>
+            )}
+          </span>
+
           <span className="pres-pill">
             <span className="swatch" />
             {t("All systems live")}
@@ -2541,6 +3027,13 @@ function App() {
                 onClick={() => setTab("news")}>
           <Icon name="newspaper" size={18} />{t("News")}
           <span style={{ marginLeft: "auto", fontSize: 10, background: "var(--pres-accent)", color: "#fff", borderRadius: 8, padding: "1px 6px", fontWeight: 700 }}>10</span>
+        </button>
+        <button className={`pres-nav-item ${tab === "govmail" ? "is-active" : ""}`}
+                onClick={() => setTab("govmail")}>
+          <Icon name="mail" size={18} />{t("Gov Mail")}
+          {unreadCount > 0 && (
+            <span style={{ marginLeft: "auto", fontSize: 10, background: "var(--pres-bad)", color: "#fff", borderRadius: 8, padding: "1px 6px", fontWeight: 700 }}>{unreadCount}</span>
+          )}
         </button>
 
         <div className="pres-nav-foot">
@@ -2599,6 +3092,7 @@ function App() {
     </div>
     </window.LangCtx.Provider>
     </window.NavCtx.Provider>
+    </window.MailCtx.Provider>
   );
 }
 
