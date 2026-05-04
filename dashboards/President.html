@@ -4939,5 +4939,321 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 
+<!-- ── AI Chat ─────────────────────────────────────────────────────── -->
+<style>
+  /* FAB */
+  #ai-fab {
+    position: fixed; bottom: 28px; right: 28px; z-index: 9000;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #5b4de8; border: none; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(91,77,232,.55);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, box-shadow .15s;
+  }
+  #ai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(91,77,232,.7); }
+  #ai-fab svg { pointer-events: none; }
+
+  /* Panel */
+  #ai-panel {
+    position: fixed; bottom: 92px; right: 28px; z-index: 8999;
+    width: 380px; height: 560px;
+    background: #131720; border: 1px solid #1e2535;
+    border-radius: 14px; display: flex; flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,.6);
+    transform: translateY(24px) scale(.97); opacity: 0;
+    pointer-events: none;
+    transition: transform .22s cubic-bezier(.34,1.56,.64,1), opacity .18s;
+  }
+  #ai-panel.open {
+    transform: translateY(0) scale(1); opacity: 1; pointer-events: all;
+  }
+
+  /* Header */
+  #ai-header {
+    padding: 14px 16px 13px;
+    border-bottom: 1px solid #1e2535;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #ai-header span {
+    font: 700 13px/1 'Inter', sans-serif;
+    letter-spacing: .06em; color: #fff;
+  }
+  #ai-header span small {
+    display: block; font-weight: 400; font-size: 10px;
+    color: #5b4de8; margin-top: 2px; letter-spacing: .04em;
+  }
+  #ai-close {
+    background: none; border: none; cursor: pointer; color: #6b7280;
+    padding: 4px; line-height: 1; font-size: 18px;
+    transition: color .12s;
+  }
+  #ai-close:hover { color: #e5e7eb; }
+
+  /* Messages */
+  #ai-messages {
+    flex: 1; overflow-y: auto; padding: 14px 14px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+    scrollbar-width: thin; scrollbar-color: #1e2535 transparent;
+  }
+  .ai-msg {
+    max-width: 88%; font: 400 12.5px/1.55 'Inter', sans-serif;
+    padding: 9px 12px; border-radius: 10px; word-break: break-word;
+  }
+  .ai-msg.assistant {
+    background: #1a2030; color: #d1d5db; align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .ai-msg.user {
+    background: #5b4de8; color: #fff; align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .ai-msg strong { font-weight: 700; color: #fff; }
+  .ai-msg.assistant strong { color: #a5b4fc; }
+
+  /* Typing indicator */
+  #ai-typing {
+    display: none; align-items: center; gap: 4px;
+    padding: 9px 12px;
+    background: #1a2030; border-radius: 10px; border-bottom-left-radius: 3px;
+    align-self: flex-start; width: fit-content;
+  }
+  #ai-typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #5b4de8; display: inline-block;
+    animation: aitypedot 1.2s infinite ease-in-out;
+  }
+  #ai-typing span:nth-child(2) { animation-delay: .2s; }
+  #ai-typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes aitypedot {
+    0%,60%,100% { opacity: .25; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+  }
+
+  /* Chips */
+  #ai-chips {
+    padding: 6px 14px 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .ai-chip {
+    font: 400 11px/1 'Inter', sans-serif; color: #a5b4fc;
+    background: #1a2030; border: 1px solid #2d3651;
+    border-radius: 20px; padding: 5px 10px; cursor: pointer;
+    white-space: nowrap; transition: background .12s, border-color .12s;
+  }
+  .ai-chip:hover { background: #252e48; border-color: #5b4de8; }
+
+  /* Input row */
+  #ai-input-row {
+    padding: 10px 12px 12px;
+    border-top: 1px solid #1e2535;
+    display: flex; gap: 8px; align-items: flex-end;
+  }
+  #ai-textarea {
+    flex: 1; background: #1a2030; border: 1px solid #2d3651;
+    border-radius: 8px; color: #e5e7eb;
+    font: 400 12.5px/1.5 'Inter', sans-serif;
+    padding: 8px 10px; resize: none; outline: none;
+    max-height: 90px; min-height: 36px;
+    transition: border-color .12s;
+  }
+  #ai-textarea::placeholder { color: #4b5563; }
+  #ai-textarea:focus { border-color: #5b4de8; }
+  #ai-send {
+    width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+    background: #5b4de8; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
+  }
+  #ai-send:hover { background: #4a3dd4; }
+  #ai-send:disabled { background: #2d3651; cursor: default; }
+  #ai-send svg { pointer-events: none; }
+</style>
+
+<!-- FAB button -->
+<button id="ai-fab" title="SWITCH Intelligence">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<!-- Chat panel -->
+<div id="ai-panel" role="dialog" aria-label="SWITCH Intelligence chat">
+  <div id="ai-header">
+    <span>SWITCH Intelligence <small>AI ASSISTANT · CLASSIFIED</small></span>
+    <button id="ai-close" aria-label="Close">&#x2715;</button>
+  </div>
+  <div id="ai-messages">
+    <div class="ai-msg assistant">
+      Good morning. I have access to live data from BoU, URA, FIA, PDM, and the National Payment Switch. What would you like to know?
+    </div>
+    <div id="ai-typing"><span></span><span></span><span></span></div>
+  </div>
+  <div id="ai-chips">
+    <button class="ai-chip">Critical alerts</button>
+    <button class="ai-chip">PDM worst region</button>
+    <button class="ai-chip">FIA fraud status</button>
+    <button class="ai-chip">URA vs target</button>
+  </div>
+  <div id="ai-input-row">
+    <textarea id="ai-textarea" rows="1" placeholder="Ask about any dashboard metric…"></textarea>
+    <button id="ai-send" aria-label="Send">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const SUPABASE_URL = 'https://qiygegopwiarqdzgldpa.supabase.co';
+  let systemPrompt = null;
+  let history = [];
+
+  async function initChat() {
+    const res = await fetch('../data/mock_data.json').catch(function() { return null; });
+    if (!res || !res.ok) {
+      systemPrompt = 'You are SWITCH Intelligence — the AI assistant for Uganda\'s Presidential Executive Dashboard. Answer concisely and at executive level. Bold key numbers with **markdown**.';
+      console.warn('[ai-chat] mock_data.json unavailable — using minimal prompt. Open via http://localhost:7820 for full data.');
+      return;
+    }
+    const data = await res.json();
+    systemPrompt = `You are SWITCH Intelligence — the AI assistant embedded in Uganda's Presidential Executive Dashboard. You have real-time access to data from BoU, URA, FIA, PDM, and the National Payment Switch.
+
+TODAY'S DATA SNAPSHOT (${data.meta.snapshot_time}):
+
+=== OVERVIEW ===
+- URA Tax MTD: ${data.overview.ura_tax_collected_mtd.value} T UGX (${data.overview.ura_tax_collected_mtd.delta})
+- Correspondent Balances at BoU: ${data.overview.correspondent_balances_bou.value} T UGX (${data.overview.correspondent_balances_bou.delta})
+- Budget Execution: ${data.overview.budget_execution_pct_of_plan.value}% of plan (${data.overview.budget_execution_pct_of_plan.delta})
+- PDM Disbursement: ${data.overview.pdm_disbursement_pct_of_applications.value}% (${data.overview.pdm_disbursement_pct_of_applications.delta})
+- FIA Blocks Today: ${data.overview.fia_blocks_today.value} tx / ${data.overview.fia_blocks_today.amount}
+
+=== SWITCH ===
+- Activity Index: ${data.switch.activity_index.value} pts (${data.switch.activity_index.delta})
+- Volume Today: ${data.switch.volume_today.value} T UGX
+- Transactions: ${data.switch.transactions_today.value}M
+- Uptime: ${data.switch.uptime_pct}%
+- Channel mix: Mobile money ${data.switch.channel_mix.mobile_money}%, Bank ${data.switch.channel_mix.bank}%, Card ${data.switch.channel_mix.card}%
+
+=== BoU ===
+- M0: ${data.bou.monetary_aggregates.M0_currency_in_circulation.value} T UGX
+- M1: ${data.bou.monetary_aggregates.M1_narrow_money.value} T UGX
+- M2: ${data.bou.monetary_aggregates.M2_broad_money.value} T UGX
+- M3: ${data.bou.monetary_aggregates.M3_extended_broad_money.value} T UGX
+- PMI: ${data.bou.business_activity_index.composite_pmi} (${data.bou.business_activity_index.signal})
+
+=== URA ===
+- Tax YTD: ${data.ura.tax_collected_ytd.value} T UGX (${data.ura.tax_collected_ytd.delta})
+- Tax MTD: ${data.ura.tax_collected_mtd.value} T UGX (${data.ura.tax_collected_mtd.delta})
+- Declared vs Cashflow Gap: ${data.ura.declared_vs_cashflow_gap.value}%
+- Unregistered taxpayers: ${data.ura.unregistered_taxpayers_est.value}K
+- High-risk mismatches: ${data.ura.high_risk_count} entities
+- Top taxpayer: ${data.ura.top_taxpayers[0].company} — ${data.ura.top_taxpayers[0].taxes_mtd_B_UGX}B UGX MTD
+
+=== FIA ===
+- Total TX Today: ${data.fia.total_transactions_today.value}K
+- Fraud TX: ${data.fia.fraud_transactions_today.value} tx (${data.fia.fraud_transactions_today.delta})
+- Blocked Amount: ${data.fia.blocked_tx_amount_today.value} B UGX
+- Fraud share of value: ${data.fia.fraud_today.share_of_tx_value_pct}%
+- Top fraud type: ${data.fia.fraud_cases_by_type[0].type} (${data.fia.fraud_cases_by_type[0].count} cases)
+
+=== PDM ===
+- Allocated YTD: ${data.pdm.allocated_ytd.value} T UGX
+- Disbursed YTD: ${data.pdm.disbursed_ytd.value} T UGX
+- Disbursement Rate: ${data.pdm.disbursement_rate.value}%
+- Best region: ${data.pdm.regions[0].name} ${data.pdm.regions[0].rate_pct}%
+- Worst region: ${data.pdm.regions[5].name} ${data.pdm.regions[5].rate_pct}%
+
+=== ACTIVE ALERTS (${data.alerts_all.filter(function(a){return a.level==='CRIT';}).length} CRITICAL) ===
+${data.alerts_all.map(function(a){return '['+a.level+'] '+a.time+' — '+a.title+': '+a.detail;}).join('\n')}
+
+=== RULES ===
+- Be concise. Executive-level. No bullet-point walls.
+- Bold key numbers using **markdown**.
+- Max 120 words unless detailed breakdown is explicitly requested.
+- Proactively mention CRIT alerts when relevant to the question.
+- If asked to take action (block, approve, send) — respond: "Action queued — pending Phase 2 authorization."
+- Tone: calm, precise, like a senior analyst briefing the President.`;
+  }
+
+  async function sendMessage(userText) {
+    history.push({ role: 'user', content: userText });
+    const res = await fetch(SUPABASE_URL + '/functions/v1/ai-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: systemPrompt, messages: history })
+    });
+    const data = await res.json();
+    console.log('[ai-proxy response]', JSON.stringify(data).slice(0, 400));
+    if (data.error) throw new Error(JSON.stringify(data.error));
+    if (!data.choices || !data.choices[0]) throw new Error('Unexpected response: ' + JSON.stringify(data).slice(0, 200));
+    const reply = data.choices[0].message.content;
+    history.push({ role: 'assistant', content: reply });
+    return reply;
+  }
+
+  const fab    = document.getElementById('ai-fab');
+  const panel  = document.getElementById('ai-panel');
+  const closeB = document.getElementById('ai-close');
+  const msgs   = document.getElementById('ai-messages');
+  const typing = document.getElementById('ai-typing');
+  const ta     = document.getElementById('ai-textarea');
+  const send   = document.getElementById('ai-send');
+  const chips  = document.querySelectorAll('.ai-chip');
+
+  initChat().catch(console.error);
+
+  fab.addEventListener('click', function() { panel.classList.toggle('open'); });
+  closeB.addEventListener('click', function() { panel.classList.remove('open'); });
+
+  function renderMsg(role, text) {
+    var div = document.createElement('div');
+    div.className = 'ai-msg ' + role;
+    div.innerHTML = text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    msgs.insertBefore(div, typing);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function submit(text) {
+    text = text.trim();
+    if (!text) return;
+    ta.value = '';
+    ta.style.height = '';
+    renderMsg('user', text);
+    typing.style.display = 'flex';
+    msgs.scrollTop = msgs.scrollHeight;
+    send.disabled = true;
+    try {
+      var reply = await sendMessage(text);
+      renderMsg('assistant', reply);
+    } catch (e) {
+      renderMsg('assistant', '**Error:** Could not reach SWITCH Intelligence. Check network or AI proxy.');
+    } finally {
+      typing.style.display = 'none';
+      send.disabled = false;
+    }
+  }
+
+  send.addEventListener('click', function() { submit(ta.value); });
+  ta.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(ta.value); }
+  });
+  ta.addEventListener('input', function() {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 90) + 'px';
+  });
+  chips.forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      panel.classList.add('open');
+      submit(chip.textContent);
+    });
+  });
+})();
+</script>
+
 </body>
 </html>

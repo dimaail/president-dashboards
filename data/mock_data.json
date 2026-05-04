@@ -1,0 +1,498 @@
+{
+  "meta": {
+    "snapshot_time": "2023-11-21T14:38:02+03:00",
+    "period": "2026-05-04",
+    "status": "LIVE · ALL SYSTEMS",
+    "currency": "UGX",
+    "usd_ugx_rate": 3742.50
+  },
+
+  "overview": {
+    "ura_tax_collected_mtd": {
+      "value": 2.14,
+      "unit": "T UGX",
+      "delta": "+1.4%",
+      "vs": "prior month",
+      "trend": "up"
+    },
+    "correspondent_balances_bou": {
+      "value": 3.87,
+      "unit": "T UGX",
+      "delta": "+0.6%",
+      "vs": "prior day",
+      "trend": "up"
+    },
+    "bou_balances_foreign_banks": {
+      "value": 2.21,
+      "unit": "T UGX",
+      "delta": "-0.3%",
+      "vs": "prior day",
+      "trend": "down"
+    },
+    "budget_execution_pct_of_plan": {
+      "value": 67.60,
+      "unit": "%",
+      "delta": "-2.1%",
+      "vs": "plan",
+      "trend": "down"
+    },
+    "pdm_disbursement_pct_of_applications": {
+      "value": 71.30,
+      "unit": "%",
+      "delta": "+0.9%",
+      "vs": "prior month",
+      "trend": "up"
+    },
+    "fia_blocks_today": {
+      "value": 250,
+      "unit": "tx",
+      "amount": "248B UGX",
+      "delta": "-8.2%",
+      "vs": "prior day",
+      "trend": "down"
+    }
+  },
+
+  "switch": {
+    "activity_index": {
+      "value": 128.4,
+      "unit": "pts",
+      "delta": "+2.3%",
+      "vs": "prior"
+    },
+    "volume_today": {
+      "value": 8.91,
+      "unit": "T UGX",
+      "delta": "+5.7%",
+      "vs": "prior"
+    },
+    "transactions_today": {
+      "value": 23.18,
+      "unit": "M",
+      "delta": "+3.1%",
+      "vs": "prior"
+    },
+    "uptime_pct": 99.997,
+    "participants_healthy": 28,
+    "settlement_breaches_24h": 0,
+    "channel_mix": {
+      "mobile_money": 58,
+      "bank": 31,
+      "card": 8,
+      "crypto_fiat_ramp": 3
+    },
+    "transaction_type_mix": {
+      "P2P": 41,
+      "C2B_retail": 24,
+      "B2B": 18,
+      "G2P_P2G": 12,
+      "cross_border": 5
+    },
+    "volume_30d_trend": "stable_with_uptick"
+  },
+
+  "bou": {
+    "monetary_aggregates": {
+      "M0_currency_in_circulation": {
+        "value": 8.74,
+        "unit": "T UGX",
+        "delta": "+1.6%",
+        "vs": "prior month"
+      },
+      "M1_narrow_money": {
+        "value": 15.10,
+        "unit": "T UGX",
+        "delta": "+2.1%",
+        "vs": "prior month"
+      },
+      "M2_broad_money": {
+        "value": 26.40,
+        "unit": "T UGX",
+        "delta": "+3.4%",
+        "vs": "prior month"
+      },
+      "M3_extended_broad_money": {
+        "value": 32.40,
+        "unit": "T UGX",
+        "delta": "+2.8%",
+        "vs": "prior month"
+      }
+    },
+    "business_activity_index": {
+      "composite_pmi": 53.1,
+      "signal": "Expansion",
+      "baseline": 50,
+      "delta_mom": "+1.2 pts",
+      "note": "Composite of NPS volume, tax inflow, PMI survey, and interbank liquidity. Above 50 = expanding."
+    },
+    "liquidity_digitalization_rails": {
+      "mobile_money": 58,
+      "bank_to_bank": 31,
+      "card": 8,
+      "cross_border": 2,
+      "crypto_vasp": 1
+    },
+    "consumption_and_business_activity": {
+      "retail_spend_C2B": { "value": "5.31T", "delta": "+6.2%", "trend": "up" },
+      "avg_merchant_turnover": { "value": "24.4M", "delta": "+2.4%", "trend": "up" },
+      "active_merchants": { "value": "218K", "delta": "+4.4%", "trend": "up" },
+      "pct_C2B_share": { "value": "47%", "delta": "+1.1%", "trend": "up" },
+      "avg_payment_ticket": { "value": "UGX 384K", "delta": "-1.8%", "trend": "down" }
+    },
+    "correspondent_balances": {
+      "total": 3.87,
+      "unit": "T UGX",
+      "banks": [
+        { "name": "Stanbic Bank Uganda", "balance_T_UGX": 0.82 },
+        { "name": "Standard Chartered Bank Uganda", "balance_T_UGX": 0.61 },
+        { "name": "Centenary Bank", "balance_T_UGX": 0.48 },
+        { "name": "DFCU Bank", "balance_T_UGX": 0.44 },
+        { "name": "Absa Bank Uganda", "balance_T_UGX": 0.38 },
+        { "name": "Housing Finance Bank", "balance_T_UGX": 0.31 },
+        { "name": "Equity Bank Uganda", "balance_T_UGX": 0.28 },
+        { "name": "KCB Bank Uganda", "balance_T_UGX": 0.26 },
+        { "name": "Diamond Trust Bank Uganda", "balance_T_UGX": 0.19 },
+        { "name": "Finance Trust Bank", "balance_T_UGX": 0.10 }
+      ]
+    },
+    "alerts": [
+      {
+        "level": "WARN",
+        "time": "14:31",
+        "title": "Liquidity below 5% floor",
+        "detail": "Crane Bank intraday liquidity 4.2% — sustained 38 min.",
+        "agency": "BoU",
+        "type": "monitor"
+      }
+    ]
+  },
+
+  "ura": {
+    "tax_collected_ytd": {
+      "value": 24.70,
+      "unit": "T UGX",
+      "delta": "+6.1%",
+      "trend": "up"
+    },
+    "tax_collected_mtd": {
+      "value": 2.14,
+      "unit": "T UGX",
+      "delta": "+1.4%",
+      "trend": "up"
+    },
+    "declared_vs_cashflow_gap": {
+      "value": 11.80,
+      "unit": "%",
+      "delta": "+0.6%",
+      "trend": "up",
+      "risk": "HIGH"
+    },
+    "unregistered_taxpayers_est": {
+      "value": 318,
+      "unit": "K",
+      "delta": "-2.4%",
+      "potential_revenue_per_year": "UGX 124.7B"
+    },
+    "unregistered_vat": {
+      "value": 12.48,
+      "unit": "K",
+      "potential_revenue_per_year": "UGX 488.4B"
+    },
+    "regional_budget_target_vs_actual": [
+      { "region": "Central (Kampala)", "actual_T_UGX": 12.84, "status": "on_track" },
+      { "region": "Eastern (Jinja, Mbale)", "actual_T_UGX": 3.14, "status": "on_track" },
+      { "region": "Western (Mbarara)", "actual_T_UGX": 2.69, "status": "on_track" },
+      { "region": "Northern (Gulu, Lira)", "actual_T_UGX": 1.02, "status": "below" },
+      { "region": "West Nile (Arua)", "actual_T_UGX": 0.51, "status": "below" },
+      { "region": "Karamoja (Moroto)", "actual_T_UGX": 0.21, "status": "critical" }
+    ],
+    "high_risk_cashflow_mismatches": [
+      {
+        "tin": "1000487231",
+        "taxpayer": "Kampala Metro Trading Ltd",
+        "declared_M": 184,
+        "cashflow_M": 612,
+        "gap_pct": "+228%",
+        "risk": "HIGH"
+      },
+      {
+        "tin": "1004471028",
+        "taxpayer": "Nile Logistics Cooperative",
+        "declared_M": 92,
+        "cashflow_M": 248,
+        "gap_pct": "+170%",
+        "risk": "HIGH"
+      },
+      {
+        "tin": "1009920441",
+        "taxpayer": "Mbarara FreshFoods Ltd",
+        "declared_M": 41,
+        "cashflow_M": 98,
+        "gap_pct": "+139%",
+        "risk": "MED"
+      },
+      {
+        "tin": "1011023556",
+        "taxpayer": "Jinja Industrial Holdings",
+        "declared_M": 228,
+        "cashflow_M": 412,
+        "gap_pct": "+81%",
+        "risk": "MED"
+      }
+    ],
+    "high_risk_count": 6,
+    "top_taxpayers": [
+      { "rank": 1, "company": "MTN Uganda Ltd", "sector": "TELECOM", "balance_B_UGX": 284.6, "taxes_mtd_B_UGX": 42.8, "tx_mtd": 28412, "status": "ACTIVE" },
+      { "rank": 2, "company": "Umeme Ltd", "sector": "ENERGY", "balance_B_UGX": 241.3, "taxes_mtd_B_UGX": 38.2, "tx_mtd": 18744, "status": "ACTIVE" },
+      { "rank": 3, "company": "Stanbic Bank Uganda Ltd", "sector": "BANKING", "balance_B_UGX": 198.4, "taxes_mtd_B_UGX": 31.4, "tx_mtd": 42180, "status": "ACTIVE" },
+      { "rank": 4, "company": "Airtel Uganda Ltd", "sector": "TELECOM", "balance_B_UGX": 176.8, "taxes_mtd_B_UGX": 28.6, "tx_mtd": 24187, "status": "ACTIVE" },
+      { "rank": 5, "company": "Standard Chartered Bank Uganda", "sector": "BANKING", "balance_B_UGX": 162.3, "taxes_mtd_B_UGX": 26.1, "tx_mtd": 31024, "status": "ACTIVE" },
+      { "rank": 6, "company": "Uganda Breweries Ltd", "sector": "FMCG", "balance_B_UGX": 112.4, "taxes_mtd_B_UGX": 22.4, "tx_mtd": 14288, "status": "ACTIVE" },
+      { "rank": 7, "company": "Nile Breweries Ltd", "sector": "FMCG", "balance_B_UGX": 98.6, "taxes_mtd_B_UGX": 19.8, "tx_mtd": 12481, "status": "ACTIVE" },
+      { "rank": 8, "company": "TotalEnergies Marketing Uganda", "sector": "ENERGY", "balance_B_UGX": 87.3, "taxes_mtd_B_UGX": 16.2, "tx_mtd": 10124, "status": "ACTIVE" },
+      { "rank": 9, "company": "Absa Bank Uganda Ltd", "sector": "BANKING", "balance_B_UGX": 81.2, "taxes_mtd_B_UGX": 14.8, "tx_mtd": 22380, "status": "ACTIVE" },
+      { "rank": 10, "company": "DFCU Bank Ltd", "sector": "BANKING", "balance_B_UGX": 74.8, "taxes_mtd_B_UGX": 13.2, "tx_mtd": 18024, "status": "ACTIVE" },
+      { "rank": 11, "company": "Vivo Energy Uganda (Shell)", "sector": "ENERGY", "balance_B_UGX": 48.4, "taxes_mtd_B_UGX": 9.8, "tx_mtd": 8124, "status": "ACTIVE" },
+      { "rank": 12, "company": "Centenary Bank Uganda", "sector": "BANKING", "balance_B_UGX": 43.6, "taxes_mtd_B_UGX": 8.4, "tx_mtd": 28142, "status": "ACTIVE" },
+      { "rank": 13, "company": "Hima Cement Ltd (Lafarge)", "sector": "MANUFACTURING", "balance_B_UGX": 39.8, "taxes_mtd_B_UGX": 7.6, "tx_mtd": 6418, "status": "ACTIVE" },
+      { "rank": 14, "company": "British American Tobacco Uganda", "sector": "FMCG", "balance_B_UGX": 36.4, "taxes_mtd_B_UGX": 12.2, "tx_mtd": 4128, "status": "ACTIVE" },
+      { "rank": 15, "company": "Equity Bank Uganda Ltd", "sector": "BANKING", "balance_B_UGX": 34.8, "taxes_mtd_B_UGX": 6.2, "tx_mtd": 19814, "status": "ACTIVE" },
+      { "rank": 16, "company": "KCB Bank Uganda Ltd", "sector": "BANKING", "balance_B_UGX": 31.2, "taxes_mtd_B_UGX": 5.8, "tx_mtd": 16481, "status": "ACTIVE" },
+      { "rank": 17, "company": "Century Bottling Company (Coca-Cola)", "sector": "FMCG", "balance_B_UGX": 29.4, "taxes_mtd_B_UGX": 5.4, "tx_mtd": 7241, "status": "ACTIVE" },
+      { "rank": 18, "company": "Mukwano Industries Uganda Ltd", "sector": "MANUFACTURING", "balance_B_UGX": 27.8, "taxes_mtd_B_UGX": 4.8, "tx_mtd": 5841, "status": "ACTIVE" },
+      { "rank": 19, "company": "Bidco Uganda Ltd", "sector": "MANUFACTURING", "balance_B_UGX": 25.6, "taxes_mtd_B_UGX": 4.2, "tx_mtd": 5218, "status": "ACTIVE" },
+      { "rank": 20, "company": "Roofings Group Uganda", "sector": "MANUFACTURING", "balance_B_UGX": 23.4, "taxes_mtd_B_UGX": 3.8, "tx_mtd": 4182, "status": "ACTIVE" },
+      { "rank": 21, "company": "Diamond Trust Bank Uganda", "sector": "BANKING", "balance_B_UGX": 18.4, "taxes_mtd_B_UGX": 3.2, "tx_mtd": 12481, "status": "ACTIVE" },
+      { "rank": 22, "company": "Tororo Cement Industries", "sector": "MANUFACTURING", "balance_B_UGX": 17.2, "taxes_mtd_B_UGX": 3.4, "tx_mtd": 3841, "status": "ACTIVE" },
+      { "rank": 23, "company": "Housing Finance Bank Uganda", "sector": "BANKING", "balance_B_UGX": 16.8, "taxes_mtd_B_UGX": 3.0, "tx_mtd": 8412, "status": "ACTIVE" },
+      { "rank": 24, "company": "Uganda Airlines", "sector": "AVIATION", "balance_B_UGX": 15.4, "taxes_mtd_B_UGX": 2.1, "tx_mtd": 4182, "status": "ACTIVE" },
+      { "rank": 25, "company": "Safal Steel Uganda (Mabati)", "sector": "MANUFACTURING", "balance_B_UGX": 14.2, "taxes_mtd_B_UGX": 2.8, "tx_mtd": 2841, "status": "ACTIVE" },
+      { "rank": 26, "company": "Uganda Clays Ltd", "sector": "MANUFACTURING", "balance_B_UGX": 12.8, "taxes_mtd_B_UGX": 2.4, "tx_mtd": 2418, "status": "ACTIVE" },
+      { "rank": 27, "company": "Cipla Quality Chemical Industries", "sector": "PHARMA", "balance_B_UGX": 11.6, "taxes_mtd_B_UGX": 2.2, "tx_mtd": 2184, "status": "ACTIVE" },
+      { "rank": 28, "company": "PostBank Uganda Ltd", "sector": "BANKING", "balance_B_UGX": 10.8, "taxes_mtd_B_UGX": 1.8, "tx_mtd": 14284, "status": "ACTIVE" },
+      { "rank": 29, "company": "Bayport Financial Services Uganda", "sector": "FINANCE", "balance_B_UGX": 9.4, "taxes_mtd_B_UGX": 1.6, "tx_mtd": 8481, "status": "ACTIVE" },
+      { "rank": 30, "company": "Uganda National Oil Company (UNOC)", "sector": "ENERGY", "balance_B_UGX": 8.8, "taxes_mtd_B_UGX": 1.4, "tx_mtd": 1284, "status": "ACTIVE" },
+      { "rank": 31, "company": "Africell Uganda Ltd", "sector": "TELECOM", "balance_B_UGX": 4.8, "taxes_mtd_B_UGX": 0.8, "tx_mtd": 6284, "status": "ACTIVE" },
+      { "rank": 32, "company": "Uganda Telecom Ltd", "sector": "TELECOM", "balance_B_UGX": 4.2, "taxes_mtd_B_UGX": 0.6, "tx_mtd": 5841, "status": "ACTIVE" },
+      { "rank": 33, "company": "Kampala Serena Hotel", "sector": "HOSPITALITY", "balance_B_UGX": 3.8, "taxes_mtd_B_UGX": 0.8, "tx_mtd": 4182, "status": "ACTIVE" },
+      { "rank": 34, "company": "Speke Resort Munyonyo", "sector": "HOSPITALITY", "balance_B_UGX": 3.4, "taxes_mtd_B_UGX": 0.7, "tx_mtd": 3841, "status": "ACTIVE" },
+      { "rank": 35, "company": "Aga Khan University Hospital", "sector": "HEALTHCARE", "balance_B_UGX": 3.1, "taxes_mtd_B_UGX": 0.6, "tx_mtd": 8481, "status": "ACTIVE" }
+    ],
+    "alerts": [
+      {
+        "level": "WARN",
+        "time": "14:22",
+        "title": "Tax declaration mismatch",
+        "detail": "TIN 1018991204 — Arua Border Traders, gap +322% MTD.",
+        "agency": "URA",
+        "type": "cross-check"
+      },
+      {
+        "level": "INFO",
+        "time": "12:55",
+        "title": "URA target 92% achieved",
+        "detail": "MTD target tracking +1.4% above plan, driven by VAT.",
+        "agency": "URA",
+        "type": "target"
+      }
+    ]
+  },
+
+  "fia": {
+    "total_transactions_today": {
+      "value": 8600,
+      "unit": "K",
+      "delta": "+3.1%",
+      "trend": "up"
+    },
+    "fraud_transactions_today": {
+      "value": 250,
+      "unit": "tx",
+      "delta": "-8.2%",
+      "trend": "down"
+    },
+    "total_tx_amount_today": {
+      "value": 8.60,
+      "unit": "T UGX",
+      "delta": "+2.4%",
+      "trend": "up"
+    },
+    "blocked_tx_amount_today": {
+      "value": 2.50,
+      "unit": "B UGX",
+      "delta": "+1.7%",
+      "trend": "up",
+      "status": "FROZEN"
+    },
+    "fraud_today": {
+      "fraud_amount": "880M UGX",
+      "fraud_transactions": 250,
+      "share_of_tx_count_pct": 2.91,
+      "share_of_tx_value_pct": 10.23
+    },
+    "fraud_cases_by_type": [
+      { "type": "Card fraud", "count": 84 },
+      { "type": "Mobile money scam", "count": 67 },
+      { "type": "Account takeover", "count": 41 },
+      { "type": "Money laundering", "count": 28 },
+      { "type": "Sanctions hit", "count": 17 },
+      { "type": "PEP threshold breach", "count": 13 }
+    ],
+    "high_risk_entities": [
+      { "sector": "Online gambling operators", "entities": 38, "volume_B_UGX": 124.6, "delta_30d": "+12.4%" },
+      { "sector": "Crypto / VASP exchanges", "entities": 22, "volume_B_UGX": 88.1, "delta_30d": "+18.7%" },
+      { "sector": "FX bureaus (unlicensed)", "entities": 14, "volume_B_UGX": 41.3, "delta_30d": "+4.1%" },
+      { "sector": "Shell companies", "entities": 19, "volume_B_UGX": 57.0, "delta_30d": "+7.6%" },
+      { "sector": "Cross-border MoMo agents", "entities": 31, "volume_B_UGX": 72.8, "delta_30d": "-2.2%" }
+    ],
+    "alerts": [
+      {
+        "level": "CRIT",
+        "time": "14:36",
+        "title": "Sanctions hit – UGX 18.4M",
+        "detail": "MoMo wallet 2567*** flagged on UN-1267; auto-blocked, FIA notified.",
+        "agency": "FIA",
+        "type": "auto"
+      },
+      {
+        "level": "CRIT",
+        "time": "13:58",
+        "title": "Fraud cluster – 41 wallets",
+        "detail": "Account-takeover ring across MTN/Airtel; auto-frozen pending review.",
+        "agency": "FIA",
+        "type": "cluster"
+      },
+      {
+        "level": "WARN",
+        "time": "13:21",
+        "title": "VASP onboarding outside policy",
+        "detail": "New crypto operator Ridgeline OÜ flagged — domicile not on FIA list.",
+        "agency": "FIA",
+        "type": "onboarding"
+      }
+    ]
+  },
+
+  "pdm": {
+    "allocated_ytd": {
+      "value": 6.91,
+      "unit": "T UGX",
+      "delta": "0.0%",
+      "trend": "flat"
+    },
+    "disbursed_ytd": {
+      "value": 4.67,
+      "unit": "T UGX",
+      "delta": "+0.9%",
+      "trend": "up"
+    },
+    "disbursement_rate": {
+      "value": 67.60,
+      "unit": "%",
+      "delta": "+1.2%",
+      "trend": "up",
+      "status": "WARN"
+    },
+    "regions": [
+      { "name": "Central", "rate_pct": 81, "disbursed_B": 1490, "allocated_B": 1840, "status": "good" },
+      { "name": "Eastern", "rate_pct": 74, "disbursed_B": 1020, "allocated_B": 1380, "status": "ok" },
+      { "name": "Western", "rate_pct": 72, "disbursed_B": 890, "allocated_B": 1240, "status": "ok" },
+      { "name": "Northern", "rate_pct": 65, "disbursed_B": 640, "allocated_B": 980, "status": "warn" },
+      { "name": "West Nile", "rate_pct": 64, "disbursed_B": 390, "allocated_B": 610, "status": "warn" },
+      { "name": "Karamoja", "rate_pct": 56, "disbursed_B": 240, "allocated_B": 430, "status": "critical" }
+    ],
+    "pillars": [
+      { "name": "Production, Storage, Processing & Marketing", "rate_pct": 72, "disbursed_T": 3.04, "allocated_T": 4.20 },
+      { "name": "Infrastructure & Economic Services", "rate_pct": 65, "disbursed_T": 0.71, "allocated_T": 1.10 },
+      { "name": "Financial Inclusion", "rate_pct": 58, "disbursed_T": 0.49, "allocated_T": 0.84 },
+      { "name": "Social Services", "rate_pct": 64, "disbursed_T": 0.27, "allocated_T": 0.42 },
+      { "name": "Mindset Change", "rate_pct": 52, "disbursed_T": 0.11, "allocated_T": 0.21 },
+      { "name": "Parish-Based Information", "rate_pct": 36, "disbursed_T": 0.05, "allocated_T": 0.14 }
+    ],
+    "alerts": [
+      {
+        "level": "INFO",
+        "time": "14:14",
+        "title": "PDM disbursement spike – Karamoja",
+        "detail": "Karamoja sub-region: +UGX 12.4B disbursed today (+38% vs avg).",
+        "agency": "PDM",
+        "type": "daily"
+      }
+    ]
+  },
+
+  "alerts_all": [
+    {
+      "level": "CRIT",
+      "time": "14:36",
+      "title": "Sanctions hit – UGX 18.4M",
+      "detail": "MoMo wallet 2567*** flagged on UN-1267; auto-blocked, FIA notified.",
+      "agency": "FIA",
+      "type": "auto"
+    },
+    {
+      "level": "WARN",
+      "time": "14:31",
+      "title": "Liquidity below 5% floor",
+      "detail": "Crane Bank intraday liquidity 4.2% — sustained 38 min.",
+      "agency": "BoU",
+      "type": "monitor"
+    },
+    {
+      "level": "WARN",
+      "time": "14:22",
+      "title": "Tax declaration mismatch",
+      "detail": "TIN 1018991204 — Arua Border Traders, gap +322% MTD.",
+      "agency": "URA",
+      "type": "cross-check"
+    },
+    {
+      "level": "INFO",
+      "time": "14:14",
+      "title": "PDM disbursement spike – Karamoja",
+      "detail": "Karamoja sub-region: +UGX 12.4B disbursed today (+38% vs avg).",
+      "agency": "PDM",
+      "type": "daily"
+    },
+    {
+      "level": "CRIT",
+      "time": "13:58",
+      "title": "Fraud cluster – 41 wallets",
+      "detail": "Account-takeover ring across MTN/Airtel; auto-frozen pending review.",
+      "agency": "FIA",
+      "type": "cluster"
+    },
+    {
+      "level": "GOOD",
+      "time": "13:42",
+      "title": "Switch uptime 99.997%",
+      "detail": "All 28 participants healthy; no settlement breaches in last 24h.",
+      "agency": "BoU",
+      "type": "ops"
+    },
+    {
+      "level": "WARN",
+      "time": "13:21",
+      "title": "VASP onboarding outside policy",
+      "detail": "New crypto operator Ridgeline OÜ flagged — domicile not on FIA list.",
+      "agency": "FIA",
+      "type": "onboarding"
+    },
+    {
+      "level": "INFO",
+      "time": "12:55",
+      "title": "URA target 92% achieved",
+      "detail": "MTD target tracking +1.4% above plan, driven by VAT.",
+      "agency": "URA",
+      "type": "target"
+    }
+  ],
+
+  "cross_agency_signals": [
+    { "agency": "BoU", "indicator": "Settlement uptime", "value": "99.997%", "status": "OK" },
+    { "agency": "URA", "indicator": "MTD vs target", "value": "+1.4%", "status": "UP" },
+    { "agency": "FIA", "indicator": "Blocked tx amount", "value": "2.50B", "status": "WARN" },
+    { "agency": "PDM", "indicator": "Disbursement rate", "value": "67.6%", "status": "WARN" },
+    { "agency": "BoU", "indicator": "Liquidity floor breaches", "value": "2", "status": "WARN" }
+  ]
+}
