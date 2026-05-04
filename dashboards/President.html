@@ -1003,6 +1003,131 @@ html, body {
 
 .tweaks-panel { z-index: 100; }
 
+/* ---------- Reports tab ---------- */
+.reports-wrap {
+  display: flex; justify-content: center;
+  padding: 28px 20px;
+}
+.reports-card {
+  width: 100%; max-width: 720px;
+  background: var(--pres-panel);
+  border: 1px solid var(--pres-line);
+  border-radius: 2px;
+  box-shadow: var(--switch-shadow-card);
+  padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.reports-card-h {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--pres-line);
+}
+.reports-card-h h2 {
+  margin: 0; font-size: 16px; font-weight: 700; color: var(--pres-text);
+}
+.reports-card-h p {
+  margin: 0; font-size: 12px; color: var(--pres-text-dim);
+}
+.reports-field { display: flex; flex-direction: column; gap: 6px; }
+.reports-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--pres-text-dim);
+}
+.reports-input {
+  width: 100%; box-sizing: border-box;
+  background: var(--pres-panel-hi);
+  border: 1px solid var(--pres-line-2);
+  border-radius: 2px;
+  padding: 9px 12px;
+  font-family: var(--switch-font-sans); font-size: 13px;
+  color: var(--pres-text);
+  outline: none;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.reports-input::placeholder { color: var(--pres-text-mute); }
+.reports-input:focus {
+  border-color: var(--pres-accent);
+  box-shadow: 0 0 0 2px rgba(255,122,0,0.15);
+}
+.reports-date-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.reports-date-group { display: flex; flex-direction: column; gap: 6px; }
+.reports-date-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--pres-text-dim);
+}
+.reports-textarea {
+  width: 100%; box-sizing: border-box;
+  background: var(--pres-panel-hi);
+  border: 1px solid var(--pres-line-2);
+  border-radius: 2px;
+  padding: 9px 12px;
+  font-family: var(--switch-font-sans); font-size: 13px;
+  color: var(--pres-text); resize: vertical;
+  outline: none; line-height: 1.55;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.reports-textarea::placeholder { color: var(--pres-text-mute); }
+.reports-textarea:focus {
+  border-color: var(--pres-accent);
+  box-shadow: 0 0 0 2px rgba(255,122,0,0.15);
+}
+.reports-sql-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.reports-edit-toggle {
+  appearance: none; background: none;
+  border: 1px solid var(--pres-line-2);
+  border-radius: 2px; padding: 2px 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--pres-text-dim); cursor: pointer; font-family: inherit;
+  transition: border-color 120ms, color 120ms;
+}
+.reports-edit-toggle:hover { border-color: var(--pres-accent); color: var(--pres-accent); }
+.reports-sql-area {
+  width: 100%; box-sizing: border-box;
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  padding: 10px 12px;
+  font-family: var(--switch-font-mono); font-size: 12px;
+  color: #c9d1d9; resize: vertical;
+  outline: none; line-height: 1.6;
+  transition: border-color 120ms;
+}
+.reports-sql-area::placeholder { color: rgba(255,255,255,0.22); }
+.reports-sql-area:focus { border-color: rgba(255,122,0,0.5); }
+.reports-btn-primary {
+  appearance: none; width: 100%; border: none;
+  background: #e8630a; color: #fff;
+  border-radius: 2px; padding: 11px 16px;
+  font-family: var(--switch-font-sans); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.04em; cursor: pointer;
+  transition: opacity 140ms, transform 80ms;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.reports-btn-primary:hover:not(:disabled) { opacity: 0.88; }
+.reports-btn-primary:active:not(:disabled) { transform: translateY(1px); }
+.reports-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.reports-btn-outline {
+  appearance: none; width: 100%; background: transparent;
+  border: 1.5px solid #e8630a; color: #e8630a;
+  border-radius: 2px; padding: 10px 16px;
+  font-family: var(--switch-font-sans); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.04em; cursor: pointer;
+  transition: background 140ms, color 140ms;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.reports-btn-outline:hover:not(:disabled) { background: rgba(232,99,10,0.08); }
+.reports-btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+.reports-status {
+  font-size: 13px; font-weight: 600; min-height: 20px; text-align: center;
+}
+.reports-status.ok   { color: var(--pres-good); }
+.reports-status.err  { color: var(--pres-bad); }
+
 /* ---------- News tab ---------- */
 .news-grid {
   display: grid;
@@ -4157,12 +4282,203 @@ const TabGovMail = ({ t }) => {
 };
 Object.assign(window, { TabGovMail });
 
+// ─── TabReports ─────────────────────────────────────────────────────────────
+
+const GENERATE_SQL_URL = 'https://qiygegopwiarqdzgldpa.supabase.co/functions/v1/generate-sql';
+const RUN_QUERY_URL    = 'https://qiygegopwiarqdzgldpa.supabase.co/functions/v1/run-query';
+
+function toCSV(columns, rows) {
+  const escape = (v) => {
+    const s = v === null || v === undefined ? '' : String(v);
+    return (s.includes(',') || s.includes('"') || s.includes('\n'))
+      ? '"' + s.replace(/"/g, '""') + '"'
+      : s;
+  };
+  const lines = [columns.join(',')];
+  for (const row of rows) lines.push(columns.map(c => escape(row[c])).join(','));
+  return '﻿' + lines.join('\r\n');
+}
+
+function getDefaultDates() {
+  const now  = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  const pad  = (n) => String(n).padStart(2, '0');
+  const fmt  = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  return { from: fmt(from), to: fmt(now) };
+}
+
+function TabReports({ t }) {
+  const defaults = getDefaultDates();
+  const [name,     setName]     = React.useState('');
+  const [dateFrom, setDateFrom] = React.useState(defaults.from);
+  const [dateTo,   setDateTo]   = React.useState(defaults.to);
+  const [prompt,   setPrompt]   = React.useState('');
+  const [sql,      setSql]      = React.useState('');
+  const [sqlEditable, setSqlEditable] = React.useState(false);
+  const [genBusy,  setGenBusy]  = React.useState(false);
+  const [runBusy,  setRunBusy]  = React.useState(false);
+  const [status,   setStatus]   = React.useState({ msg: '', kind: '' }); // kind: 'ok'|'err'
+
+  const hasSql = sql.trim().length > 0;
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) { setStatus({ msg: 'Please enter a prompt first.', kind: 'err' }); return; }
+    setGenBusy(true);
+    setStatus({ msg: '', kind: '' });
+    try {
+      const res  = await fetch(GENERATE_SQL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, dateFrom, dateTo }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Generation failed');
+      setSql(data.sql);
+      setSqlEditable(false);
+      setStatus({ msg: '', kind: '' });
+    } catch (err) {
+      setStatus({ msg: err.message, kind: 'err' });
+    } finally {
+      setGenBusy(false);
+    }
+  };
+
+  const handleRun = async () => {
+    if (!hasSql) return;
+    setRunBusy(true);
+    setStatus({ msg: '', kind: '' });
+    try {
+      const res  = await fetch(RUN_QUERY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sql }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Query failed');
+
+      const csv      = toCSV(data.columns, data.rows);
+      const blob     = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url      = URL.createObjectURL(blob);
+      const ts       = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const filename = name.trim()
+        ? `${name.trim().replace(/[^a-z0-9_\-]/gi,'_')}_${dateFrom}_${dateTo}.csv`
+        : `report_${ts}.csv`;
+      const a        = document.createElement('a');
+      a.href         = url;
+      a.download     = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setStatus({ msg: `✓ ${data.count} rows exported`, kind: 'ok' });
+    } catch (err) {
+      setStatus({ msg: err.message, kind: 'err' });
+    } finally {
+      setRunBusy(false);
+    }
+  };
+
+  return (
+    <div className="reports-wrap">
+      <div className="reports-card">
+
+        <div className="reports-card-h">
+          <Icon name="summarize" size={22} style={{ color: 'var(--pres-accent)', flexShrink: 0 }} />
+          <div>
+            <h2>{t('Reports')}</h2>
+            <p>{t('Generate a SQL query from plain English and export results as CSV.')}</p>
+          </div>
+        </div>
+
+        {/* Report Name */}
+        <div className="reports-field">
+          <label className="reports-label">{t('Report Name')}</label>
+          <input
+            className="reports-input"
+            type="text"
+            placeholder='e.g. High-value AML transactions — May 2026'
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+        </div>
+
+        {/* Period */}
+        <div className="reports-field">
+          <label className="reports-label">{t('Period')}</label>
+          <div className="reports-date-row">
+            <div className="reports-date-group">
+              <label className="reports-date-label">{t('From')}:</label>
+              <input className="reports-input" type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+            </div>
+            <div className="reports-date-group">
+              <label className="reports-date-label">{t('To')}:</label>
+              <input className="reports-input" type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} />
+            </div>
+          </div>
+        </div>
+
+        {/* Prompt */}
+        <div className="reports-field">
+          <label className="reports-label">{t('Prompt')}</label>
+          <textarea
+            className="reports-textarea"
+            rows={4}
+            placeholder={'Describe what you want to see. Examples:\n• All transactions above 5,000,000 UGX\n• All transactions flagged as AML in the Eastern region\n• Blocked transactions from mobile money channel this period'}
+            value={prompt}
+            onChange={e => setPrompt(e.target.value)}
+          />
+        </div>
+
+        {/* Generate button */}
+        <button className="reports-btn-primary" onClick={handleGenerate} disabled={genBusy}>
+          {genBusy
+            ? <><Icon name="hourglass_empty" size={16} /> {t('Generating…')}</>
+            : <><Icon name="auto_awesome" size={16} /> {t('Generate SQL')}</>}
+        </button>
+
+        {/* SQL preview */}
+        <div className="reports-field">
+          <div className="reports-sql-head">
+            <label className="reports-label" style={{ marginBottom: 0 }}>{t('SQL Query')}</label>
+            <button className="reports-edit-toggle" onClick={() => setSqlEditable(e => !e)}>
+              {sqlEditable ? t('Lock') : t('Edit')}
+            </button>
+          </div>
+          <textarea
+            className="reports-sql-area"
+            rows={5}
+            readOnly={!sqlEditable}
+            placeholder="SQL will appear here after generation…"
+            value={sql}
+            onChange={e => setSql(e.target.value)}
+          />
+        </div>
+
+        {/* Run & Download button */}
+        <button className="reports-btn-outline" onClick={handleRun} disabled={!hasSql || runBusy}>
+          {runBusy
+            ? <><Icon name="hourglass_empty" size={16} /> {t('Running query…')}</>
+            : <><Icon name="download" size={16} /> {t('Run & Download CSV')}</>}
+        </button>
+
+        {/* Status */}
+        {status.msg && (
+          <div className={`reports-status ${status.kind}`}>{status.msg}</div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+window.TabReports = TabReports;
+
 const TABS = [
   { id: "overview", icon: "dashboard",       label: "Overview" },
+  { id: "ura",      icon: "request_quote",   label: "URA" },
   { id: "switch",   icon: "swap_horiz",      label: "Switch" },
   { id: "bou",      icon: "account_balance", label: "BoU" },
   { id: "fia",      icon: "shield",          label: "FIA" },
-  { id: "ura",      icon: "request_quote",   label: "URA" },
   { id: "pdm",      icon: "map",             label: "PDM" },
 ];
 
@@ -4233,6 +4549,7 @@ function App() {
     ura:      <TabURA      t={t} data={data} />,
     pdm:      <TabPDM      t={t} data={data} activeRegion={activeRegion} setActiveRegion={setActiveRegion} />,
     news:     <TabNews     t={t} />,
+    reports:  <TabReports  t={t} />,
     govmail:  <TabGovMail  t={t} />,
   };
 
@@ -4366,6 +4683,10 @@ function App() {
                 onClick={() => setTab("news")}>
           <Icon name="newspaper" size={18} />{t("News")}
           <span style={{ marginLeft: "auto", fontSize: 10, background: "var(--pres-accent)", color: "#fff", borderRadius: 8, padding: "1px 6px", fontWeight: 700 }}>10</span>
+        </button>
+        <button className={`pres-nav-item ${tab === "reports" ? "is-active" : ""}`}
+                onClick={() => setTab("reports")}>
+          <Icon name="summarize" size={18} />{t("Reports")}
         </button>
 
         <div className="pres-nav-section">{t("Government Mail")}</div>
