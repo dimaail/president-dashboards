@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>NPS Flow · Uganda National Payment Switch</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  grid-template-rows:56px 1fr;
+  grid-template-areas:"brand topbar" "nav main";
+  background:#050508;
+  font-family:"Nunito Sans",sans-serif;
+}
+
+/* ── Brand ──────────────────────────────────────────────────── */
+.pres-brand{
+  grid-area:brand;background:#FAFAFA;
+  border-right:1px solid rgba(0,0,0,.08);border-bottom:1px solid rgba(0,0,0,.08);
+  display:flex;align-items:center;gap:10px;padding:0 16px;
+}
+.brand-flag{width:26px;height:18px;object-fit:cover;border-radius:2px;flex-shrink:0}
+.brand-arms{width:20px;height:20px;object-fit:contain;flex-shrink:0}
+.brand-text{font-size:9.5px;font-weight:700;color:#121216;line-height:1.3;letter-spacing:.04em}
+
+/* ── Topbar ─────────────────────────────────────────────────── */
+.pres-topbar{
+  grid-area:topbar;background:#FAFAFA;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+}
+.tb-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#EF4444;letter-spacing:.07em;text-transform:uppercase}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#EF4444;flex-shrink:0;animation:livePulse 1.4s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(239,68,68,0)}}
+.tb-title{font-family:"Syne",sans-serif;font-weight:800;font-size:14px;color:#121216;letter-spacing:.02em}
+.tb-back{
+  margin-left:auto;font-size:12px;color:#605E5C;text-decoration:none;
+  display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;
+  border:1px solid rgba(0,0,0,.10);transition:background .15s;font-family:inherit;
+}
+.tb-back:hover{background:rgba(0,0,0,.05);color:#121216}
+
+/* ── Side nav ───────────────────────────────────────────────── */
+.pres-nav{
+  grid-area:nav;background:#FAFAFA;
+  border-right:1px solid rgba(0,0,0,.08);
+  padding:10px 0;display:flex;flex-direction:column;gap:1px;overflow-y:auto;
+}
+.nav-sec{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8A8886;padding:10px 20px 4px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;font-size:13px;font-weight:600;color:#605E5C;
+  text-decoration:none;border:none;background:none;width:100%;text-align:left;
+  cursor:pointer;border-left:3px solid transparent;transition:background .1s,color .1s;
+}
+.nav-item:hover{background:rgba(0,0,0,.04);color:#121216}
+.nav-item.active{background:#F1F1FD;color:#0728C8;border-left-color:#FF7A00;font-weight:700}
+.nav-icon{width:18px;height:18px;flex-shrink:0;fill:currentColor;opacity:.7}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
+
+/* ── Map area ───────────────────────────────────────────────── */
+#map-wrap{
+  grid-area:main;position:relative;background:#050508;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+#map{overflow:visible}
+
+/* ── HUD panels ─────────────────────────────────────────────── */
+.hud{
+  position:absolute;background:rgba(5,5,20,.90);
+  border:1px solid #1E3A5F;border-radius:5px;
+  padding:16px 18px;font-family:"JetBrains Mono",monospace;color:#94A3B8;
+  backdrop-filter:blur(8px);pointer-events:none;z-index:5;
+}
+#hud-left{top:18px;left:18px;min-width:248px}
+#hud-right{bottom:18px;right:18px;min-width:168px}
+.hud-title{
+  font-family:"Syne",sans-serif;font-size:11px;font-weight:800;
+  color:#F1F5F9;letter-spacing:.12em;text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;margin-bottom:13px;
+}
+.hud-live{width:7px;height:7px;border-radius:50%;background:#EF4444;flex-shrink:0;animation:livePulse 1.4s ease-in-out infinite}
+.hud-big{font-size:38px;font-weight:600;color:#A855F7;line-height:1;letter-spacing:-.02em}
+.hud-big-lbl{font-size:10px;color:#94A3B8;letter-spacing:.08em;margin-bottom:14px;margin-top:2px}
+.hud-hr{border:none;border-top:1px solid #1E3A5F;margin:10px 0}
+.hud-cap{font-size:9px;color:#7B2FBE;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+.hud-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;font-size:11px}
+.hud-lbl{color:#94A3B8}
+.hud-val{color:#F1F5F9;font-weight:600}
+.hud-prog-wrap{margin-top:11px}
+.hud-prog-head{font-size:9px;color:#94A3B8;margin-bottom:5px;display:flex;justify-content:space-between;letter-spacing:.06em}
+.hud-prog-track{height:4px;background:#1E3A5F;border-radius:2px;overflow:hidden}
+.hud-prog-fill{height:100%;background:linear-gradient(90deg,#7B2FBE,#A855F7);border-radius:2px;transition:width 1s linear;width:0%}
+.leg-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:11px;color:#94A3B8}
+.leg-line{width:26px;height:2px;border-radius:1px;flex-shrink:0}
+
+/* ── Tooltip ─────────────────────────────────────────────────── */
+#tooltip{
+  position:absolute;background:rgba(5,5,20,.95);border:1px solid #2D5A8E;
+  border-radius:4px;padding:8px 13px;font-family:"JetBrains Mono",monospace;
+  font-size:11px;color:#F1F5F9;pointer-events:none;display:none;z-index:20;
+  white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6);
+}
+#tt-name{font-weight:600;color:#A855F7;margin-bottom:3px}
+#tt-val{color:#94A3B8;font-size:10px}
+</style>
+</head>
+<body>
+
+<!-- Brand -->
+<div class="pres-brand">
+  <img class="brand-flag" src="../assets/flag-uganda.png" alt=""/>
+  <img class="brand-arms" src="../assets/uganda-coat-of-arms.png" alt=""/>
+  <div class="brand-text">President<br>of Uganda</div>
+</div>
+
+<!-- Topbar -->
+<div class="pres-topbar">
+  <span class="tb-live"><span class="live-dot"></span>Live</span>
+  <span class="tb-title">Uganda NPS &middot; Real-Time Transaction Flow Map</span>
+  <a class="tb-back" href="President.html">&larr; Dashboard</a>
+</div>
+
+<!-- Nav -->
+<nav class="pres-nav">
+  <div class="nav-sec">Dashboard</div>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Overview
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM8 7h8v2H8V7zm5 10H8v-2h5v2zm3-4H8v-2h8v2z"/></svg>URA
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>Switch
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 10v7h2v-7H4zm6 0v7h2v-7h-2zm-7 11h18v-2H3v2zm13-11v7h2v-7h-2zM12 1L2 6v2h20V6L12 1z"/></svg>BoU
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>FIA
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>PDM
+  </a>
+  <a class="nav-item active" href="nps-flow.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M15.5 5H11L7 12h3.5L7 19l10-8h-4.5z"/></svg>NPS Flow
+  </a>
+  <div class="nav-sec">Intelligence</div>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>News
+  </a>
+  <a class="nav-item" href="President.html">
+    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Reports
+  </a>
+</nav>
+
+<!-- Map -->
+<div id="map-wrap">
+  <svg id="map" width="560" height="620" viewBox="0 0 560 620">
+    <defs>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow2" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="7" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <g id="g-districts"></g>
+    <g id="g-arcs"></g>
+    <g id="g-particles"></g>
+    <g id="g-nodes"></g>
+  </svg>
+
+  <!-- HUD left -->
+  <div class="hud" id="hud-left">
+    <div class="hud-title"><span class="hud-live"></span>Uganda NPS Switch</div>
+    <div class="hud-big">276</div>
+    <div class="hud-big-lbl">TX / SECOND</div>
+    <hr class="hud-hr"/>
+    <div class="hud-cap">Top Corridors</div>
+    <div class="hud-row"><span class="hud-lbl">Kampala &rarr; Wakiso</span><span class="hud-val" id="c0">89 tx/s</span></div>
+    <div class="hud-row"><span class="hud-lbl">Kampala &rarr; Mukono</span><span class="hud-val" id="c1">54 tx/s</span></div>
+    <div class="hud-row"><span class="hud-lbl">Jinja &rarr; Kampala</span><span class="hud-val" id="c2">31 tx/s</span></div>
+    <div class="hud-row"><span class="hud-lbl">Mbarara &rarr; Masaka</span><span class="hud-val" id="c3">18 tx/s</span></div>
+    <div class="hud-row"><span class="hud-lbl">Gulu &rarr; Lira</span><span class="hud-val" id="c4">12 tx/s</span></div>
+    <hr class="hud-hr"/>
+    <div class="hud-row"><span class="hud-lbl">Active nodes</span><span class="hud-val">15</span></div>
+    <div class="hud-row"><span class="hud-lbl">Active streams</span><span class="hud-val" id="s-streams">0</span></div>
+    <div class="hud-row"><span class="hud-lbl">Session tx</span><span class="hud-val" id="s-session">0</span></div>
+    <div class="hud-prog-wrap">
+      <div class="hud-prog-head"><span>&#9201; Loop 60s</span><span id="s-secs">60s</span></div>
+      <div class="hud-prog-track"><div class="hud-prog-fill" id="s-prog"></div></div>
+    </div>
+  </div>
+
+  <!-- HUD right (legend) -->
+  <div class="hud" id="hud-right">
+    <div class="hud-cap" style="margin-bottom:11px">Volume</div>
+    <div class="leg-row"><div class="leg-line" style="background:linear-gradient(90deg,#7B2FBE,#A855F7)"></div>&gt;30 tx/s</div>
+    <div class="leg-row"><div class="leg-line" style="background:#0EA5E9"></div>10&ndash;30 tx/s</div>
+    <div class="leg-row" style="margin-bottom:0"><div class="leg-line" style="background:#10B981"></div>&lt;10 tx/s</div>
+  </div>
+
+  <div id="tooltip"><div id="tt-name"></div><div id="tt-val"></div></div>
+</div>
+
+<script>
+// ── GeoJSON ───────────────────────────────────────────────────────────────────
+const GEO = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG314","name":"Abim"},"geometry":{"type":"Polygon","coordinates":[[[33.9658,2.6167],[33.9658,2.6167]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG301","name":"Adjumani"},"geometry":{"type":"Polygon","coordinates":[[[32.0007,3.5768],[32.0007,3.5768]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG322","name":"Agago"},"geometry":{"type":"Polygon","coordinates":[[[33.5595,3.1489],[33.5595,3.1489]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG323","name":"Alebtong"},"geometry":{"type":"Polygon","coordinates":[[[33.535,2.352],[33.535,2.352]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG315","name":"Amolatar"},"geometry":{"type":"Polygon","coordinates":[[[32.9404,1.8134],[32.9404,1.8134]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG324","name":"Amudat"},"geometry":{"type":"MultiPolygon","coordinates":[[[[34.7776,1.3935],[34.7776,1.3935]]],[[[34.7766,1.3848],[34.7766,1.3848]]],[[[34.7815,1.3752],[34.7815,1.3752]]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG216","name":"Amuria"},"geometry":{"type":"Polygon","coordinates":[[[33.364,2.0279],[33.364,2.0279]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG316","name":"Amuru"},"geometry":{"type":"MultiPolygon","coordinates":[[[[31.4177,2.9523],[31.4177,2.9523]]],[[[32.3605,3.3006],[32.3605,3.3006]]],[[[32.3658,3.2987],[32.3658,3.2987]]],[[[32.3738,3.2973],[32.3738,3.2973]]],[[[32.3803,3.2929],[32.3803,3.2929]]],[[[32.3829,3.2907],[32.3829,3.2907]]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG302","name":"Apac"},"geometry":{"type":"Polygon","coordinates":[[[32.5871,1.6512],[32.5871,1.6512]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG303","name":"Arua"},"geometry":{"type":"Polygon","coordinates":[[[30.8029,3.1332],[30.8029,3.1332]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG217","name":"Budaka"},"geometry":{"type":"Polygon","coordinates":[[[34.1248,1.0744],[34.1248,1.0744]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG218","name":"Bududa"},"geometry":{"type":"Polygon","coordinates":[[[34.535,1.106],[34.535,1.106]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG201","name":"Bugiri"},"geometry":{"type":"Polygon","coordinates":[[[33.8593,0.6985],[33.8593,0.6985]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG235","name":"Bugweri"},"geometry":{"type":"Polygon","coordinates":[[[33.6401,0.7317],[33.6401,0.7317]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG420","name":"Buhweju"},"geometry":{"type":"Polygon","coordinates":[[[30.5063,-0.2611],[30.5063,-0.2611]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG117","name":"Buikwe"},"geometry":{"type":"Polygon","coordinates":[[[33.0847,0.5462],[33.0847,0.5462]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG219","name":"Bukedea"},"geometry":{"type":"Polygon","coordinates":[[[34.2296,1.5615],[34.2296,1.5615]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG118","name":"Bukomansimbi"},"geometry":{"type":"Polygon","coordinates":[[[31.6464,0.0394],[31.6464,0.0394]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG220","name":"Bukwo"},"geometry":{"type":"Polygon","coordinates":[[[34.7232,1.4376],[34.7232,1.4376]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG225","name":"Bulambuli"},"geometry":{"type":"Polygon","coordinates":[[[34.2445,1.291],[34.2445,1.291]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG416","name":"Buliisa"},"geometry":{"type":"Polygon","coordinates":[[[31.1044,1.8507],[31.1044,1.8507]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG401","name":"Bundibugyo"},"geometry":{"type":"Polygon","coordinates":[[[30.1469,0.8875],[30.1469,0.8875]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG430","name":"Bunyangabu"},"geometry":{"type":"Polygon","coordinates":[[[29.9817,0.4256],[29.9817,0.4256]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG402","name":"Bushenyi"},"geometry":{"type":"Polygon","coordinates":[[[30.1842,-0.2864],[30.1842,-0.2864]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG202","name":"Busia"},"geometry":{"type":"Polygon","coordinates":[[[33.9016,0.4817],[33.9016,0.4817]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG221","name":"Butaleja"},"geometry":{"type":"Polygon","coordinates":[[[33.8632,0.9423],[33.8632,0.9423]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG119","name":"Butambala"},"geometry":{"type":"Polygon","coordinates":[[[31.8715,0.0058],[31.8715,0.0058]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG233","name":"Butebo"},"geometry":{"type":"Polygon","coordinates":[[[34.1248,1.0744],[34.1248,1.0744]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG120","name":"Buvuma"},"geometry":{"type":"Polygon","coordinates":[[[32.8739,0.1131],[32.8739,0.1131]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG226","name":"Buyende"},"geometry":{"type":"Polygon","coordinates":[[[32.8203,1.475],[32.8203,1.475]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG317","name":"Dokolo"},"geometry":{"type":"Polygon","coordinates":[[[33.1355,2.1086],[33.1355,2.1086]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG121","name":"Gomba"},"geometry":{"type":"Polygon","coordinates":[[[31.6464,0.0394],[31.6464,0.0394]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG304","name":"Gulu"},"geometry":{"type":"Polygon","coordinates":[[[32.3601,3.3009],[32.3601,3.3009]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG403","name":"Hoima"},"geometry":{"type":"Polygon","coordinates":[[[31.1044,1.8507],[31.1044,1.8507]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG417","name":"Ibanda"},"geometry":{"type":"Polygon","coordinates":[[[30.5063,-0.2611],[30.5063,-0.2611]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG203","name":"Iganga"},"geometry":{"type":"Polygon","coordinates":[[[33.5641,0.8012],[33.5641,0.8012]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG418","name":"Isingiro"},"geometry":{"type":"Polygon","coordinates":[[[31.2693,-0.9959],[31.2693,-0.9959]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG204","name":"Jinja"},"geometry":{"type":"Polygon","coordinates":[[[33.2822,0.3889],[33.2822,0.3889]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG318","name":"Kaabong"},"geometry":{"type":"Polygon","coordinates":[[[33.8613,4.1033],[33.8613,4.1033]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG404","name":"Kabale"},"geometry":{"type":"Polygon","coordinates":[[[30.1696,-1.2751],[30.1696,-1.2751]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG405","name":"Kabarole"},"geometry":{"type":"Polygon","coordinates":[[[30.1196,0.6236],[30.1196,0.6236]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG213","name":"Kaberamaido"},"geometry":{"type":"Polygon","coordinates":[[[32.9737,1.4772],[32.9737,1.4772]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG427","name":"Kagadi"},"geometry":{"type":"Polygon","coordinates":[[[30.5613,0.9405],[30.5613,0.9405]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG428","name":"Kakumiro"},"geometry":{"type":"Polygon","coordinates":[[[31.1199,1.0103],[31.1199,1.0103]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG237","name":"Kalaki"},"geometry":{"type":"Polygon","coordinates":[[[33.2905,2.0394],[33.2905,2.0394]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG101","name":"Kalangala"},"geometry":{"type":"Polygon","coordinates":[[[32.8762,-0.1497],[32.8762,-0.1497]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG222","name":"Kaliro"},"geometry":{"type":"Polygon","coordinates":[[[33.335,1.0773],[33.335,1.0773]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG122","name":"Kalungu"},"geometry":{"type":"Polygon","coordinates":[[[31.721,-0.2548],[31.721,-0.2548]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG102","name":"Kampala"},"geometry":{"type":"Polygon","coordinates":[[[32.6688,0.2746],[32.6688,0.2746]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG205","name":"Kamuli"},"geometry":{"type":"Polygon","coordinates":[[[32.9354,1.2226],[32.9354,1.2226]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG413","name":"Kamwenge"},"geometry":{"type":"Polygon","coordinates":[[[30.6049,0.1652],[30.6049,0.1652]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG414","name":"Kanungu"},"geometry":{"type":"Polygon","coordinates":[[[29.5919,-1.0134],[29.5919,-1.0134]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG206","name":"Kapchorwa"},"geometry":{"type":"Polygon","coordinates":[[[34.5365,1.18],[34.5365,1.18]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG236","name":"Kapelebyong"},"geometry":{"type":"Polygon","coordinates":[[[33.736,2.4175],[33.736,2.4175]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG335","name":"Karenga"},"geometry":{"type":"Polygon","coordinates":[[[33.8613,4.1033],[33.8613,4.1033]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG406","name":"Kasese"},"geometry":{"type":"Polygon","coordinates":[[[29.944,0.4054],[29.944,0.4054]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG126","name":"Kassanda"},"geometry":{"type":"Polygon","coordinates":[[[31.8028,0.2834],[31.8028,0.2834]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG207","name":"Katakwi"},"geometry":{"type":"Polygon","coordinates":[[[33.8106,1.7152],[33.8106,1.7152]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG112","name":"Kayunga"},"geometry":{"type":"Polygon","coordinates":[[[32.6964,1.4507],[32.6964,1.4507]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG433","name":"Kazo"},"geometry":{"type":"Polygon","coordinates":[[[30.6254,-0.1639],[30.6254,-0.1639]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG407","name":"Kibaale"},"geometry":{"type":"Polygon","coordinates":[[[30.8289,0.8393],[30.8289,0.8393]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG103","name":"Kiboga"},"geometry":{"type":"Polygon","coordinates":[[[31.9094,0.6241],[31.9094,0.6241]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG227","name":"Kibuku"},"geometry":{"type":"Polygon","coordinates":[[[33.9322,1.1654],[33.9322,1.1654]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG432","name":"Kikuube"},"geometry":{"type":"Polygon","coordinates":[[[30.8034,1.5469],[30.8034,1.5469]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG419","name":"Kiruhura"},"geometry":{"type":"Polygon","coordinates":[[[30.6083,-0.2085],[30.6083,-0.2085]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG421","name":"Kiryandongo"},"geometry":{"type":"Polygon","coordinates":[[[32.3528,2.0744],[32.3528,2.0744]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG408","name":"Kisoro"},"geometry":{"type":"Polygon","coordinates":[[[29.5919,-1.0134],[29.5919,-1.0134]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG434","name":"Kitagwenda"},"geometry":{"type":"Polygon","coordinates":[[[30.4721,0.1044],[30.4721,0.1044]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG305","name":"Kitgum"},"geometry":{"type":"Polygon","coordinates":[[[33.5505,3.2815],[33.5505,3.2815]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG319","name":"Koboko"},"geometry":{"type":"Polygon","coordinates":[[[31.1005,3.7358],[31.1005,3.7358]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG325","name":"Kole"},"geometry":{"type":"Polygon","coordinates":[[[32.6247,2.1446],[32.6247,2.1446]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG306","name":"Kotido"},"geometry":{"type":"Polygon","coordinates":[[[33.9658,2.6167],[33.9658,2.6167]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG208","name":"Kumi"},"geometry":{"type":"Polygon","coordinates":[[[34.2295,1.5793],[34.2295,1.5793]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG333","name":"Kwania"},"geometry":{"type":"Polygon","coordinates":[[[32.9404,1.8134],[32.9404,1.8134]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG228","name":"Kween"},"geometry":{"type":"Polygon","coordinates":[[[34.6232,1.5691],[34.6232,1.5691]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG123","name":"Kyankwanzi"},"geometry":{"type":"MultiPolygon","coordinates":[[[[31.4184,1.269],[31.4184,1.269]]],[[[31.749,0.8851],[31.749,0.8851]]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG422","name":"Kyegegwa"},"geometry":{"type":"Polygon","coordinates":[[[30.7685,0.2028],[30.7685,0.2028]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG415","name":"Kyenjojo"},"geometry":{"type":"Polygon","coordinates":[[[30.4643,0.5725],[30.4643,0.5725]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG125","name":"Kyotera"},"geometry":{"type":"Polygon","coordinates":[[[32.0005,-0.8187],[32.0005,-0.8187]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG326","name":"Lamwo"},"geometry":{"type":"Polygon","coordinates":[[[32.3601,3.3009],[32.3601,3.3009]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG307","name":"Lira"},"geometry":{"type":"Polygon","coordinates":[[[33.01,2.4971],[33.01,2.4971]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG229","name":"Luuka"},"geometry":{"type":"Polygon","coordinates":[[[33.3068,0.9846],[33.3068,0.9846]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG104","name":"Luwero"},"geometry":{"type":"Polygon","coordinates":[[[32.788,1.0751],[32.788,1.0751]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG124","name":"Lwengo"},"geometry":{"type":"Polygon","coordinates":[[[31.5972,-0.2957],[31.5972,-0.2957]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG114","name":"Lyantonde"},"geometry":{"type":"Polygon","coordinates":[[[31.1547,-0.49],[31.1547,-0.49]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG336","name":"Madi Okollo"},"geometry":{"type":"Polygon","coordinates":[[[31.5391,3.1507],[31.5391,3.1507]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG223","name":"Manafwa"},"geometry":{"type":"Polygon","coordinates":[[[34.2843,0.9625],[34.2843,0.9625]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG320","name":"Maracha"},"geometry":{"type":"Polygon","coordinates":[[[31.0696,3.2956],[31.0696,3.2956]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG105","name":"Masaka"},"geometry":{"type":"Polygon","coordinates":[[[31.7123,-0.3044],[31.7123,-0.3044]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG409","name":"Masindi"},"geometry":{"type":"Polygon","coordinates":[[[31.3897,1.6963],[31.3897,1.6963]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG214","name":"Mayuge"},"geometry":{"type":"Polygon","coordinates":[[[33.6137,0.4635],[33.6137,0.4635]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG209","name":"Mbale"},"geometry":{"type":"Polygon","coordinates":[[[34.0812,1.0404],[34.0812,1.0404]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG410","name":"Mbarara"},"geometry":{"type":"Polygon","coordinates":[[[30.4572,-0.4293],[30.4572,-0.4293]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG423","name":"Mitooma"},"geometry":{"type":"Polygon","coordinates":[[[29.9342,-0.4935],[29.9342,-0.4935]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG115","name":"Mityana"},"geometry":{"type":"Polygon","coordinates":[[[32.2681,0.3175],[32.2681,0.3175]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG308","name":"Moroto"},"geometry":{"type":"Polygon","coordinates":[[[34.9339,2.2825],[34.9339,2.2825]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG309","name":"Moyo"},"geometry":{"type":"Polygon","coordinates":[[[32.0007,3.5768],[32.0007,3.5768]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG106","name":"Mpigi"},"geometry":{"type":"Polygon","coordinates":[[[31.8715,0.0058],[31.8715,0.0058]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG107","name":"Mubende"},"geometry":{"type":"Polygon","coordinates":[[[31.5703,0.3677],[31.5703,0.3677]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG108","name":"Mukono"},"geometry":{"type":"Polygon","coordinates":[[[32.9837,0.555],[32.9837,0.555]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG334","name":"Nabilatuk"},"geometry":{"type":"Polygon","coordinates":[[[34.2222,1.6402],[34.2222,1.6402]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG311","name":"Nakapiripirit"},"geometry":{"type":"Polygon","coordinates":[[[34.7979,2.1229],[34.7979,2.1229]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG116","name":"Nakaseke"},"geometry":{"type":"Polygon","coordinates":[[[32.1717,0.6822],[32.1717,0.6822]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG109","name":"Nakasongola"},"geometry":{"type":"Polygon","coordinates":[[[32.3125,1.6432],[32.3125,1.6432]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG230","name":"Namayingo"},"geometry":{"type":"Polygon","coordinates":[[[33.6939,0.3042],[33.6939,0.3042]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG234","name":"Namisindwa"},"geometry":{"type":"Polygon","coordinates":[[[34.3563,0.9806],[34.3563,0.9806]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG224","name":"Namutumba"},"geometry":{"type":"Polygon","coordinates":[[[33.8593,0.6985],[33.8593,0.6985]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG327","name":"Napak"},"geometry":{"type":"Polygon","coordinates":[[[33.8494,2.3438],[33.8494,2.3438]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG310","name":"Nebbi"},"geometry":{"type":"Polygon","coordinates":[[[31.0205,2.5752],[31.0205,2.5752]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG231","name":"Ngora"},"geometry":{"type":"Polygon","coordinates":[[[33.8118,1.6789],[33.8118,1.6789]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG424","name":"Ntoroko"},"geometry":{"type":"Polygon","coordinates":[[[30.1644,0.7326],[30.1644,0.7326]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG411","name":"Ntungamo"},"geometry":{"type":"Polygon","coordinates":[[[30.6029,-0.8674],[30.6029,-0.8674]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG328","name":"Nwoya"},"geometry":{"type":"Polygon","coordinates":[[[31.4423,2.6769],[31.4423,2.6769]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG337","name":"Obongi"},"geometry":{"type":"Polygon","coordinates":[[[31.7694,3.5087],[31.7694,3.5087]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG331","name":"Omoro"},"geometry":{"type":"Polygon","coordinates":[[[32.1985,2.7578],[32.1985,2.7578]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG329","name":"Otuke"},"geometry":{"type":"Polygon","coordinates":[[[33.533,2.6037],[33.533,2.6037]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG321","name":"Oyam"},"geometry":{"type":"Polygon","coordinates":[[[32.5768,2.2186],[32.5768,2.2186]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG312","name":"Pader"},"geometry":{"type":"MultiPolygon","coordinates":[[[[33.1313,3.074],[33.1313,3.074]]],[[[32.4969,3.1749],[32.4969,3.1749]]],[[[32.4998,3.1687],[32.4998,3.1687]]],[[[32.5028,3.1646],[32.5028,3.1646]]],[[[32.5006,3.1319],[32.5006,3.1319]]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG332","name":"Pakwach"},"geometry":{"type":"Polygon","coordinates":[[[31.3869,2.7756],[31.3869,2.7756]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG210","name":"Pallisa"},"geometry":{"type":"Polygon","coordinates":[[[33.8813,1.2671],[33.8813,1.2671]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG110","name":"Rakai"},"geometry":{"type":"Polygon","coordinates":[[[31.2693,-0.9959],[31.2693,-0.9959]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG429","name":"Rubanda"},"geometry":{"type":"Polygon","coordinates":[[[30.0239,-1.202],[30.0239,-1.202]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG425","name":"Rubirizi"},"geometry":{"type":"Polygon","coordinates":[[[30.2841,-0.2113],[30.2841,-0.2113]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG431","name":"Rukiga"},"geometry":{"type":"Polygon","coordinates":[[[30.1696,-1.2751],[30.1696,-1.2751]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG412","name":"Rukungiri"},"geometry":{"type":"Polygon","coordinates":[[[29.9365,-0.4489],[29.9365,-0.4489]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG435","name":"Rwampara"},"geometry":{"type":"Polygon","coordinates":[[[30.641,-0.7662],[30.641,-0.7662]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG232","name":"Serere"},"geometry":{"type":"Polygon","coordinates":[[[33.3954,1.3339],[33.3954,1.3339]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG426","name":"Sheema"},"geometry":{"type":"Polygon","coordinates":[[[30.3057,-0.4335],[30.3057,-0.4335]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG215","name":"Sironko"},"geometry":{"type":"Polygon","coordinates":[[[34.5264,1.119],[34.5264,1.119]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG211","name":"Soroti"},"geometry":{"type":"Polygon","coordinates":[[[33.4395,1.8968],[33.4395,1.8968]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG111","name":"Ssembabule"},"geometry":{"type":"Polygon","coordinates":[[[31.6009,0.05],[31.6009,0.05]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG212","name":"Tororo"},"geometry":{"type":"Polygon","coordinates":[[[33.9787,0.578],[33.9787,0.578]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG113","name":"Wakiso"},"geometry":{"type":"Polygon","coordinates":[[[32.501,-0.1525],[32.501,-0.1525]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG313","name":"Yumbe"},"geometry":{"type":"Polygon","coordinates":[[[31.4088,3.184],[31.4088,3.184]]]}},{"type":"Feature","properties":{"source":"https://simplemaps.com","id":"UG330","name":"Zombo"},"geometry":{"type":"Polygon","coordinates":[[[30.792,2.6444],[30.792,2.6444]]]}}]};
+
+// ── Projection  (Uganda bbox: lon 29.4–35.1, lat -1.6–4.3) ───────────────────
+const W=560,H=620,LON0=29.4,LON1=35.1,LAT0=-1.6,LAT1=4.3;
+const px = lon => (lon-LON0)/(LON1-LON0)*W;
+const py = lat => (1-(lat-LAT0)/(LAT1-LAT0))*H;
+
+function ringToD(ring){return ring.map((c,i)=>(i?'L':'M')+px(c[0]).toFixed(1)+','+py(c[1]).toFixed(1)).join('')+'Z';}
+function featToD(f){
+  const g=f.geometry;
+  if(g.type==='Polygon') return g.coordinates.map(ringToD).join(' ');
+  return g.coordinates.map(poly=>poly.map(ringToD).join(' ')).join(' ');
+}
+function centroid(f){
+  const g=f.geometry;
+  const ring=g.type==='Polygon'?g.coordinates[0]:g.coordinates.reduce((a,b)=>a[0].length>b[0].length?a:b)[0];
+  const lons=ring.map(c=>c[0]),lats=ring.map(c=>c[1]);
+  return{x:px(lons.reduce((a,b)=>a+b)/lons.length),y:py(lats.reduce((a,b)=>a+b)/lats.length)};
+}
+
+// ── Hub config ────────────────────────────────────────────────────────────────
+const HUB_NAMES=['Kampala','Wakiso','Mukono','Jinja','Mbale','Gulu','Lira','Arua','Mbarara','Masaka','Kasese','Soroti','Moroto','Kabale','Tororo'];
+const CORRIDORS=[
+  {from:'Kampala',to:'Wakiso', rate:89,col:'purple'},
+  {from:'Kampala',to:'Mukono', rate:54,col:'purple'},
+  {from:'Jinja',  to:'Kampala',rate:31,col:'purple'},
+  {from:'Kampala',to:'Mbarara',rate:27,col:'cyan'},
+  {from:'Kampala',to:'Masaka', rate:22,col:'cyan'},
+  {from:'Kampala',to:'Jinja',  rate:19,col:'cyan'},
+  {from:'Kampala',to:'Lira',   rate:14,col:'cyan'},
+  {from:'Kabale', to:'Mbarara',rate:11,col:'cyan'},
+  {from:'Mbarara',to:'Masaka', rate:18,col:'cyan'},
+  {from:'Gulu',   to:'Lira',   rate:12,col:'cyan'},
+  {from:'Mbale',  to:'Tororo', rate: 9,col:'green'},
+  {from:'Soroti', to:'Mbale',  rate: 8,col:'green'},
+  {from:'Arua',   to:'Gulu',   rate: 7,col:'green'},
+  {from:'Kasese', to:'Mbarara',rate: 6,col:'green'},
+  {from:'Moroto', to:'Soroti', rate: 5,col:'green'},
+];
+const COLORS={purple:'#A855F7',cyan:'#0EA5E9',green:'#10B981'};
+const hubs={};
+
+// ── Render districts ──────────────────────────────────────────────────────────
+const gDist=document.getElementById('g-districts');
+const gNode=document.getElementById('g-nodes');
+const gArc =document.getElementById('g-arcs');
+const gPart=document.getElementById('g-particles');
+const SVG_NS='http://www.w3.org/2000/svg';
+
+GEO.features.forEach(feat=>{
+  const name=feat.properties.name;
+  const isHub=HUB_NAMES.includes(name);
+  const el=document.createElementNS(SVG_NS,'path');
+  el.setAttribute('d',featToD(feat));
+  el.setAttribute('fill',isHub?'#111827':'#0D1117');
+  el.setAttribute('stroke',isHub?'#2D5A8E':'#1E3A5F');
+  el.setAttribute('stroke-width',isHub?'1.2':'0.5');
+  if(isHub){
+    el.style.cursor='pointer';
+    const c=centroid(feat);
+    const rate=CORRIDORS.filter(r=>r.from===name||r.to===name).reduce((s,r)=>s+r.rate,0);
+    hubs[name]={...c,rate,name};
+    el.addEventListener('mouseenter',e=>showTip(name,rate,e));
+    el.addEventListener('mousemove', e=>moveTip(e));
+    el.addEventListener('mouseleave',hideTip);
+  }
+  gDist.appendChild(el);
+});
+
+// ── Nodes (pulse rings + core dots) ──────────────────────────────────────────
+const pulseState={};
+HUB_NAMES.forEach(name=>{
+  const h=hubs[name];if(!h)return;
+  const big=name==='Kampala';
+  const speed=Math.max(0.4,Math.min(3,h.rate/35));
+  const ring=document.createElementNS(SVG_NS,'circle');
+  ring.setAttribute('cx',h.x);ring.setAttribute('cy',h.y);
+  ring.setAttribute('r',big?5:3.5);ring.setAttribute('fill','none');
+  ring.setAttribute('stroke',big?'#A855F7':'#7B2FBE');ring.setAttribute('stroke-width','1');
+  ring.setAttribute('opacity','0');
+  gNode.appendChild(ring);
+  pulseState[name]={ring,phase:Math.random()*Math.PI*2,speed};
+  const dot=document.createElementNS(SVG_NS,'circle');
+  dot.setAttribute('cx',h.x);dot.setAttribute('cy',h.y);
+  dot.setAttribute('r',big?5:3.5);dot.setAttribute('fill','#F8FAFC');
+  dot.setAttribute('filter','url(#glow)');dot.style.cursor='pointer';
+  dot.addEventListener('mouseenter',e=>showTip(name,h.rate,e));
+  dot.addEventListener('mousemove', e=>moveTip(e));
+  dot.addEventListener('mouseleave',hideTip);
+  gNode.appendChild(dot);
+});
+
+// ── Arc + particle pools ──────────────────────────────────────────────────────
+const MAX_ARCS=20,MAX_PARTS=100;
+const arcPool=Array.from({length:MAX_ARCS},()=>{
+  const el=document.createElementNS(SVG_NS,'path');
+  el.setAttribute('fill','none');el.setAttribute('stroke-width','1.5');
+  el.setAttribute('filter','url(#glow)');el.style.display='none';
+  gArc.appendChild(el);return{el,active:false};
+});
+const partPool=Array.from({length:MAX_PARTS},()=>{
+  const el=document.createElementNS(SVG_NS,'circle');
+  el.setAttribute('r','2.5');el.setAttribute('filter','url(#glow)');
+  el.style.display='none';gPart.appendChild(el);return{el,active:false};
+});
+
+function cp(x1,y1,x2,y2,off){
+  const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  return{cx:mx-dy/len*off,cy:my+dx/len*off};
+}
+function bpt(t,x1,y1,cx,cy,x2,y2){const m=1-t;return{x:m*m*x1+2*m*t*cx+t*t*x2,y:m*m*y1+2*m*t*cy+t*t*y2};}
+function blen(x1,y1,cx,cy,x2,y2){let l=0,px=x1,py=y1;for(let i=1;i<=20;i++){const p=bpt(i/20,x1,y1,cx,cy,x2,y2),dx=p.x-px,dy=p.y-py;l+=Math.sqrt(dx*dx+dy*dy);px=p.x;py=p.y;}return l;}
+
+const liveArcs=[];
+let nextSpawn=0;
+
+function spawnArc(now){
+  const tot=CORRIDORS.reduce((s,c)=>s+c.rate,0);
+  let r=Math.random()*tot,pick=CORRIDORS[0];
+  for(const c of CORRIDORS){r-=c.rate;if(r<=0){pick=c;break;}}
+  const h1=hubs[pick.from],h2=hubs[pick.to];if(!h1||!h2)return;
+  const slot=arcPool.find(a=>!a.active);if(!slot)return;
+  const color=COLORS[pick.col];
+  const flip=Math.random()<0.5?1:-1;
+  const off=(40+Math.random()*70)*flip;
+  const cpt=cp(h1.x,h1.y,h2.x,h2.y,off);
+  const d=`M${h1.x.toFixed(1)},${h1.y.toFixed(1)} Q${cpt.cx.toFixed(1)},${cpt.cy.toFixed(1)} ${h2.x.toFixed(1)},${h2.y.toFixed(1)}`;
+  const pl=blen(h1.x,h1.y,cpt.cx,cpt.cy,h2.x,h2.y);
+  const life=2200+Math.random()*2800;
+  const speed=0.006+(pick.rate/276)*0.014;
+  const np=3+Math.floor(Math.random()*3);
+  const parts=[];
+  for(const p of partPool){if(!p.active&&parts.length<np){p.active=true;p.el.setAttribute('fill',color);p.el.style.display='';parts.push({p,t:parts.length/np});}}
+  slot.active=true;
+  slot.el.setAttribute('d',d);slot.el.setAttribute('stroke',color);
+  slot.el.setAttribute('stroke-dasharray',pl);slot.el.setAttribute('stroke-dashoffset',pl);
+  slot.el.setAttribute('opacity','0.75');slot.el.style.display='';
+  const born=now;
+  liveArcs.push({slot,parts,x1:h1.x,y1:h1.y,cx:cpt.cx,cy:cpt.cy,x2:h2.x,y2:h2.y,pl,life,speed,born,dt:0,dying:false});
+  (function draw(ts){const prog=Math.min(1,(ts-born)/(life*0.4));slot.el.setAttribute('stroke-dashoffset',(pl*(1-prog)).toFixed(1));if(prog<1)requestAnimationFrame(draw);})(now);
+}
+
+function tickArc(arc,now){
+  const elapsed=now-arc.born,left=arc.life-elapsed;
+  if(left<700){arc.dying=true;arc.slot.el.setAttribute('opacity',(0.75*left/700).toFixed(2));}
+  arc.dt=(arc.dt+arc.speed)%1;
+  arc.parts.forEach(({p,t})=>{
+    const pos=bpt((arc.dt+t)%1,arc.x1,arc.y1,arc.cx,arc.cy,arc.x2,arc.y2);
+    p.el.setAttribute('cx',pos.x.toFixed(1));p.el.setAttribute('cy',pos.y.toFixed(1));
+    p.el.setAttribute('opacity',arc.dying?(left/700*0.9).toFixed(2):'0.9');
+  });
+  if(elapsed>=arc.life){
+    arc.slot.el.style.display='none';arc.slot.active=false;
+    arc.parts.forEach(({p})=>{p.el.style.display='none';p.active=false;});
+    return false;
+  }
+  return true;
+}
+
+// ── HUD corridor drift ────────────────────────────────────────────────────────
+const BASE=[89,54,31,18,12];
+setInterval(()=>{BASE.forEach((b,i)=>{document.getElementById('c'+i).textContent=Math.round(b*(0.94+Math.random()*0.12))+' tx/s';});},2000);
+
+// ── Main loop ─────────────────────────────────────────────────────────────────
+let lastT=performance.now(),sessionTx=0;
+const LOOP=60000,t0=performance.now();
+
+function frame(now){
+  const dt=now-lastT;lastT=now;
+  // session counter
+  sessionTx+=276*dt/1000;
+  document.getElementById('s-session').textContent=Math.floor(sessionTx).toLocaleString();
+  // 60s progress
+  const elapsed=(now-t0)%LOOP,pct=elapsed/LOOP*100;
+  document.getElementById('s-prog').style.width=pct.toFixed(1)+'%';
+  document.getElementById('s-secs').textContent=Math.ceil((LOOP-elapsed)/1000)+'s';
+  // spawn
+  if(now>=nextSpawn){
+    if(liveArcs.filter(a=>!a.dying).length<MAX_ARCS)spawnArc(now);
+    nextSpawn=now+200+Math.random()*400;
+  }
+  // update arcs
+  for(let i=liveArcs.length-1;i>=0;i--)if(!tickArc(liveArcs[i],now))liveArcs.splice(i,1);
+  document.getElementById('s-streams').textContent=liveArcs.filter(a=>!a.dying).length;
+  // pulses
+  for(const n in pulseState){
+    const s=pulseState[n];
+    const prog=Math.sin((now*s.speed*0.001+s.phase)%(Math.PI*2))*0.5+0.5;
+    s.ring.setAttribute('r',(4+prog*14).toFixed(1));
+    s.ring.setAttribute('opacity',((1-prog)*0.7).toFixed(2));
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+const tip=document.getElementById('tooltip');
+function showTip(name,rate,e){document.getElementById('tt-name').textContent=name;document.getElementById('tt-val').textContent=rate+' tx/s · active hub';tip.style.display='block';moveTip(e);}
+function moveTip(e){const r=document.getElementById('map-wrap').getBoundingClientRect();tip.style.left=(e.clientX-r.left+14)+'px';tip.style.top=(e.clientY-r.top-10)+'px';}
+function hideTip(){tip.style.display='none';}
+
+// ── Responsive SVG ────────────────────────────────────────────────────────────
+function resize(){
+  const wrap=document.getElementById('map-wrap');
+  const scale=Math.min(wrap.clientWidth/560,wrap.clientHeight/620)*0.9;
+  const svg=document.getElementById('map');
+  svg.style.width=Math.round(560*scale)+'px';svg.style.height=Math.round(620*scale)+'px';
+}
+window.addEventListener('resize',resize);resize();
+</script>
+</body>
+</html>
