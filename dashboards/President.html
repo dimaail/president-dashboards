@@ -306,21 +306,20 @@ html, body {
   line-height: 1.45;
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 220px 1fr 320px;
+  grid-template-columns: 220px 1fr;
   grid-template-rows: 56px 1fr;
   grid-template-areas:
-    "brand topbar topbar"
-    "nav   main   alerts";
+    "brand topbar"
+    "nav   main";
 }
 
 .pres.density-comfortable { font-size: 14px; }
 .pres.govmail-active {
-  grid-template-columns: 220px 1fr 0;
+  grid-template-columns: 220px 1fr;
   grid-template-areas:
-    "brand topbar topbar"
-    "nav   main   main";
+    "brand topbar"
+    "nav   main";
 }
-.pres.govmail-active .pres-alerts { display: none; }
 
 /* ---------- Brand block ---------- */
 .pres-brand {
@@ -862,15 +861,50 @@ html, body {
 .chip.flat   { background: rgba(0,0,0,0.06);       color: var(--pres-text-dim); }
 .chip.accent { background: rgba(255,122,0,0.14);  color: var(--pres-accent); }
 
-/* ---------- Alerts column ---------- */
+/* ---------- Alerts panel (fixed overlay) ---------- */
 .pres-alerts {
-  grid-area: alerts;
+  position: fixed;
+  top: 56px; right: 0;
+  width: 320px;
+  height: calc(100vh - 56px);
+  z-index: 400;
   border-left: 1px solid var(--pres-line);
   padding: 16px;
   display: flex; flex-direction: column; gap: 12px;
   overflow-y: auto;
-  max-height: calc(100vh - 56px);
   background: var(--pres-panel);
+  transform: translateX(100%);
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+  box-shadow: none;
+}
+.pres-alerts.is-open {
+  transform: translateX(0);
+  box-shadow: -6px 0 28px rgba(0,0,0,0.14);
+}
+.alerts-backdrop {
+  position: fixed; inset: 0;
+  z-index: 399;
+  background: rgba(0,0,0,0.15);
+}
+
+/* ---------- Bell icon button ---------- */
+.bell-btn {
+  position: relative;
+  appearance: none; background: transparent; border: none;
+  color: var(--pres-text-dim); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 4px;
+  transition: background 120ms, color 120ms;
+  flex-shrink: 0;
+}
+.bell-btn:hover { background: rgba(0,0,0,0.06); color: var(--pres-text); }
+.bell-badge {
+  position: absolute; top: 1px; right: 1px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px; background: var(--pres-bad);
+  color: #fff; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; pointer-events: none;
 }
 .alerts-h {
   display: flex; align-items: center; justify-content: space-between;
@@ -4677,6 +4711,7 @@ function App() {
   const [ddOpen, setDdOpen]             = React.useState(false);
   const [ddTab, setDdTab]               = React.useState("inbox");
   const ddRef                           = React.useRef(null);
+  const [alertsOpen, setAlertsOpen]     = React.useState(false);
 
   const unreadCount = React.useMemo(
     () => messages.filter(m => m.tab === "inbox" && m.status !== "read").length,
@@ -4697,6 +4732,14 @@ function App() {
     document.addEventListener("mousedown", onClick);
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("mousedown", onClick); };
   }, [ddOpen]);
+
+  // Close alerts panel on Escape
+  React.useEffect(() => {
+    if (!alertsOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setAlertsOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [alertsOpen]);
 
   const openFromDropdown = (id) => {
     setSelectedId(id);
@@ -4779,6 +4822,12 @@ function App() {
             <button className={tweaks.language === "en" ? "is-active" : ""} onClick={() => setTweak("language", "en")}>EN</button>
             <button className={tweaks.language === "lg" ? "is-active" : ""} onClick={() => setTweak("language", "lg")}>Luganda</button>
           </span>
+
+          {/* ── Bell icon (alerts toggle) ── */}
+          <button className="bell-btn" title="Alerts" onClick={() => setAlertsOpen(o => !o)}>
+            <Icon name="notifications" size={20} />
+            {data.alerts.length > 0 && <span className="bell-badge">{data.alerts.length}</span>}
+          </button>
 
           {/* ── Mail icon + dropdown ── */}
           <span className="mail-dropdown-wrap" ref={ddRef}>
@@ -4886,8 +4935,11 @@ function App() {
       {/* ── Main content ─────────────────────────────────────────── */}
       <main className="pres-main">{tabBody[tab]}</main>
 
-      {/* ── Alerts column ────────────────────────────────────────── */}
-      <aside className="pres-alerts">
+      {/* ── Alerts backdrop ──────────────────────────────────────── */}
+      {alertsOpen && <div className="alerts-backdrop" onClick={() => setAlertsOpen(false)} />}
+
+      {/* ── Alerts panel ─────────────────────────────────────────── */}
+      <aside className={`pres-alerts${alertsOpen ? " is-open" : ""}`}>
         <div className="alerts-h">
           <span>{t("Alerts")} · {t("Live")}</span>
           <span className="count">{data.alerts.length}</span>
