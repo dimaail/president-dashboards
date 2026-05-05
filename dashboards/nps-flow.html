@@ -266,9 +266,9 @@ GEO.features.forEach(feat=>{
   const isHub=HUB_NAMES.includes(name);
   const el=document.createElementNS(SVG_NS,'path');
   el.setAttribute('d',featToD(feat));
-  el.setAttribute('fill',isHub?'#111827':'#0D1117');
-  el.setAttribute('stroke',isHub?'#2D5A8E':'#1E3A5F');
-  el.setAttribute('stroke-width',isHub?'1.2':'0.5');
+  el.setAttribute('fill',isHub?'#0d2545':'#091628');
+  el.setAttribute('stroke',isHub?'#4A8EC4':'#1E3A5F');
+  el.setAttribute('stroke-width',isHub?'1.5':'0.8');
   if(isHub){
     el.style.cursor='pointer';
     const c=centroid(feat);
