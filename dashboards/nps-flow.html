@@ -207,7 +207,7 @@ body{
   <!-- HUD left -->
   <div class="hud" id="hud-left">
     <div class="hud-title"><span class="hud-live"></span>Uganda NPS Switch</div>
-    <div class="hud-big">276</div>
+    <div class="hud-big" id="s-txrate">276</div>
     <div class="hud-big-lbl">TX / SECOND</div>
     <hr class="hud-hr"/>
     <div class="hud-cap">Top Corridors</div>
@@ -403,13 +403,19 @@ const BASE=[89,54,31,18,12];
 setInterval(()=>{BASE.forEach((b,i)=>{document.getElementById('c'+i).textContent=Math.round(b*(0.94+Math.random()*0.12))+' tx/s';});},2000);
 
 // ── Main loop ─────────────────────────────────────────────────────────────────
-let lastT=performance.now(),sessionTx=0;
+let lastT=performance.now(),sessionTx=0,curTxRate=233;
 const LOOP=60000,t0=performance.now();
+const TX_WAVES=[{amp:36,freq:0.11,ph:0},{amp:18,freq:0.29,ph:1.3},{amp:9,freq:0.67,ph:2.7}];
+const TX_BASE=233;
 
 function frame(now){
   const dt=now-lastT;lastT=now;
   // session counter
-  sessionTx+=276*dt/1000;
+  const tSec=(now-t0)/1000;
+  let txVal=TX_BASE;for(const w of TX_WAVES)txVal+=w.amp*Math.sin(tSec*w.freq*Math.PI*2+w.ph);
+  curTxRate=Math.max(178,Math.min(289,Math.round(txVal)));
+  document.getElementById('s-txrate').textContent=curTxRate;
+  sessionTx+=curTxRate*dt/1000;
   document.getElementById('s-session').textContent=Math.floor(sessionTx).toLocaleString();
   // 60s progress
   const elapsed=(now-t0)%LOOP,pct=elapsed/LOOP*100;
