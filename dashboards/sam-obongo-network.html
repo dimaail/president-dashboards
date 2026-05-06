@@ -667,11 +667,25 @@ function initGraph(data) {
   /* ── Selection state ──────────────────────────────────────────── */
   let selected = null;
 
+  function applyHighlight(node) {
+    selected = node;
+    const hood = node.closedNeighborhood();
+    cy.elements().not(hood).removeClass('hl').addClass('dim');
+    hood.removeClass('dim').addClass('hl');
+    showDetail(node.data());
+  }
+
   function resetHighlight() {
     cy.elements().removeClass('hl dim');
     clearDetail();
     selected = null;
   }
+
+  /* Auto-highlight Sam on load once the layout settles */
+  cy.one('layoutstop', () => {
+    const sam = cy.getElementById('sam');
+    if (sam) applyHighlight(sam);
+  });
 
   cy.on('tap', 'node', evt => {
     const node = evt.target;
@@ -679,11 +693,7 @@ function initGraph(data) {
       resetHighlight();
       return;
     }
-    selected = node;
-    const hood = node.closedNeighborhood();
-    cy.elements().not(hood).removeClass('hl').addClass('dim');
-    hood.removeClass('dim').addClass('hl');
-    showDetail(node.data());
+    applyHighlight(node);
   });
 
   cy.on('tap', evt => {
