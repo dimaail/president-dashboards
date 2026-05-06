@@ -2847,7 +2847,8 @@ const TabOverview = ({ t, data, activeRegion, setActiveRegion }) => {
 
 // =============== SWITCH ===============
 // ── NPS live bar chart — smooth scrolling, 60-second window ─────────────────
-function NpsBarChart({ avgVal, color, label, unit, fmtVal, subline, t }) {
+function NpsBarChart({ avgVal, color, label, unit, fmtVal, subline, t, collapsible = false }) {
+  const [open, setOpen] = React.useState(true);
   const N   = 60;   // visible seconds
   const GAP = 1.5;  // px gap between bars
 
@@ -2922,13 +2923,17 @@ function NpsBarChart({ avgVal, color, label, unit, fmtVal, subline, t }) {
 
   return (
     <div className="pres-card">
-      <div className="card-h">
+      <div className="card-h"
+        onClick={collapsible ? () => setOpen(o => !o) : undefined}
+        style={collapsible ? { cursor: "pointer", userSelect: "none" } : undefined}>
         <span>{t(label)}</span>
         <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span className="nps-live-dot" />
           <span className="chip ok">{t("LIVE")}</span>
+          {collapsible && <span style={{ fontSize: 14, marginLeft: 4, color: "var(--pres-text-mute)" }}>{open ? "▾" : "▸"}</span>}
         </span>
       </div>
+      <div style={{ display: open ? "" : "none" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", margin: "6px 0 8px" }}>
         <span style={{ fontSize: 32, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.01em" }}>{fmtVal(curVal)}</span>
         <span className="muted" style={{ fontSize: 11 }}>{unit}</span>
@@ -2963,15 +2968,16 @@ function NpsBarChart({ avgVal, color, label, unit, fmtVal, subline, t }) {
       <div className="nps-axis">
         <span>−60s</span><span>−45s</span><span>−30s</span><span>−15s</span><span>now</span>
       </div>
-      <div className="nps-subline">{subline}</div>
+      {subline && <div className="nps-subline">{subline}</div>}
+      </div>
     </div>
   );
 }
 
 // ── NPS joint dual-axis area chart (60-second rolling window) ────────────────
-const AVG_TX  = 300;       // tx / sec (used by both components below)
-const AVG_VAL = 2_700_000; // UGX / sec  (300 × 9 000)
-const NOISE   = 0.38;      // ±38% random variance
+const AVG_TX  = 233;       // tx / sec — matches NPS flow map range 178-289
+const AVG_VAL = 2_097_000; // UGX / sec  (233 × 9 000)
+const NOISE   = 0.24;      // ±24% variance — keeps tx/s within 178-289
 
 function NpsJointChart({ t }) {
   const N = 60; // 60-second window, one data point per second
@@ -3127,7 +3133,6 @@ function NpsJointChart({ t }) {
         ))}
       </svg>
 
-      <div className="nps-subline">60-second rolling window · avg 300 tx/s · avg ticket UGX 9,000 · avg value flow UGX 2.7 M/s</div>
     </div>
   );
 }
@@ -3140,17 +3145,18 @@ function TabSwitch({ t, data }) {
         <span className="meta">{t("Live · all systems")} · {data.asOf}</span>
       </div>
 
+      <NpsJointChart t={t} />
+
       <NpsBarChart
         avgVal={AVG_VAL}
         color="#1A6B3C"
         label="NPS Transaction Value"
         unit="M UGX / sec"
         fmtVal={v => (v / 1_000_000).toFixed(2)}
-        subline="avg UGX 2.7 M / sec · avg ticket UGX 9,000 · 60-second rolling window"
+        subline=""
         t={t}
+        collapsible
       />
-
-      <NpsJointChart t={t} />
 
       <div className="pres-grid cols-2">
         <div className="pres-card">
