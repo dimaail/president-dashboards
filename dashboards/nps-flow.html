@@ -260,23 +260,47 @@ function centroid(f){
 }
 
 // ── Hub config ────────────────────────────────────────────────────────────────
-const HUB_NAMES=['Kampala','Wakiso','Mukono','Jinja','Mbale','Gulu','Lira','Arua','Mbarara','Masaka','Kasese','Soroti','Moroto','Kabale','Tororo'];
+const HUB_NAMES=['Kampala','Wakiso','Mukono','Jinja','Mbale','Gulu','Lira','Arua','Mbarara','Masaka','Kasese','Soroti','Moroto','Kabale','Tororo','Hoima','Kabarole','Mubende','Ntungamo','Iganga','Kitgum','Nebbi','Luwero'];
 const CORRIDORS=[
-  {from:'Kampala',to:'Wakiso', rate:89,col:'purple'},
-  {from:'Kampala',to:'Mukono', rate:54,col:'purple'},
-  {from:'Jinja',  to:'Kampala',rate:31,col:'purple'},
-  {from:'Kampala',to:'Mbarara',rate:27,col:'cyan'},
-  {from:'Kampala',to:'Masaka', rate:22,col:'cyan'},
-  {from:'Kampala',to:'Jinja',  rate:19,col:'cyan'},
-  {from:'Kampala',to:'Lira',   rate:14,col:'cyan'},
-  {from:'Kabale', to:'Mbarara',rate:11,col:'cyan'},
-  {from:'Mbarara',to:'Masaka', rate:18,col:'cyan'},
-  {from:'Gulu',   to:'Lira',   rate:12,col:'cyan'},
-  {from:'Mbale',  to:'Tororo', rate: 9,col:'green'},
-  {from:'Soroti', to:'Mbale',  rate: 8,col:'green'},
-  {from:'Arua',   to:'Gulu',   rate: 7,col:'green'},
-  {from:'Kasese', to:'Mbarara',rate: 6,col:'green'},
-  {from:'Moroto', to:'Soroti', rate: 5,col:'green'},
+  // Tier 1 — Kampala high-volume (purple)
+  {from:'Kampala',to:'Wakiso',   rate:89,col:'purple'},
+  {from:'Kampala',to:'Mukono',   rate:54,col:'purple'},
+  {from:'Jinja',  to:'Kampala',  rate:35,col:'purple'},
+  {from:'Kampala',to:'Iganga',   rate:28,col:'purple'},
+  // Tier 2 — Kampala radials + strong regional (cyan)
+  {from:'Kampala',to:'Mbarara',  rate:27,col:'cyan'},
+  {from:'Kampala',to:'Masaka',   rate:22,col:'cyan'},
+  {from:'Kampala',to:'Jinja',    rate:19,col:'cyan'},
+  {from:'Kampala',to:'Gulu',     rate:17,col:'cyan'},
+  {from:'Kampala',to:'Lira',     rate:14,col:'cyan'},
+  {from:'Kampala',to:'Mubende',  rate:13,col:'cyan'},
+  {from:'Kampala',to:'Hoima',    rate:12,col:'cyan'},
+  {from:'Kampala',to:'Luwero',   rate:11,col:'cyan'},
+  {from:'Mbarara',to:'Masaka',   rate:18,col:'cyan'},
+  {from:'Kabale', to:'Mbarara',  rate:11,col:'cyan'},
+  {from:'Gulu',   to:'Lira',     rate:12,col:'cyan'},
+  // Tier 3 — regional cross-links (green)
+  {from:'Mbale',  to:'Tororo',   rate: 9,col:'green'},
+  {from:'Soroti', to:'Mbale',    rate: 8,col:'green'},
+  {from:'Arua',   to:'Gulu',     rate: 7,col:'green'},
+  {from:'Kasese', to:'Mbarara',  rate: 6,col:'green'},
+  {from:'Moroto', to:'Soroti',   rate: 5,col:'green'},
+  {from:'Iganga', to:'Jinja',    rate:11,col:'green'},
+  {from:'Iganga', to:'Mbale',    rate: 7,col:'green'},
+  {from:'Soroti', to:'Lira',     rate: 8,col:'green'},
+  {from:'Kitgum', to:'Gulu',     rate: 8,col:'green'},
+  {from:'Kitgum', to:'Lira',     rate: 6,col:'green'},
+  {from:'Ntungamo',to:'Mbarara', rate: 9,col:'green'},
+  {from:'Ntungamo',to:'Kabale',  rate: 6,col:'green'},
+  {from:'Mbarara',to:'Kabale',   rate: 8,col:'green'},
+  {from:'Kabarole',to:'Kasese',  rate: 7,col:'green'},
+  {from:'Kabarole',to:'Mubende', rate: 5,col:'green'},
+  {from:'Hoima',  to:'Kabarole', rate: 6,col:'green'},
+  {from:'Mubende',to:'Hoima',    rate: 6,col:'green'},
+  {from:'Nebbi',  to:'Arua',     rate: 7,col:'green'},
+  {from:'Nebbi',  to:'Gulu',     rate: 5,col:'green'},
+  {from:'Luwero', to:'Gulu',     rate: 5,col:'green'},
+  {from:'Mbale',  to:'Soroti',   rate: 7,col:'green'},
 ];
 const COLORS={purple:'#A855F7',cyan:'#0EA5E9',green:'#10B981'};
 const hubs={};
@@ -312,18 +336,20 @@ GEO.features.forEach(feat=>{
 const pulseState={};
 HUB_NAMES.forEach(name=>{
   const h=hubs[name];if(!h)return;
-  const big=name==='Kampala';
+  const MAJOR_HUBS=['Wakiso','Mukono','Jinja','Gulu','Mbarara','Arua','Mbale','Masaka','Lira','Hoima','Iganga'];
+  const tier=name==='Kampala'?1:MAJOR_HUBS.includes(name)?2:3;
+  const r=tier===1?5:tier===2?4:3;
   const speed=Math.max(0.4,Math.min(3,h.rate/35));
   const ring=document.createElementNS(SVG_NS,'circle');
   ring.setAttribute('cx',h.x);ring.setAttribute('cy',h.y);
-  ring.setAttribute('r',big?5:3.5);ring.setAttribute('fill','none');
-  ring.setAttribute('stroke',big?'#A855F7':'#7B2FBE');ring.setAttribute('stroke-width','1');
+  ring.setAttribute('r',r);ring.setAttribute('fill','none');
+  ring.setAttribute('stroke',tier===1?'#A855F7':tier===2?'#0EA5E9':'#10B981');ring.setAttribute('stroke-width','1');
   ring.setAttribute('opacity','0');
   gNode.appendChild(ring);
   pulseState[name]={ring,phase:Math.random()*Math.PI*2,speed};
   const dot=document.createElementNS(SVG_NS,'circle');
   dot.setAttribute('cx',h.x);dot.setAttribute('cy',h.y);
-  dot.setAttribute('r',big?5:3.5);dot.setAttribute('fill','#F8FAFC');
+  dot.setAttribute('r',r);dot.setAttribute('fill','#F8FAFC');
   dot.setAttribute('filter','url(#glow)');dot.style.cursor='pointer';
   dot.addEventListener('mouseenter',e=>showTip(name,h.rate,e));
   dot.addEventListener('mousemove', e=>moveTip(e));
@@ -332,7 +358,7 @@ HUB_NAMES.forEach(name=>{
 });
 
 // ── Arc + particle pools ──────────────────────────────────────────────────────
-const MAX_ARCS=20,MAX_PARTS=100;
+const MAX_ARCS=35,MAX_PARTS=200;
 const arcPool=Array.from({length:MAX_ARCS},()=>{
   const el=document.createElementNS(SVG_NS,'path');
   el.setAttribute('fill','none');el.setAttribute('stroke-width','1.5');
@@ -375,6 +401,8 @@ function spawnArc(now){
   slot.active=true;
   slot.el.setAttribute('d',d);slot.el.setAttribute('stroke',color);
   slot.el.setAttribute('stroke-dasharray',pl);slot.el.setAttribute('stroke-dashoffset',pl);
+  const sw=pick.rate>30?2:pick.rate>10?1.5:1;
+  slot.el.setAttribute('stroke-width',sw);
   slot.el.setAttribute('opacity','0.75');slot.el.style.display='';
   const born=now;
   liveArcs.push({slot,parts,x1:h1.x,y1:h1.y,cx:cpt.cx,cy:cpt.cy,x2:h2.x,y2:h2.y,pl,life,speed,born,dt:0,dying:false});
@@ -424,7 +452,7 @@ function frame(now){
   // spawn
   if(now>=nextSpawn){
     if(liveArcs.filter(a=>!a.dying).length<MAX_ARCS)spawnArc(now);
-    nextSpawn=now+200+Math.random()*400;
+    nextSpawn=now+130+Math.random()*270;
   }
   // update arcs
   for(let i=liveArcs.length-1;i>=0;i--)if(!tickArc(liveArcs[i],now))liveArcs.splice(i,1);
