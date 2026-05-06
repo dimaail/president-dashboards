@@ -357,15 +357,31 @@ body {
    Design tokens
    ────────────────────────────────────────────────────────────────── */
 const TYPE_CFG = {
-  person:           { emoji: '👤', label: 'Person',           bg: '#EFF6FF', border: '#3B82F6', shape: 'ellipse'        },
-  bank_account:     { emoji: '🏦', label: 'Bank Account',     bg: '#F0FDF4', border: '#22C55E', shape: 'roundrectangle' },
-  mobile_money:     { emoji: '📱', label: 'Mobile Money',     bg: '#FFF7ED', border: '#FF7A00', shape: 'roundrectangle' },
-  crypto_wallet:    { emoji: '🔐', label: 'Crypto Wallet',    bg: '#FAF5FF', border: '#9E00FF', shape: 'roundrectangle' },
-  exchange_account: { emoji: '🔄', label: 'Exchange Acct',    bg: '#ECFDF5', border: '#10B981', shape: 'roundrectangle' },
-  company:          { emoji: '🏢', label: 'Company',          bg: '#EEF2FF', border: '#6366F1', shape: 'roundrectangle' },
+  person:           { label: 'Person',        bg: '#EFF6FF', border: '#3B82F6', shape: 'ellipse',
+    icon: '<path d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/>' },
+  bank_account:     { label: 'Bank Account',  bg: '#F0FDF4', border: '#22C55E', shape: 'roundrectangle',
+    icon: '<path d="M2 20h20v2H2zm2-2h3V9H4v9zM2 7l10-4 10 4v2H2V7zm7 11h2V9H9v9zm4 0h2V9h-2v9zm4 0h3V9h-3v9z"/>' },
+  mobile_money:     { label: 'Mobile Money',  bg: '#FFF7ED', border: '#FF7A00', shape: 'roundrectangle',
+    icon: '<path d="M17 1H7C5.9 1 5 1.9 5 3v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-5 19c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm5-4H7V4h10v12z"/>' },
+  crypto_wallet:    { label: 'Crypto Wallet', bg: '#FAF5FF', border: '#9E00FF', shape: 'roundrectangle',
+    icon: '<path d="M15 8.5c.5-.7.7-1.5.5-2.3-.5-1.9-2.3-3.2-4.2-3.2H8v5H6v2h2v2H6v2h2v5h4.5c1.9 0 3.5-1.6 3.5-3.5 0-1.1-.5-2-1.3-2.6.5-.8.6-1.7.3-2.4zM10 5h1.5c.8 0 1.5.7 1.5 1.5S12.3 8 11.5 8H10V5zm2.5 12H10v-4h2.5c1.1 0 2 .9 2 2s-.9 2-2 2z"/>' },
+  exchange_account: { label: 'Exchange Acct', bg: '#ECFDF5', border: '#10B981', shape: 'roundrectangle',
+    icon: '<path d="M12 4V1L8 5l4 4V6c3.3 0 6 2.7 6 6 0 1-.3 2-.7 2.8l1.5 1.5C19.5 15 20 13.6 20 12c0-4.4-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6 0-1 .3-2 .7-2.8L5.2 7.7C4.5 9 4 10.4 4 12c0 4.4 3.6 8 8 8v3l4-4-4-4v3z"/>' },
+  company:          { label: 'Company',        bg: '#EEF2FF', border: '#6366F1', shape: 'roundrectangle',
+    icon: '<path d="M12 3L2 8v1h1v12h6v-7h6v7h6V9h1V8L12 3zm-3 14H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>' },
 };
 const SUSP_BG  = '#FEF2F2';
 const SUSP_BDR = '#EF4444';
+
+function makeIconUri(iconBody, color) {
+  return 'data:image/svg+xml,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}">${iconBody}</svg>`
+  );
+}
+
+function iconSvgEl(cfg, color, size) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="${color}" style="flex-shrink:0;display:block">${cfg.icon || ''}</svg>`;
+}
 
 /* ──────────────────────────────────────────────────────────────────
    Utilities
@@ -373,6 +389,16 @@ const SUSP_BDR = '#EF4444';
 function fmtUGX(n) {
   if (n == null || n === 0) return null;
   return 'UGX ' + Number(n).toLocaleString('en-UG');
+}
+function fmtCrypto(amount, unit) {
+  if (amount == null || unit == null) return null;
+  const decimals = (unit === 'BTC' || unit === 'ETH') ? 4 : 0;
+  const formatted = Number(amount).toLocaleString('en-US', { maximumFractionDigits: decimals, minimumFractionDigits: decimals > 0 ? 2 : 0 });
+  return `${formatted} ${unit}`;
+}
+function fmtEdgeAmount(e) {
+  if (e.cryptoAmount != null && e.cryptoUnit) return fmtCrypto(e.cryptoAmount, e.cryptoUnit);
+  return fmtUGX(e.amountUGX);
 }
 function toLabel(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -403,7 +429,7 @@ function tipHide() { TIP.classList.remove('show'); }
    ────────────────────────────────────────────────────────────────── */
 function showDetail(nodeData) {
   const { label, type, details, suspicious } = nodeData;
-  const cfg = TYPE_CFG[type] || { emoji: '?', label: type, bg: '#F5F5F5', border: '#999' };
+  const cfg = TYPE_CFG[type] || { icon: '', label: type, bg: '#F5F5F5', border: '#999' };
 
   let rows = '';
   if (details) {
@@ -425,7 +451,7 @@ function showDetail(nodeData) {
   panel.innerHTML = `
     <div class="dc" style="border-left: 3px solid ${suspicious ? SUSP_BDR : cfg.border}">
       <div class="dc-header" style="background:${suspicious ? SUSP_BG : cfg.bg}">
-        <span class="dc-emoji">${cfg.emoji}</span>
+        <span class="dc-emoji">${iconSvgEl(cfg, suspicious ? SUSP_BDR : cfg.border, 22)}</span>
         <div>
           <div class="dc-name">${label}</div>
           <div class="dc-type">${cfg.label}</div>
@@ -452,7 +478,8 @@ function buildLegend() {
   Object.values(TYPE_CFG).forEach(cfg => {
     html += `<div class="legend-item">
       <div class="lg-swatch" style="background:${cfg.bg};border-color:${cfg.border}"></div>
-      <span>${cfg.emoji} ${cfg.label}</span>
+      ${iconSvgEl(cfg, cfg.border, 14)}
+      <span>${cfg.label}</span>
     </div>`;
   });
   html += `<div class="legend-item" style="margin-top:4px;">
@@ -490,35 +517,38 @@ function initGraph(data) {
 
   (data.nodes || []).forEach(n => {
     const cfg = TYPE_CFG[n.type] || { emoji: '?', label: n.type, bg: '#F5F5F5', border: '#999', shape: 'ellipse' };
+    const iconColor = n.suspicious ? SUSP_BDR : cfg.border;
     elements.push({
       data: {
         id:         n.id,
-        label:      cfg.emoji + '\n' + n.label,
+        label:      n.label,
         rawLabel:   n.label,
         type:       n.type,
         details:    n.details || {},
         suspicious: !!n.suspicious,
-        /* style hints passed through data for the stylesheet */
         _bg:        n.suspicious ? SUSP_BG  : cfg.bg,
         _border:    n.suspicious ? SUSP_BDR : cfg.border,
         _shape:     cfg.shape,
+        _iconUri:   makeIconUri(cfg.icon || '', iconColor),
       }
     });
   });
 
   (data.edges || []).forEach(e => {
-    const amtLabel = fmtUGX(e.amountUGX);
+    const amtLabel = fmtEdgeAmount(e);
     elements.push({
       data: {
-        id:         e.id,
-        source:     e.from,
-        target:     e.to,
-        label:      amtLabel || e.label || '',
-        rawLabel:   e.label || '',
-        amountUGX:  e.amountUGX || null,
-        suspicious: !!e.suspicious,
-        fromId:     e.from,
-        toId:       e.to,
+        id:          e.id,
+        source:      e.from,
+        target:      e.to,
+        label:       amtLabel || e.label || '',
+        rawLabel:    e.label || '',
+        amountUGX:   e.amountUGX  || null,
+        cryptoAmount:e.cryptoAmount != null ? e.cryptoAmount : null,
+        cryptoUnit:  e.cryptoUnit  || null,
+        suspicious:  !!e.suspicious,
+        fromId:      e.from,
+        toId:        e.to,
       }
     });
   });
@@ -549,9 +579,16 @@ function initGraph(data) {
           'width':            72,
           'height':           72,
           'shape':            'data(_shape)',
-          'background-color': 'data(_bg)',
-          'border-color':     'data(_border)',
-          'border-width':     2,
+          'background-color':    'data(_bg)',
+          'border-color':        'data(_border)',
+          'border-width':        2,
+          'background-image':    'data(_iconUri)',
+          'background-fit':      'none',
+          'background-width':    '52%',
+          'background-height':   '52%',
+          'background-position-x': '50%',
+          'background-position-y': '50%',
+          'background-image-opacity': 0.82,
           'transition-property': 'opacity, border-width',
           'transition-duration': '150ms',
         }
@@ -703,16 +740,17 @@ function initGraph(data) {
   /* ── Node tooltip ─────────────────────────────────────────────── */
   cy.on('mouseover', 'node', evt => {
     const d   = evt.target.data();
-    const cfg = TYPE_CFG[d.type] || { emoji: '?', label: d.type };
+    const cfg = TYPE_CFG[d.type] || { icon: '', label: d.type, border: '#999' };
     const entries = Object.entries(d.details || {}).slice(0, 4);
     const rows = entries.map(([k, v]) =>
       `<div class="tip-row"><span class="tip-k">${toLabel(k)}</span><span class="tip-v">${v}</span></div>`
     ).join('');
     const susp = d.suspicious ? '<div class="tip-susp">⚠ Suspicious entity</div>' : '';
+    const ico = `<span style="display:inline-flex;vertical-align:middle;margin-right:5px">${iconSvgEl(cfg, d.suspicious ? SUSP_BDR : cfg.border, 14)}</span>`;
     tipShow(
       evt.originalEvent.clientX,
       evt.originalEvent.clientY,
-      `<div class="tip-title">${cfg.emoji} ${d.rawLabel}</div>${rows}${susp}`
+      `<div class="tip-title">${ico}${d.rawLabel}</div>${rows}${susp}`
     );
   });
   cy.on('mousemove', 'node', evt => tipMove(evt.originalEvent.clientX, evt.originalEvent.clientY));
@@ -723,18 +761,23 @@ function initGraph(data) {
     const d    = evt.target.data();
     const from = nodeLabels[d.fromId] || d.fromId;
     const to   = nodeLabels[d.toId]   || d.toId;
-    const amt  = fmtUGX(d.amountUGX);
+    const isCrypto = d.cryptoAmount != null && d.cryptoUnit;
+    const amt  = isCrypto ? fmtCrypto(d.cryptoAmount, d.cryptoUnit) : fmtUGX(d.amountUGX);
+    const amtKey = isCrypto ? d.cryptoUnit : 'Amount (UGX)';
     const noteRow = d.rawLabel
       ? `<div class="tip-row"><span class="tip-k">Note</span><span class="tip-v">${d.rawLabel}</span></div>`
       : '';
     const amtRow = amt
-      ? `<div class="tip-row"><span class="tip-k">Amount</span><span class="tip-v">${amt}</span></div>`
+      ? `<div class="tip-row"><span class="tip-k">${amtKey}</span><span class="tip-v">${amt}</span></div>`
+      : '';
+    const denomRow = isCrypto
+      ? `<div class="tip-row"><span class="tip-k">Type</span><span class="tip-v">Crypto transfer</span></div>`
       : '';
     const susp = d.suspicious ? '<div class="tip-susp">⚠ Suspicious flow</div>' : '';
     tipShow(
       evt.originalEvent.clientX,
       evt.originalEvent.clientY,
-      `<div class="tip-title">${from} → ${to}</div>${amtRow}${noteRow}${susp}`
+      `<div class="tip-title">${from} → ${to}</div>${amtRow}${denomRow}${noteRow}${susp}`
     );
   });
   cy.on('mousemove', 'edge', evt => tipMove(evt.originalEvent.clientX, evt.originalEvent.clientY));

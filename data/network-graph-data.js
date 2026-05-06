@@ -1,9 +1,12 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    FIA Financial Network Data — Sam Obongo
-   Loaded via <script src> so the page works on file:// and GitHub Pages.
    Edit this file to add/remove nodes and edges; the graph reloads on refresh.
 
    Node types: person | bank_account | mobile_money | crypto_wallet | exchange_account | company
+
+   Edge denomination rules (enforced in sam-obongo-network.html):
+     crypto_wallet ↔ exchange_account  →  cryptoAmount + cryptoUnit (USDT/USDC/BTC/ETH)
+     bank / mobile_money ↔ exchange    →  amountUGX
    ───────────────────────────────────────────────────────────────────────────── */
 window.NETWORK_GRAPH_DATA = {
   "meta": {
@@ -90,20 +93,54 @@ window.NETWORK_GRAPH_DATA = {
       "suspicious": false
     },
 
-    /* ── Sam's crypto / exchange ─────────────────────────────────── */
+    /* ── Sam's crypto wallets ───────────────────────────────────── */
     {
       "id": "usdt_wallet",
-      "label": "USDT TRC20 · TFBa1M9a…",
+      "label": "USDT · TRC20 · TGzK…Pt1",
       "type": "crypto_wallet",
       "details": {
-        "blockchain": "TRON (TRC-20)",
-        "address": "TFBa1M9a7rqXpz2K…",
-        "estimated_balance": "USD 142,000",
+        "asset": "USDT",
+        "network": "TRC20 (Tron)",
+        "address": "TGzK8mN4pR2vXqL7nDsYj5Hf3aBcWe9Pt1",
+        "balance": "24,500 USDT",
+        "usd_value": "~$24,500",
         "first_seen": "Nov 2022",
-        "total_received": "USD 412,000"
+        "total_received": "68,200 USDT"
       },
       "suspicious": true
     },
+    {
+      "id": "btc_wallet",
+      "label": "BTC · SegWit · bc1q4m…a2z",
+      "type": "crypto_wallet",
+      "details": {
+        "asset": "Bitcoin",
+        "network": "BTC (SegWit)",
+        "address": "bc1q4mxy8zkl5n6v3p8j2wq4r6t9u1c0e8n7y5fa2z",
+        "balance": "0.45 BTC",
+        "usd_value": "~$28,350",
+        "first_seen": "Mar 2023",
+        "total_received": "1.24 BTC"
+      },
+      "suspicious": true
+    },
+    {
+      "id": "eth_wallet_sam",
+      "label": "ETH · EVM · 0x71C7…976F",
+      "type": "crypto_wallet",
+      "details": {
+        "asset": "Ethereum",
+        "network": "ETH (EVM)",
+        "address": "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+        "balance": "0.32 ETH",
+        "usd_value": "~$960",
+        "first_seen": "Apr 2023",
+        "total_received": "0.89 ETH"
+      },
+      "suspicious": true
+    },
+
+    /* ── Sam's exchange accounts ─────────────────────────────────── */
     {
       "id": "binance",
       "label": "Binance · samobongo@gmail.com",
@@ -115,6 +152,34 @@ window.NETWORK_GRAPH_DATA = {
         "country": "Uganda",
         "total_volume": "USD 890,000",
         "account_created": "Oct 2022"
+      },
+      "suspicious": true
+    },
+    {
+      "id": "bybit",
+      "label": "ByBit · s.obongo87@pm.me",
+      "type": "exchange_account",
+      "details": {
+        "platform": "ByBit",
+        "email": "s.obongo87@protonmail.com",
+        "kyc_status": "Verified (Enhanced)",
+        "country": "Uganda",
+        "total_volume": "USD 340,000",
+        "account_created": "Jan 2023"
+      },
+      "suspicious": true
+    },
+    {
+      "id": "yellow_card",
+      "label": "Yellow Card · +256701234567",
+      "type": "exchange_account",
+      "details": {
+        "platform": "Yellow Card",
+        "phone": "+256 701 234 567",
+        "kyc_status": "Verified (KYC2)",
+        "country": "Uganda",
+        "total_volume": "USD 85,000",
+        "account_created": "Mar 2023"
       },
       "suspicious": true
     },
@@ -216,6 +281,24 @@ window.NETWORK_GRAPH_DATA = {
         "monthly_avg_tx": "UGX 9.2M"
       },
       "suspicious": false
+    },
+
+    /* ── Grace's crypto wallet (suspicious) ─────────────────────── */
+    {
+      "id": "usdc_wallet_grace",
+      "label": "USDC · ERC20 · 0x4B8e…0E5",
+      "type": "crypto_wallet",
+      "details": {
+        "asset": "USDC",
+        "network": "ERC20 (Ethereum)",
+        "address": "0x4B8e2A9f7D6c1E3b0A5d8F4c7B2e9A6d3C1f0E5",
+        "balance": "8,200 USDC",
+        "usd_value": "~$8,200",
+        "first_seen": "Feb 2023",
+        "total_received": "18,400 USDC",
+        "beneficial_owner": "Grace Obongo"
+      },
+      "suspicious": true
     },
 
     /* ── Father: Robert Obongo ───────────────────────────────────── */
@@ -374,56 +457,83 @@ window.NETWORK_GRAPH_DATA = {
   "edges": [
 
     /* ── Sam ↔ his accounts ──────────────────────────────────────── */
-    { "id": "e_sam_stanbic",       "from": "sam",        "to": "stanbic",        "amountUGX": 45000000,  "label": "Salary credit",       "suspicious": false, "bidirectional": false },
-    { "id": "e_stanbic_sam",       "from": "stanbic",    "to": "sam",            "amountUGX": 38000000,  "label": "Cash withdrawal",      "suspicious": false, "bidirectional": false },
-    { "id": "e_sam_absa",          "from": "sam",        "to": "absa",           "amountUGX": 23400000,  "label": "Transfer",             "suspicious": false, "bidirectional": false },
-    { "id": "e_sam_airtel",        "from": "sam",        "to": "airtel",         "amountUGX": 12500000,  "label": "Monthly top-up",       "suspicious": false, "bidirectional": false },
-    { "id": "e_sam_mtn",           "from": "sam",        "to": "mtn",            "amountUGX": 8750000,   "label": "Outgoing transfers",   "suspicious": false, "bidirectional": false },
+    { "id": "e_sam_stanbic",       "from": "sam",        "to": "stanbic",        "amountUGX": 45000000,  "label": "Salary credit",        "suspicious": false },
+    { "id": "e_stanbic_sam",       "from": "stanbic",    "to": "sam",            "amountUGX": 38000000,  "label": "Cash withdrawal",       "suspicious": false },
+    { "id": "e_sam_absa",          "from": "sam",        "to": "absa",           "amountUGX": 23400000,  "label": "Transfer",              "suspicious": false },
+    { "id": "e_sam_airtel",        "from": "sam",        "to": "airtel",         "amountUGX": 12500000,  "label": "Monthly top-up",        "suspicious": false },
+    { "id": "e_sam_mtn",           "from": "sam",        "to": "mtn",            "amountUGX": 8750000,   "label": "Outgoing transfers",    "suspicious": false },
 
-    /* ── Sam's suspicious crypto chain ──────────────────────────── */
-    { "id": "e_stanbic_usdt",      "from": "stanbic",    "to": "usdt_wallet",    "amountUGX": 67000000,  "label": "Crypto purchase",      "suspicious": true,  "bidirectional": false },
-    { "id": "e_usdt_binance",      "from": "usdt_wallet","to": "binance",        "amountUGX": 95000000,  "label": "USDT deposit",         "suspicious": true,  "bidirectional": false },
-    { "id": "e_binance_wife",      "from": "binance",    "to": "wife",           "amountUGX": 42000000,  "label": "Crypto withdrawal",    "suspicious": true,  "bidirectional": false },
+    /* ── Suspicious chain 1: USDT via Binance → ByBit → fiat out ── */
+    /* bank→exchange: UGX denomination */
+    { "id": "e_stanbic_binance",   "from": "stanbic",    "to": "binance",        "amountUGX": 67000000,  "label": "Fiat crypto purchase",  "suspicious": true  },
+    /* exchange→wallet: CRYPTO denomination */
+    { "id": "e_binance_usdt",      "from": "binance",    "to": "usdt_wallet",    "amountUGX": null,  "cryptoAmount": 24500, "cryptoUnit": "USDT",  "label": "USDT withdrawal",       "suspicious": true  },
+    /* wallet→exchange: CRYPTO denomination */
+    { "id": "e_usdt_bybit",        "from": "usdt_wallet","to": "bybit",          "amountUGX": null,  "cryptoAmount": 18000, "cryptoUnit": "USDT",  "label": "USDT deposit",          "suspicious": true  },
+    /* exchange→bank: UGX denomination */
+    { "id": "e_bybit_wife_equity", "from": "bybit",      "to": "wife_equity",    "amountUGX": 65800000,  "label": "Fiat withdrawal",       "suspicious": true  },
+
+    /* ── Suspicious chain 2: BTC via Yellow Card → Binance ────────── */
+    /* bank→exchange: UGX denomination */
+    { "id": "e_absa_yellow_card",  "from": "absa",       "to": "yellow_card",    "amountUGX": 32000000,  "label": "Fiat crypto purchase",  "suspicious": true  },
+    /* exchange→wallet: CRYPTO denomination */
+    { "id": "e_yc_btc",           "from": "yellow_card", "to": "btc_wallet",     "amountUGX": null,  "cryptoAmount": 0.45,  "cryptoUnit": "BTC",   "label": "BTC purchase",          "suspicious": true  },
+    /* wallet→exchange: CRYPTO denomination */
+    { "id": "e_btc_binance",       "from": "btc_wallet", "to": "binance",        "amountUGX": null,  "cryptoAmount": 0.38,  "cryptoUnit": "BTC",   "label": "BTC deposit",           "suspicious": true  },
+    /* exchange→bank: UGX denomination */
+    { "id": "e_binance_wife_stanbic","from": "binance",  "to": "wife_stanbic",   "amountUGX": 42000000,  "label": "Fiat withdrawal",       "suspicious": true  },
+
+    /* ── Suspicious chain 3: ETH via Binance → ByBit ─────────────── */
+    /* exchange→wallet: CRYPTO denomination */
+    { "id": "e_binance_eth",       "from": "binance",    "to": "eth_wallet_sam", "amountUGX": null,  "cryptoAmount": 0.32,  "cryptoUnit": "ETH",   "label": "ETH withdrawal",        "suspicious": true  },
+    /* wallet→exchange: CRYPTO denomination */
+    { "id": "e_eth_bybit",         "from": "eth_wallet_sam","to": "bybit",       "amountUGX": null,  "cryptoAmount": 0.28,  "cryptoUnit": "ETH",   "label": "ETH deposit",           "suspicious": true  },
+
+    /* ── Grace's USDC wallet → Binance ──────────────────────────── */
+    /* ownership (no financial amount) */
+    { "id": "e_wife_usdc",         "from": "wife",       "to": "usdc_wallet_grace","amountUGX": null, "label": "Beneficial owner",      "suspicious": false },
+    /* wallet→exchange: CRYPTO denomination */
+    { "id": "e_usdc_binance",      "from": "usdc_wallet_grace","to": "binance",  "amountUGX": null,  "cryptoAmount": 8200,  "cryptoUnit": "USDC",  "label": "USDC deposit",          "suspicious": true  },
 
     /* ── Sam's companies ─────────────────────────────────────────── */
-    { "id": "e_sam_company_a",     "from": "sam",        "to": "company_a",      "amountUGX": null,      "label": "100% beneficiary",     "suspicious": false, "bidirectional": false },
-    { "id": "e_sam_company_b",     "from": "sam",        "to": "company_b",      "amountUGX": null,      "label": "25% shareholder",      "suspicious": false, "bidirectional": false },
-    { "id": "e_company_a_stanbic", "from": "company_a",  "to": "stanbic",        "amountUGX": 34500000,  "label": "Business revenue",     "suspicious": false, "bidirectional": false },
-    { "id": "e_company_b_absa",    "from": "company_b",  "to": "absa",           "amountUGX": 18750000,  "label": "Dividend payment",     "suspicious": false, "bidirectional": false },
+    { "id": "e_sam_company_a",     "from": "sam",        "to": "company_a",      "amountUGX": null,      "label": "100% beneficiary",      "suspicious": false },
+    { "id": "e_sam_company_b",     "from": "sam",        "to": "company_b",      "amountUGX": null,      "label": "25% shareholder",       "suspicious": false },
+    { "id": "e_company_a_stanbic", "from": "company_a",  "to": "stanbic",        "amountUGX": 34500000,  "label": "Business revenue",      "suspicious": false },
+    { "id": "e_company_b_absa",    "from": "company_b",  "to": "absa",           "amountUGX": 18750000,  "label": "Dividend payment",      "suspicious": false },
 
     /* ── Sam ↔ wife (person-level) ───────────────────────────────── */
-    { "id": "e_sam_wife",          "from": "sam",        "to": "wife",           "amountUGX": 15000000,  "label": "Family transfer",      "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_sam",          "from": "wife",       "to": "sam",            "amountUGX": 12000000,  "label": "Business income",      "suspicious": false, "bidirectional": false },
+    { "id": "e_sam_wife",          "from": "sam",        "to": "wife",           "amountUGX": 15000000,  "label": "Family transfer",       "suspicious": false },
+    { "id": "e_wife_sam",          "from": "wife",       "to": "sam",            "amountUGX": 12000000,  "label": "Business income",       "suspicious": false },
 
     /* ── Wife ↔ her accounts ─────────────────────────────────────── */
-    { "id": "e_wife_wife_stanbic", "from": "wife",       "to": "wife_stanbic",   "amountUGX": 32000000,  "label": "Personal banking",     "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_wife_equity",  "from": "wife",       "to": "wife_equity",    "amountUGX": 28500000,  "label": "Business account",     "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_wife_airtel",  "from": "wife",       "to": "wife_airtel",    "amountUGX": 7200000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_wife_mtn",     "from": "wife",       "to": "wife_mtn",       "amountUGX": 4600000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_equity_compb", "from": "wife_equity","to": "company_b",      "amountUGX": 22000000,  "label": "Director payments",    "suspicious": false, "bidirectional": false },
-    { "id": "e_wife_stanbic_sam",  "from": "wife_stanbic","to": "stanbic",       "amountUGX": 18400000,  "label": "Spousal transfer",     "suspicious": false, "bidirectional": false },
+    { "id": "e_wife_wife_stanbic", "from": "wife",       "to": "wife_stanbic",   "amountUGX": 32000000,  "label": "Personal banking",      "suspicious": false },
+    { "id": "e_wife_wife_equity",  "from": "wife",       "to": "wife_equity",    "amountUGX": 28500000,  "label": "Business account",      "suspicious": false },
+    { "id": "e_wife_wife_airtel",  "from": "wife",       "to": "wife_airtel",    "amountUGX": 7200000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_wife_wife_mtn",     "from": "wife",       "to": "wife_mtn",       "amountUGX": 4600000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_wife_equity_compb", "from": "wife_equity","to": "company_b",      "amountUGX": 22000000,  "label": "Director payments",     "suspicious": false },
+    { "id": "e_wife_stanbic_sam",  "from": "wife_stanbic","to": "stanbic",       "amountUGX": 18400000,  "label": "Spousal transfer",      "suspicious": false },
 
     /* ── Sam ↔ father (person-level) ────────────────────────────── */
-    { "id": "e_father_sam",        "from": "father",     "to": "sam",            "amountUGX": 11000000,  "label": "Family support",       "suspicious": false, "bidirectional": false },
+    { "id": "e_father_sam",        "from": "father",     "to": "sam",            "amountUGX": 11000000,  "label": "Family support",        "suspicious": false },
 
     /* ── Father ↔ his accounts & company ────────────────────────── */
-    { "id": "e_father_fcompany",   "from": "father",     "to": "father_company", "amountUGX": null,      "label": "100% owner",           "suspicious": false, "bidirectional": false },
-    { "id": "e_father_fcentenary", "from": "father",     "to": "father_centenary","amountUGX": 19500000, "label": "Main banking",         "suspicious": false, "bidirectional": false },
-    { "id": "e_father_fpostbank",  "from": "father",     "to": "father_postbank","amountUGX": 6800000,   "label": "Savings deposit",      "suspicious": false, "bidirectional": false },
-    { "id": "e_father_fairtel",    "from": "father",     "to": "father_airtel",  "amountUGX": 2100000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_father_fmtn",       "from": "father",     "to": "father_mtn",     "amountUGX": 3400000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_fcompany_fcentenary","from": "father_company","to": "father_centenary","amountUGX": 24000000,"label": "Farm revenue",       "suspicious": false, "bidirectional": false },
-    { "id": "e_fcentenary_stanbic","from": "father_centenary","to": "stanbic",   "amountUGX": 11000000,  "label": "Family support",       "suspicious": false, "bidirectional": false },
+    { "id": "e_father_fcompany",   "from": "father",     "to": "father_company", "amountUGX": null,      "label": "100% owner",            "suspicious": false },
+    { "id": "e_father_fcentenary", "from": "father",     "to": "father_centenary","amountUGX": 19500000, "label": "Main banking",          "suspicious": false },
+    { "id": "e_father_fpostbank",  "from": "father",     "to": "father_postbank","amountUGX": 6800000,   "label": "Savings deposit",       "suspicious": false },
+    { "id": "e_father_fairtel",    "from": "father",     "to": "father_airtel",  "amountUGX": 2100000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_father_fmtn",       "from": "father",     "to": "father_mtn",     "amountUGX": 3400000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_fcompany_fcentenary","from": "father_company","to": "father_centenary","amountUGX": 24000000,"label": "Farm revenue",        "suspicious": false },
+    { "id": "e_fcentenary_stanbic","from": "father_centenary","to": "stanbic",   "amountUGX": 11000000,  "label": "Family support",        "suspicious": false },
 
     /* ── Sam ↔ mother (person-level) ────────────────────────────── */
-    { "id": "e_mother_sam",        "from": "mother",     "to": "sam",            "amountUGX": 8000000,   "label": "Gift transfer",        "suspicious": false, "bidirectional": false },
+    { "id": "e_mother_sam",        "from": "mother",     "to": "sam",            "amountUGX": 8000000,   "label": "Gift transfer",         "suspicious": false },
 
     /* ── Mother ↔ her accounts ───────────────────────────────────── */
-    { "id": "e_mother_mcentenary", "from": "mother",     "to": "mother_centenary","amountUGX": 14500000, "label": "Main banking",         "suspicious": false, "bidirectional": false },
-    { "id": "e_mother_mdfcu",      "from": "mother",     "to": "mother_dfcu",    "amountUGX": 5200000,   "label": "Savings deposit",      "suspicious": false, "bidirectional": false },
-    { "id": "e_mother_mairtel",    "from": "mother",     "to": "mother_airtel",  "amountUGX": 1800000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_mother_mmtn",       "from": "mother",     "to": "mother_mtn",     "amountUGX": 2400000,   "label": "Mobile top-up",        "suspicious": false, "bidirectional": false },
-    { "id": "e_mcentenary_stanbic","from": "mother_centenary","to": "stanbic",   "amountUGX": 8000000,   "label": "Gift to son",          "suspicious": false, "bidirectional": false }
+    { "id": "e_mother_mcentenary", "from": "mother",     "to": "mother_centenary","amountUGX": 14500000, "label": "Main banking",          "suspicious": false },
+    { "id": "e_mother_mdfcu",      "from": "mother",     "to": "mother_dfcu",    "amountUGX": 5200000,   "label": "Savings deposit",       "suspicious": false },
+    { "id": "e_mother_mairtel",    "from": "mother",     "to": "mother_airtel",  "amountUGX": 1800000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_mother_mmtn",       "from": "mother",     "to": "mother_mtn",     "amountUGX": 2400000,   "label": "Mobile top-up",         "suspicious": false },
+    { "id": "e_mcentenary_stanbic","from": "mother_centenary","to": "stanbic",   "amountUGX": 8000000,   "label": "Gift to son",           "suspicious": false }
 
   ]
 };
