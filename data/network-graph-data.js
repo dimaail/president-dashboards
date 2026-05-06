@@ -1,0 +1,317 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   FIA Financial Network Data — Sam Obongo
+   Loaded via <script src> so the page works on file:// and GitHub Pages.
+   Edit this file to add/remove nodes and edges; the graph reloads on refresh.
+   ───────────────────────────────────────────────────────────────────────────── */
+window.NETWORK_GRAPH_DATA = {
+  "meta": {
+    "subject": "Sam Obongo",
+    "case_ref": "FIA-2026-0047",
+    "generated": "2026-05-06",
+    "analyst": "FIA Intelligence Unit",
+    "risk_level": "High"
+  },
+  "nodes": [
+    {
+      "id": "sam",
+      "label": "Sam Obongo",
+      "type": "person",
+      "details": {
+        "role": "Senior Civil Servant, MoF",
+        "dob": "12 Mar 1978",
+        "nationality": "Ugandan",
+        "source_of_funds": "Salary + directorships",
+        "risk_level": "High"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "wife",
+      "label": "Grace Obongo (Wife)",
+      "type": "person",
+      "details": {
+        "relation": "Spouse",
+        "occupation": "Business owner",
+        "risk_level": "High"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "mother",
+      "label": "Esther Obongo (Mother)",
+      "type": "person",
+      "details": {
+        "relation": "Mother",
+        "occupation": "Retired",
+        "risk_level": "Low"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "father",
+      "label": "Robert Obongo (Father)",
+      "type": "person",
+      "details": {
+        "relation": "Father",
+        "occupation": "Farmer",
+        "risk_level": "Low"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "airtel",
+      "label": "Airtel Money · +256701234567",
+      "type": "mobile_money",
+      "details": {
+        "provider": "Airtel Uganda",
+        "phone": "+256 701 234 567",
+        "registered_name": "Sam Obongo",
+        "account_age": "4 years",
+        "monthly_avg_tx": "UGX 22.5M"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "mtn",
+      "label": "MTN MoMo · +256781234567",
+      "type": "mobile_money",
+      "details": {
+        "provider": "MTN Uganda",
+        "phone": "+256 781 234 567",
+        "registered_name": "Sam Obongo",
+        "account_age": "6 years",
+        "monthly_avg_tx": "UGX 18.2M"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "stanbic",
+      "label": "Stanbic Bank · UG0123456789",
+      "type": "bank_account",
+      "details": {
+        "bank": "Stanbic Bank Uganda",
+        "account": "UG0123456789",
+        "currency": "UGX",
+        "balance": "UGX 287,400,000",
+        "opened": "Jan 2015",
+        "account_type": "Corporate"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "absa",
+      "label": "Absa Bank · UG9876543210",
+      "type": "bank_account",
+      "details": {
+        "bank": "Absa Bank Uganda",
+        "account": "UG9876543210",
+        "currency": "UGX",
+        "balance": "UGX 94,200,000",
+        "opened": "Mar 2019",
+        "account_type": "Personal"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "usdt_wallet",
+      "label": "USDT TRC20 · TFBa1M9a…",
+      "type": "crypto_wallet",
+      "details": {
+        "blockchain": "TRON (TRC-20)",
+        "address": "TFBa1M9a7rqXpz2K…",
+        "estimated_balance": "USD 142,000",
+        "first_seen": "Nov 2022",
+        "total_received": "USD 412,000"
+      },
+      "suspicious": true
+    },
+    {
+      "id": "binance",
+      "label": "Binance · samobongo@gmail.com",
+      "type": "exchange_account",
+      "details": {
+        "platform": "Binance",
+        "email": "samobongo@gmail.com",
+        "kyc_status": "Verified (Tier 2)",
+        "country": "Uganda",
+        "total_volume": "USD 890,000",
+        "account_created": "Oct 2022"
+      },
+      "suspicious": true
+    },
+    {
+      "id": "company_a",
+      "label": "Obongo Holdings Ltd (100%)",
+      "type": "company",
+      "details": {
+        "registration": "UG-REG-2018-047821",
+        "incorporated": "Feb 2018",
+        "ownership": "Sam Obongo 100%",
+        "director": "Sam Obongo",
+        "industry": "General Trade & Consulting",
+        "annual_turnover": "UGX 1.2B"
+      },
+      "suspicious": false
+    },
+    {
+      "id": "company_b",
+      "label": "Nile Ventures Ltd (25%)",
+      "type": "company",
+      "details": {
+        "registration": "UG-REG-2020-094512",
+        "incorporated": "Jun 2020",
+        "ownership": "Sam Obongo 25%",
+        "director": "Grace Obongo",
+        "industry": "Real Estate",
+        "annual_turnover": "UGX 640M"
+      },
+      "suspicious": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_sam_airtel",
+      "from": "sam",
+      "to": "airtel",
+      "amountUGX": 12500000,
+      "label": "Monthly top-up",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_mtn",
+      "from": "sam",
+      "to": "mtn",
+      "amountUGX": 8750000,
+      "label": "Outgoing transfers",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_stanbic",
+      "from": "sam",
+      "to": "stanbic",
+      "amountUGX": 45000000,
+      "label": "Salary credit",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_stanbic_sam",
+      "from": "stanbic",
+      "to": "sam",
+      "amountUGX": 38000000,
+      "label": "Cash withdrawal",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_absa",
+      "from": "sam",
+      "to": "absa",
+      "amountUGX": 23400000,
+      "label": "Transfer",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_stanbic_usdt",
+      "from": "stanbic",
+      "to": "usdt_wallet",
+      "amountUGX": 67000000,
+      "label": "Crypto purchase",
+      "suspicious": true,
+      "bidirectional": false
+    },
+    {
+      "id": "e_usdt_binance",
+      "from": "usdt_wallet",
+      "to": "binance",
+      "amountUGX": 95000000,
+      "label": "USDT deposit",
+      "suspicious": true,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_company_a",
+      "from": "sam",
+      "to": "company_a",
+      "amountUGX": null,
+      "label": "100% beneficiary",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_company_b",
+      "from": "sam",
+      "to": "company_b",
+      "amountUGX": null,
+      "label": "25% shareholder",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_sam_wife",
+      "from": "sam",
+      "to": "wife",
+      "amountUGX": 15000000,
+      "label": "Family transfer",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_wife_sam",
+      "from": "wife",
+      "to": "sam",
+      "amountUGX": 12000000,
+      "label": "Business income",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_mother_sam",
+      "from": "mother",
+      "to": "sam",
+      "amountUGX": 8000000,
+      "label": "Gift transfer",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_father_sam",
+      "from": "father",
+      "to": "sam",
+      "amountUGX": 11000000,
+      "label": "Family support",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_company_a_stanbic",
+      "from": "company_a",
+      "to": "stanbic",
+      "amountUGX": 34500000,
+      "label": "Business revenue",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_company_b_absa",
+      "from": "company_b",
+      "to": "absa",
+      "amountUGX": 18750000,
+      "label": "Dividend payment",
+      "suspicious": false,
+      "bidirectional": false
+    },
+    {
+      "id": "e_binance_wife",
+      "from": "binance",
+      "to": "wife",
+      "amountUGX": 42000000,
+      "label": "Crypto withdrawal",
+      "suspicious": true,
+      "bidirectional": false
+    }
+  ]
+};

@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>FIA · Financial Network · Sam Obongo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<!-- Graph data — edit data/network-graph-data.js to add/change entities -->
+<script src="network-graph-data.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+:root {
+  --bg:          #F5F4F1;
+  --panel:       #FFFFFF;
+  --panel-hi:    #FAFAFA;
+  --text:        #121216;
+  --text-dim:    rgba(18,18,22,0.60);
+  --text-mute:   rgba(18,18,22,0.38);
+  --line:        rgba(0,0,0,0.07);
+  --line-2:      rgba(0,0,0,0.12);
+  --accent:      #FF7A00;
+  --purple:      #9E00FF;
+  --blue:        #0728C8;
+  --red:         #C92028;
+  --red-bg:      #FEF2F2;
+  --red-border:  #EF4444;
+  --green:       #1A6B3C;
+  --shadow-card:    0px 2px 8px rgba(0,0,0,0.06);
+  --shadow-pop:     0px 4px 16px rgba(0,0,0,0.12);
+  --radius:      5px;
+  --font:        "Nunito Sans", "Open Sans", system-ui, sans-serif;
+}
+
+body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  grid-template-areas: "brand topbar" "nav main";
+  background: var(--bg);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* ── Brand ──────────────────────────────────────────────────────── */
+.brand {
+  grid-area: brand;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px;
+}
+.brand-mark { width: 28px; height: 28px; object-fit: contain; }
+.brand-title { font-size: 13px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.3; }
+.brand-sub { font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-dim); }
+
+/* ── Topbar ─────────────────────────────────────────────────────── */
+.topbar {
+  grid-area: topbar;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; padding: 0 20px; gap: 14px;
+}
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red); flex-shrink: 0;
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(201,32,40,0.4); }
+  50%     { box-shadow: 0 0 0 5px rgba(201,32,40,0); }
+}
+.tb-badge {
+  display: inline-flex; align-items: center;
+  background: rgba(159,0,255,0.10); color: var(--purple);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  border-radius: 3px; padding: 2px 8px; flex-shrink: 0;
+}
+.tb-title { font-size: 14px; font-weight: 700; }
+.tb-sub   { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+.tb-case  { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.tb-case-label {
+  font-size: 11px; color: var(--text-dim);
+  border: 1px solid var(--line-2); border-radius: 3px;
+  padding: 3px 8px; font-weight: 600;
+}
+.back-btn {
+  font-size: 12px; color: var(--text-dim); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: var(--radius);
+  border: 1px solid var(--line-2); background: var(--panel);
+  font-family: var(--font); cursor: pointer; transition: background 0.12s;
+  white-space: nowrap;
+}
+.back-btn:hover { background: rgba(0,0,0,0.04); color: var(--text); }
+
+/* ── Sidebar / nav ─────────────────────────────────────────────── */
+.nav {
+  grid-area: nav;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+}
+.nav-sec {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-mute);
+  padding: 14px 16px 4px; flex-shrink: 0;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.stat-cell {
+  flex: 1; padding: 10px 12px; text-align: center;
+  border-right: 1px solid var(--line);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-val { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-key { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.stat-cell.suspicious .stat-val { color: var(--red); }
+
+/* Detail panel */
+.detail-placeholder {
+  padding: 16px;
+  font-size: 12px; color: var(--text-mute); font-style: italic;
+  text-align: center; line-height: 1.5;
+}
+.detail-placeholder .detail-icon-big { font-size: 28px; margin-bottom: 8px; display: block; }
+
+#detail-panel { display: none; flex: 0 0 auto; }
+
+.dc {
+  margin: 8px 10px;
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.dc-header {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.dc-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.dc-name  { font-size: 13px; font-weight: 700; line-height: 1.25; }
+.dc-type  { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-top: 2px; }
+.dc-rows  { padding: 6px 0 4px; }
+.dc-row   { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 12px; gap: 6px; }
+.dc-key   { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+.dc-val   { font-size: 11px; font-weight: 600; text-align: right; word-break: break-word; }
+.dc-susp  {
+  margin: 0 10px 8px;
+  background: var(--red-bg); color: var(--red);
+  font-size: 11px; font-weight: 700; border-radius: 3px;
+  padding: 5px 8px; display: flex; align-items: center; gap: 5px;
+}
+
+/* Legend */
+.legend { padding: 4px 0 12px; flex-shrink: 0; }
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 16px; font-size: 11px; color: var(--text-dim);
+}
+.lg-swatch {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid transparent;
+}
+
+/* Instructions */
+.nav-hint {
+  padding: 10px 16px 12px;
+  font-size: 11px; color: var(--text-mute); line-height: 1.5;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.nav-hint kbd {
+  display: inline-block;
+  background: var(--bg); border: 1px solid var(--line-2);
+  border-radius: 3px; padding: 0 4px;
+  font-family: monospace; font-size: 10px;
+}
+
+/* ── Main / graph canvas ────────────────────────────────────────── */
+.main {
+  grid-area: main;
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+}
+#cy {
+  width: 100%; height: 100%;
+  position: absolute; top: 0; left: 0;
+}
+
+/* Toolbar */
+.toolbar {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  z-index: 10;
+}
+.tb-btn {
+  width: 32px; height: 32px;
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 15px; color: var(--text-dim);
+  transition: background 0.12s, color 0.12s;
+  line-height: 1;
+}
+.tb-btn:hover { background: rgba(0,0,0,0.04); color: var(--text); }
+
+/* Suspicious flow badge */
+.susp-banner {
+  position: absolute; bottom: 16px; right: 12px;
+  background: var(--red-bg); border: 1px solid rgba(239,68,68,0.35);
+  border-radius: var(--radius); padding: 8px 14px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; color: var(--red);
+  box-shadow: var(--shadow-card);
+  z-index: 10;
+}
+.susp-banner-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red-border);
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+
+/* ── Tooltip ────────────────────────────────────────────────────── */
+#tip {
+  position: fixed; z-index: 2000;
+  background: var(--panel);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+  padding: 10px 12px;
+  max-width: 230px; min-width: 140px;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.12s;
+  font-size: 12px;
+}
+#tip.show { opacity: 1; }
+.tip-title { font-weight: 700; font-size: 12px; margin-bottom: 5px; line-height: 1.3; }
+.tip-row   { display: flex; justify-content: space-between; gap: 8px; padding: 1px 0; }
+.tip-k     { color: var(--text-dim); white-space: nowrap; }
+.tip-v     { font-weight: 600; text-align: right; }
+.tip-susp  {
+  margin-top: 6px;
+  background: var(--red-bg); color: var(--red);
+  font-size: 10px; font-weight: 700; border-radius: 3px;
+  padding: 3px 6px; display: inline-block;
+}
+
+/* ── Error state ────────────────────────────────────────────────── */
+.err-banner {
+  position: absolute; top: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--red-bg); border: 1px solid var(--red-border);
+  color: var(--red); border-radius: var(--radius);
+  padding: 12px 20px; font-weight: 600; font-size: 13px;
+  box-shadow: var(--shadow-card); z-index: 50;
+  display: flex; align-items: center; gap: 8px;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Brand ──────────────────────────────────────────────────── -->
+<div class="brand">
+  <img class="brand-mark" src="../assets/Coat_of_arms_of_Uganda.svg.png" alt="Uganda"
+       onerror="this.style.visibility='hidden'"/>
+  <div>
+    <div class="brand-title">SWITCH</div>
+    <div class="brand-sub">Office of the President</div>
+  </div>
+</div>
+
+<!-- ── Topbar ──────────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="live-dot"></div>
+  <span class="tb-badge">FIA · Intelligence</span>
+  <div>
+    <div class="tb-title">Financial Network Analysis · Sam Obongo</div>
+    <div class="tb-sub">Entity relationship mapping · Suspicious flows highlighted in red</div>
+  </div>
+  <div class="tb-case">
+    <span class="tb-case-label" id="case-ref">Loading…</span>
+    <a class="back-btn" href="President.html">← Dashboard</a>
+  </div>
+</div>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────── -->
+<aside class="nav" id="sidebar">
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-cell"><div class="stat-val" id="stat-nodes">—</div><div class="stat-key">Entities</div></div>
+    <div class="stat-cell"><div class="stat-val" id="stat-edges">—</div><div class="stat-key">Links</div></div>
+    <div class="stat-cell suspicious"><div class="stat-val" id="stat-susp">—</div><div class="stat-key">Suspicious</div></div>
+  </div>
+
+  <!-- Selected entity detail -->
+  <div class="nav-sec">Selected Entity</div>
+  <div class="detail-placeholder" id="detail-placeholder">
+    <span class="detail-icon-big">🔍</span>
+    Click any node to inspect its details and connected flows.
+  </div>
+  <div id="detail-panel"></div>
+
+  <!-- Legend -->
+  <div class="nav-sec" style="margin-top:8px;">Entity Types</div>
+  <div class="legend" id="legend"></div>
+
+  <!-- Keyboard hints -->
+  <div class="nav-hint">
+    <b>Interact</b><br/>
+    Click node → highlight network<br/>
+    Click again / canvas → reset<br/>
+    Scroll → zoom &nbsp;|&nbsp; Drag → pan<br/>
+    <kbd>⊙</kbd> Fit &nbsp; <kbd>+</kbd> / <kbd>−</kbd> Zoom
+  </div>
+
+</aside>
+
+<!-- ── Graph canvas ────────────────────────────────────────────── -->
+<main class="main" id="main">
+  <div id="cy"></div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="tb-btn" id="btn-fit"  title="Fit to screen">⊙</button>
+    <button class="tb-btn" id="btn-zin"  title="Zoom in">+</button>
+    <button class="tb-btn" id="btn-zout" title="Zoom out">−</button>
+  </div>
+
+  <!-- Suspicious flow alert -->
+  <div class="susp-banner" id="susp-banner" style="display:none;">
+    <span class="susp-banner-dot"></span>
+    <span id="susp-banner-text"></span>
+  </div>
+</main>
+
+<!-- Floating tooltip -->
+<div id="tip"></div>
+
+<script>
+/* ──────────────────────────────────────────────────────────────────
+   Design tokens
+   ────────────────────────────────────────────────────────────────── */
+const TYPE_CFG = {
+  person:           { emoji: '👤', label: 'Person',           bg: '#EFF6FF', border: '#3B82F6', shape: 'ellipse'        },
+  bank_account:     { emoji: '🏦', label: 'Bank Account',     bg: '#F0FDF4', border: '#22C55E', shape: 'roundrectangle' },
+  mobile_money:     { emoji: '📱', label: 'Mobile Money',     bg: '#FFF7ED', border: '#FF7A00', shape: 'roundrectangle' },
+  crypto_wallet:    { emoji: '🔐', label: 'Crypto Wallet',    bg: '#FAF5FF', border: '#9E00FF', shape: 'roundrectangle' },
+  exchange_account: { emoji: '🔄', label: 'Exchange Acct',    bg: '#ECFDF5', border: '#10B981', shape: 'roundrectangle' },
+  company:          { emoji: '🏢', label: 'Company',          bg: '#EEF2FF', border: '#6366F1', shape: 'roundrectangle' },
+};
+const SUSP_BG  = '#FEF2F2';
+const SUSP_BDR = '#EF4444';
+
+/* ──────────────────────────────────────────────────────────────────
+   Utilities
+   ────────────────────────────────────────────────────────────────── */
+function fmtUGX(n) {
+  if (n == null || n === 0) return null;
+  return 'UGX ' + Number(n).toLocaleString('en-UG');
+}
+function toLabel(key) {
+  return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Tooltip
+   ────────────────────────────────────────────────────────────────── */
+const TIP = document.getElementById('tip');
+
+function tipShow(x, y, html) {
+  TIP.innerHTML = html;
+  TIP.classList.add('show');
+  tipMove(x, y);
+}
+function tipMove(x, y) {
+  const pad = 14, tw = TIP.offsetWidth || 180, th = TIP.offsetHeight || 80;
+  let l = x + pad, t = y + pad;
+  if (l + tw > window.innerWidth  - pad) l = x - tw - pad;
+  if (t + th > window.innerHeight - pad) t = y - th - pad;
+  TIP.style.left = l + 'px';
+  TIP.style.top  = t + 'px';
+}
+function tipHide() { TIP.classList.remove('show'); }
+
+/* ──────────────────────────────────────────────────────────────────
+   Sidebar detail panel
+   ────────────────────────────────────────────────────────────────── */
+function showDetail(nodeData) {
+  const { label, type, details, suspicious } = nodeData;
+  const cfg = TYPE_CFG[type] || { emoji: '?', label: type, bg: '#F5F5F5', border: '#999' };
+
+  let rows = '';
+  if (details) {
+    Object.entries(details).forEach(([k, v]) => {
+      rows += `<div class="dc-row">
+        <span class="dc-key">${toLabel(k)}</span>
+        <span class="dc-val">${v}</span>
+      </div>`;
+    });
+  }
+
+  const suspHtml = suspicious
+    ? `<div class="dc-susp">⚠ Suspicious entity — flagged</div>`
+    : '';
+
+  document.getElementById('detail-placeholder').style.display = 'none';
+  const panel = document.getElementById('detail-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="dc" style="border-left: 3px solid ${suspicious ? SUSP_BDR : cfg.border}">
+      <div class="dc-header" style="background:${suspicious ? SUSP_BG : cfg.bg}">
+        <span class="dc-emoji">${cfg.emoji}</span>
+        <div>
+          <div class="dc-name">${label}</div>
+          <div class="dc-type">${cfg.label}</div>
+        </div>
+      </div>
+      <div class="dc-rows">${rows}</div>
+      ${suspHtml}
+    </div>`;
+}
+
+function clearDetail() {
+  document.getElementById('detail-placeholder').style.display = '';
+  const p = document.getElementById('detail-panel');
+  p.style.display = 'none';
+  p.innerHTML = '';
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Legend
+   ────────────────────────────────────────────────────────────────── */
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  let html = '';
+  Object.values(TYPE_CFG).forEach(cfg => {
+    html += `<div class="legend-item">
+      <div class="lg-swatch" style="background:${cfg.bg};border-color:${cfg.border}"></div>
+      <span>${cfg.emoji} ${cfg.label}</span>
+    </div>`;
+  });
+  html += `<div class="legend-item" style="margin-top:4px;">
+    <div class="lg-swatch" style="background:${SUSP_BG};border-color:${SUSP_BDR}"></div>
+    <span style="color:#C92028;font-weight:700;">⚠ Suspicious</span>
+  </div>`;
+  leg.innerHTML = html;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Graph initialisation
+   ────────────────────────────────────────────────────────────────── */
+function initGraph(data) {
+  /* Update meta */
+  const meta = data.meta || {};
+  document.getElementById('case-ref').textContent = meta.case_ref ? `Case: ${meta.case_ref}` : 'FIA Network';
+
+  const suspNodes = (data.nodes || []).filter(n => n.suspicious).length;
+  const suspEdges = (data.edges || []).filter(e => e.suspicious).length;
+  const suspTotal = suspNodes + suspEdges;
+
+  document.getElementById('stat-nodes').textContent = (data.nodes || []).length;
+  document.getElementById('stat-edges').textContent = (data.edges || []).length;
+  document.getElementById('stat-susp').textContent  = suspTotal;
+
+  if (suspTotal > 0) {
+    const banner = document.getElementById('susp-banner');
+    document.getElementById('susp-banner-text').textContent =
+      `${suspTotal} suspicious flow${suspTotal > 1 ? 's' : ''} detected`;
+    banner.style.display = 'flex';
+  }
+
+  /* Build Cytoscape elements */
+  const elements = [];
+
+  (data.nodes || []).forEach(n => {
+    const cfg = TYPE_CFG[n.type] || { emoji: '?', label: n.type, bg: '#F5F5F5', border: '#999', shape: 'ellipse' };
+    elements.push({
+      data: {
+        id:         n.id,
+        label:      cfg.emoji + '\n' + n.label,
+        rawLabel:   n.label,
+        type:       n.type,
+        details:    n.details || {},
+        suspicious: !!n.suspicious,
+        /* style hints passed through data for the stylesheet */
+        _bg:        n.suspicious ? SUSP_BG  : cfg.bg,
+        _border:    n.suspicious ? SUSP_BDR : cfg.border,
+        _shape:     cfg.shape,
+      }
+    });
+  });
+
+  (data.edges || []).forEach(e => {
+    const amtLabel = fmtUGX(e.amountUGX);
+    elements.push({
+      data: {
+        id:         e.id,
+        source:     e.from,
+        target:     e.to,
+        label:      amtLabel || e.label || '',
+        rawLabel:   e.label || '',
+        amountUGX:  e.amountUGX || null,
+        suspicious: !!e.suspicious,
+        fromId:     e.from,
+        toId:       e.to,
+      }
+    });
+  });
+
+  /* Node label → label map for edge tooltips */
+  const nodeLabels = {};
+  (data.nodes || []).forEach(n => { nodeLabels[n.id] = n.label; });
+
+  /* Cytoscape instance */
+  const cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements,
+    style: [
+      /* ── Default node ──────────────────────────────────────────── */
+      {
+        selector: 'node',
+        style: {
+          'label':            'data(label)',
+          'text-valign':      'bottom',
+          'text-halign':      'center',
+          'text-wrap':        'wrap',
+          'text-max-width':   '96px',
+          'text-margin-y':    4,
+          'font-family':      '"Nunito Sans", sans-serif',
+          'font-size':        '9.5px',
+          'font-weight':      '600',
+          'color':            '#121216',
+          'width':            72,
+          'height':           72,
+          'shape':            'data(_shape)',
+          'background-color': 'data(_bg)',
+          'border-color':     'data(_border)',
+          'border-width':     2,
+          'transition-property': 'opacity, border-width',
+          'transition-duration': '150ms',
+        }
+      },
+      /* ── Subject node (sam) — larger, blue ring ─────────────────── */
+      {
+        selector: 'node[id="sam"]',
+        style: {
+          'width':        86,
+          'height':       86,
+          'border-width': 3,
+          'font-size':    '10px',
+          'font-weight':  '800',
+        }
+      },
+      /* ── Suspicious node override ────────────────────────────────── */
+      {
+        selector: 'node[?suspicious]',
+        style: {
+          'border-width': 3,
+        }
+      },
+      /* ── Default edge ───────────────────────────────────────────── */
+      {
+        selector: 'edge',
+        style: {
+          'curve-style':           'bezier',
+          'target-arrow-shape':    'triangle',
+          'target-arrow-color':    '#3E5674',
+          'line-color':            '#3E5674',
+          'arrow-scale':           0.9,
+          'width':                 1.5,
+          'label':                 'data(label)',
+          'font-family':           '"Nunito Sans", sans-serif',
+          'font-size':             '9px',
+          'color':                 '#605E5C',
+          'text-background-color': '#F5F4F1',
+          'text-background-opacity': 0.88,
+          'text-background-padding': '2px',
+          'text-background-shape': 'roundrectangle',
+          'text-rotation':         'autorotate',
+          'opacity':               0.85,
+          'transition-property':   'opacity, width',
+          'transition-duration':   '150ms',
+        }
+      },
+      /* ── Suspicious edge ────────────────────────────────────────── */
+      {
+        selector: 'edge[?suspicious]',
+        style: {
+          'line-color':         '#EF4444',
+          'target-arrow-color': '#EF4444',
+          'line-style':         'dashed',
+          'line-dash-pattern':  [6, 3],
+          'width':              2.5,
+          'color':              '#C92028',
+          'font-weight':        '700',
+        }
+      },
+      /* ── Ownership / non-monetary edges (no UGX amount) ──────────── */
+      {
+        selector: 'edge[label *= "beneficiary"], edge[label *= "shareholder"]',
+        style: {
+          'line-style':        'dotted',
+          'line-color':        '#6366F1',
+          'target-arrow-color': '#6366F1',
+          'width':             1.5,
+          'color':             '#6366F1',
+        }
+      },
+      /* ── Highlighted ─────────────────────────────────────────────── */
+      {
+        selector: '.hl',
+        style: { 'opacity': 1 }
+      },
+      {
+        selector: 'node.hl',
+        style: { 'border-width': 3 }
+      },
+      {
+        selector: 'edge.hl',
+        style: { 'width': 2.5, 'opacity': 1 }
+      },
+      /* ── Dimmed ─────────────────────────────────────────────────── */
+      {
+        selector: '.dim',
+        style: { 'opacity': 0.15 }
+      },
+    ],
+    layout: {
+      name:             'cose',
+      idealEdgeLength:  130,
+      nodeOverlap:      20,
+      refresh:          20,
+      fit:              true,
+      padding:          50,
+      randomize:        false,
+      componentSpacing: 80,
+      nodeRepulsion:    500000,
+      edgeElasticity:   100,
+      nestingFactor:    5,
+      gravity:          80,
+      numIter:          1000,
+      initialTemp:      200,
+      coolingFactor:    0.95,
+      minTemp:          1.0,
+    },
+    wheelSensitivity: 0.3,
+    minZoom: 0.15,
+    maxZoom: 5,
+  });
+
+  /* ── Selection state ──────────────────────────────────────────── */
+  let selected = null;
+
+  function resetHighlight() {
+    cy.elements().removeClass('hl dim');
+    clearDetail();
+    selected = null;
+  }
+
+  cy.on('tap', 'node', evt => {
+    const node = evt.target;
+    if (selected && selected.id() === node.id()) {
+      resetHighlight();
+      return;
+    }
+    selected = node;
+    const hood = node.closedNeighborhood();
+    cy.elements().not(hood).removeClass('hl').addClass('dim');
+    hood.removeClass('dim').addClass('hl');
+    showDetail(node.data());
+  });
+
+  cy.on('tap', evt => {
+    if (evt.target === cy) resetHighlight();
+  });
+
+  /* ── Node tooltip ─────────────────────────────────────────────── */
+  cy.on('mouseover', 'node', evt => {
+    const d   = evt.target.data();
+    const cfg = TYPE_CFG[d.type] || { emoji: '?', label: d.type };
+    const entries = Object.entries(d.details || {}).slice(0, 4);
+    const rows = entries.map(([k, v]) =>
+      `<div class="tip-row"><span class="tip-k">${toLabel(k)}</span><span class="tip-v">${v}</span></div>`
+    ).join('');
+    const susp = d.suspicious ? '<div class="tip-susp">⚠ Suspicious entity</div>' : '';
+    tipShow(
+      evt.originalEvent.clientX,
+      evt.originalEvent.clientY,
+      `<div class="tip-title">${cfg.emoji} ${d.rawLabel}</div>${rows}${susp}`
+    );
+  });
+  cy.on('mousemove', 'node', evt => tipMove(evt.originalEvent.clientX, evt.originalEvent.clientY));
+  cy.on('mouseout',  'node', tipHide);
+
+  /* ── Edge tooltip ─────────────────────────────────────────────── */
+  cy.on('mouseover', 'edge', evt => {
+    const d    = evt.target.data();
+    const from = nodeLabels[d.fromId] || d.fromId;
+    const to   = nodeLabels[d.toId]   || d.toId;
+    const amt  = fmtUGX(d.amountUGX);
+    const noteRow = d.rawLabel
+      ? `<div class="tip-row"><span class="tip-k">Note</span><span class="tip-v">${d.rawLabel}</span></div>`
+      : '';
+    const amtRow = amt
+      ? `<div class="tip-row"><span class="tip-k">Amount</span><span class="tip-v">${amt}</span></div>`
+      : '';
+    const susp = d.suspicious ? '<div class="tip-susp">⚠ Suspicious flow</div>' : '';
+    tipShow(
+      evt.originalEvent.clientX,
+      evt.originalEvent.clientY,
+      `<div class="tip-title">${from} → ${to}</div>${amtRow}${noteRow}${susp}`
+    );
+  });
+  cy.on('mousemove', 'edge', evt => tipMove(evt.originalEvent.clientX, evt.originalEvent.clientY));
+  cy.on('mouseout',  'edge', tipHide);
+
+  /* ── Toolbar ──────────────────────────────────────────────────── */
+  const mid = () => ({ x: cy.width() / 2, y: cy.height() / 2 });
+  document.getElementById('btn-fit').onclick  = () => cy.fit(undefined, 50);
+  document.getElementById('btn-zin').onclick  = () => cy.zoom({ level: cy.zoom() * 1.25, renderedPosition: mid() });
+  document.getElementById('btn-zout').onclick = () => cy.zoom({ level: cy.zoom() * 0.80, renderedPosition: mid() });
+
+  /* Keyboard shortcuts */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') resetHighlight();
+    if (e.key === 'f' || e.key === 'F') cy.fit(undefined, 50);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Boot
+   ────────────────────────────────────────────────────────────────── */
+buildLegend();
+
+if (window.NETWORK_GRAPH_DATA) {
+  initGraph(window.NETWORK_GRAPH_DATA);
+} else {
+  document.getElementById('main').insertAdjacentHTML('beforeend',
+    `<div class="err-banner">⚠ Graph data not found.
+     <br/><small>Check that data/network-graph-data.js loaded correctly.</small></div>`
+  );
+}
+</script>
+</body>
+</html>
